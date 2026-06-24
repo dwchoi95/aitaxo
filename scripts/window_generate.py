@@ -14,8 +14,8 @@ from bs4 import BeautifulSoup
 from openai import OpenAI
 
 sys.path.insert(0, "src")
-from aitaxo.execution.runner import run_python_code, classify_failure
-from aitaxo.problems.schema import TestCase
+from execution.runner import run_python_code, classify_failure
+from problems.schema import TestCase
 
 socket.setdefaulttimeout(25)
 DATA = Path("data")

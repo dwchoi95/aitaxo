@@ -6,8 +6,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aitaxo.execution.runner import run_python_code
-from aitaxo.problems.schema import TestCase
+from execution.runner import run_python_code
+from problems.schema import TestCase
 
 
 def test_pass():

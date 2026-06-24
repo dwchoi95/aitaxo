@@ -9,8 +9,8 @@ import json, shutil, sys, collections
 from pathlib import Path
 
 sys.path.insert(0, "src")
-from aitaxo.execution.runner import run_python_code
-from aitaxo.problems.schema import TestCase
+from execution.runner import run_python_code
+from problems.schema import TestCase
 
 TEST = Path("/Users/cdw/VSCode/aria/data/ConDefects/Test")
 DATA = Path("data"); RESULTS = Path("results"); TIMEOUT = 3.0

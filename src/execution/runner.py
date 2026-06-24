@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-from ..problems import Problem, TestCase
+from problems import Problem, TestCase
 
 FailureType = Literal["pass", "wrong_answer", "runtime_error", "timeout", "compile_error"]
 

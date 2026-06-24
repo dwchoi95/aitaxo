@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from ..problems import Problem
+from problems import Problem
 
 
 SYSTEM_PROMPT = (
