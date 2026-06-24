@@ -3,7 +3,7 @@
     "2021-09-01",
     "2022-11-30"
   ],
-  "n_tasks": 432,
+  "n_tasks": 428,
   "n_human": 1215,
   "tasks": [
     {
@@ -948,14 +948,6 @@
       "date": "2022-03-20",
       "difficulty": 30,
       "n_human": 1,
-      "origin_note": "ConDefects local; window [2021-09,2022-11-30)"
-    },
-    {
-      "task_id": "abc244_c",
-      "contest": "abc244",
-      "date": "2022-03-20",
-      "difficulty": 165,
-      "n_human": 3,
       "origin_note": "ConDefects local; window [2021-09,2022-11-30)"
     },
     {
@@ -2223,14 +2215,6 @@
       "origin_note": "ConDefects local; window [2021-09,2022-11-30)"
     },
     {
-      "task_id": "abc269_e",
-      "contest": "abc269",
-      "date": "2022-09-17",
-      "difficulty": 1030,
-      "n_human": 2,
-      "origin_note": "ConDefects local; window [2021-09,2022-11-30)"
-    },
-    {
       "task_id": "abc269_g",
       "contest": "abc269",
       "date": "2022-09-17",
@@ -2619,14 +2603,6 @@
       "contest": "abc278",
       "date": "2022-11-19",
       "difficulty": 996,
-      "n_human": 1,
-      "origin_note": "ConDefects local; window [2021-09,2022-11-30)"
-    },
-    {
-      "task_id": "abc278_g",
-      "contest": "abc278",
-      "date": "2022-11-19",
-      "difficulty": 2533,
       "n_human": 1,
       "origin_note": "ConDefects local; window [2021-09,2022-11-30)"
     },
@@ -3167,14 +3143,6 @@
       "origin_note": "ConDefects local; window [2021-09,2022-11-30)"
     },
     {
-      "task_id": "arc142_c",
-      "contest": "arc142",
-      "date": "2022-06-19",
-      "difficulty": 1347,
-      "n_human": 5,
-      "origin_note": "ConDefects local; window [2021-09,2022-11-30)"
-    },
-    {
       "task_id": "arc143_a",
       "contest": "arc143",
       "date": "2022-06-26",
@@ -3462,5 +3430,11 @@
       "n_human": 2,
       "origin_note": "ConDefects local; window [2021-09,2022-11-30)"
     }
+  ],
+  "excluded_interactive": [
+    "abc244_c",
+    "abc269_e",
+    "abc278_g",
+    "arc142_c"
   ]
 }

@@ -218,6 +218,9 @@ __marimo__/
 .streamlit/secrets.toml
 
 # ── aitaxo project-specific ──
+# macOS
+.DS_Store
+
 # Large / regenerable dataset (15GB full tests + generations + human progs);
 # regenerable via scripts/ from ConDefects — keep only small manifests
 /data/*

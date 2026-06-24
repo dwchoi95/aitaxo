@@ -19,9 +19,12 @@ def main():
     no_full = []
     for k, t in enumerate(tasks, 1):
         contest, letter = t.rsplit("_", 1)
-        ind = TEST / contest / letter.upper() / "in"
-        outd = TEST / contest / letter.upper() / "out"
-        if not ind.is_dir() or not outd.is_dir():
+        # ConDefects `_h` <-> AtCoder "Ex" (last ABC problem renamed): try H then Ex
+        ind = outd = None
+        for L in (letter.upper(), "Ex"):
+            if (TEST / contest / L / "in").is_dir() and (TEST / contest / L / "out").is_dir():
+                ind, outd = TEST / contest / L / "in", TEST / contest / L / "out"; break
+        if ind is None:
             no_full.append(t); kept_samples += 1; continue
         tcdir = DATA / t / "testcases"
         if tcdir.exists():

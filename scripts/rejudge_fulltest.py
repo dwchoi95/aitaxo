@@ -22,12 +22,13 @@ TIMEOUT = 3.0
 
 def test_names(task):
     contest, letter = task.rsplit("_", 1)
-    ind = TEST / contest / letter.upper() / "in"
-    outd = TEST / contest / letter.upper() / "out"
-    if not ind.is_dir() or not outd.is_dir():
-        return None, None
-    names = sorted(p.name for p in ind.iterdir() if p.suffix == ".txt" and (outd / p.name).exists())
-    return (contest, letter.upper()), names
+    # ConDefects `_h` <-> AtCoder "Ex" (last ABC problem renamed): try H then Ex
+    for L in (letter.upper(), "Ex"):
+        ind, outd = TEST / contest / L / "in", TEST / contest / L / "out"
+        if ind.is_dir() and outd.is_dir():
+            names = sorted(p.name for p in ind.iterdir() if p.suffix == ".txt" and (outd / p.name).exists())
+            return (contest, L), names
+    return None, None
 
 
 def judge(code, task, loc, names):
