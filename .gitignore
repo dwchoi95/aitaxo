@@ -216,3 +216,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ── aitaxo project-specific ──
+# Large / regenerable dataset (15GB full tests + generations + human progs);
+# regenerable via scripts/ from ConDefects — keep only small manifests
+/data/*
+!/data/*.json
+
+# Cloned external APR tools (Refactory etc.) — not ours
+/tools/
+
+# Large / regenerable result corpora & logs (keep reports + summaries)
+results/*.jsonl
+results/*_log.txt
+results/phase3_bugs_readable.txt
