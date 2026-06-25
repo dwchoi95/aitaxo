@@ -17,7 +17,7 @@
 
 \begin{document}
 
-\title{AIBugBench: data leakage 없이 사람과 짝지은 LLM 생성 코드 결함 벤치마크}
+\title{AIBugBench: Are AI Bugs Different from Human Bugs? A Human-Paired Benchmark of LLM-Generated Code Defects}
 
 \maketitle
 
@@ -64,23 +64,25 @@ AIBugBench를 구축하기 위해, ConDefects~\cite{wu2023condefects}에서 이 
 \item 428개 문제, 4{,}280개 AI 생성물(문제당 10개)과 채점 라벨, 1{,}204개의 짝지어진 사람 버그(fault location 포함), 정규화 명세, 전체 hidden test로 이루어진 데이터셋과, 4개 defect type 및 11개 sub type의 분류 체계.
 \item 벤치마크가 지원하는 다섯 평가 태스크와 측정 지표, 그리고 표준 분할과 평가 스크립트로 이루어진 평가 프로토콜.
 \item 생성 모델의 난이도별 통과율과 결함 분포, systematicity를 reference 특성으로 보고하고, 교육용 수리 도구의 전이 실패와 그 근본 한계를 분석.
-\item 데이터, 코드, 재현 파이프라인을 담은 replication package를 \url{https://github.com/dwchoi95/aitaxo} 에 공개.
+\item 데이터, 코드, 평가 스크립트, 재현 파이프라인을 담은 replication package를 공개한다(이중 익명 심사를 위해 링크는 익명화하며, 검토용 익명 아카이브를 보충 자료로 제출한다).
 \end{itemize}
+
+본 논문의 새로움은 데이터의 규모가 아니라 그 구성 원리에 있다. 최근 연구들이 HumanEval 같은 공개 벤치마크에서 LLM 코드 오류를 분류하였으나~\cite{wang2025characteristics,tambon2025bugs,dou2026wrong}, 그 벤치마크들은 생성 모델 입장에서 오염 가능성이 있고 같은 문제의 사람 대조군이 없다. 본 논문은 처음으로 (i) 생성 모델 cutoff 이후이자 LLM 대중화 이전이라는 이중 제약을 만족하는 시기 윈도우를 도입하여 data leakage와 사람 대조군 오염을 동시에 제거하고, (ii) 같은 문제에서 AI와 사람 결함을 짝지어 ``다른가''를 통계적으로 검정하며, (iii) 명세·전체 테스트·라벨·사람 정답을 묶어 재사용 가능한 실행 벤치마크로 패키징한다. 이 세 요소의 결합이 기존 연구와의 본질적 차이이며, 어느 하나만으로는 ``AI 버그는 사람 버그와 다른가''라는 질문에 타당하게 답할 수 없다.
 
 \section{Background and Related Work}
 \subsection{LLM Code Generation and Its Evaluation}
-Codex와 그 평가 벤치마크 HumanEval~\cite{chen2021codex}, 그리고 MBPP~\cite{austin2021mbpp} 이후 LLM 기반 코드 생성은 빠르게 발전하였고, 표준 지표로 pass@$k$가 자리 잡았다. 그러나 이 지표는 코드가 맞는지/틀리는지만 보고하고 어떤 종류의 결함이 왜 발생하는지는 알려주지 않는다. 더욱이 통과/실패 판정은 테스트 스위트의 강도에 민감하다. EvalPlus~\cite{liu2023evalplus}는 HumanEval의 테스트를 대폭 보강하면 여러 모델의 통과율이 크게 하락함을 보여, 빈약한 테스트가 정확도를 과대평가함을 입증하였다. 최근에는 SWE-bench~\cite{jimenez2024swebench}처럼 실세계 GitHub 이슈 해결 능력을 평가하는 벤치마크도 등장했으나, 이 역시 통과/실패 중심이고 공개 저장소를 기반으로 하여 contamination 우려가 있으며 결함을 분류하지 않는다. AIBugBench는 이 관찰을 결함 분석 맥락에서 재현하면서(공개 sample이 아닌 전체 hidden test 사용), 통과/실패를 넘어 실패 코드를 분류하고 같은 문제에서 사람 버그와 짝짓는다는 점에서 평가 벤치마크와 구분된다.
+Codex와 그 평가 벤치마크 HumanEval~\cite{chen2021codex}, 그리고 MBPP~\cite{austin2021mbpp} 이후 LLM 기반 코드 생성은 빠르게 발전하였고, 표준 지표로 pass@$k$가 자리 잡았다. 그러나 이 지표는 코드가 맞는지/틀리는지만 보고하고 어떤 종류의 결함이 왜 발생하는지는 알려주지 않는다. 더욱이 통과/실패 판정은 테스트 스위트의 강도에 민감하다. EvalPlus~\cite{liu2023evalplus}는 HumanEval의 테스트를 대폭 보강하면 여러 모델의 통과율이 크게 하락함을 보여, 빈약한 테스트가 정확도를 과대평가함을 입증하였다. 최근에는 SWE-bench~\cite{jimenez2024swebench}처럼 실세계 GitHub 이슈 해결 능력을 평가하는 벤치마크도 등장했으나, 이 역시 통과/실패 중심이고 공개 저장소를 기반으로 하여 contamination 우려가 있으며 결함을 분류하지 않는다. 이러한 한계 때문에, 단순 정확도를 넘어 ``어떤 종류의 결함이 왜 발생하는가''를 묻는 결함 중심 평가가 필요하다. AIBugBench는 이 관찰을 결함 분석 맥락에서 재현하면서(공개 sample이 아닌 전체 hidden test 사용), 통과/실패를 1차 신호로만 쓰고 실패한 코드를 의미 단위로 분류하여 평가의 해상도를 높이며, 같은 문제에서 사람 버그와 짝짓는다는 점에서 통과율 중심 평가 벤치마크와 근본적으로 구분된다.
 
 \subsection{Empirical Studies of Bugs in LLM-Generated Code}
-LLM 코드의 결함을 경험적으로 분석한 연구가 본 논문과 가장 가깝다. Tambon 등~\cite{tambon2025bugs}은 LLM 생성 코드의 버그 유형을 조사해 다양한 결함 범주를 보고하였고, Dou 등~\cite{dou2026wrong}은 여러 모델과 벤치마크에 걸쳐 LLM 코드의 오류를 대규모로 분류하여 ``무엇이 잘못되는가''를 광범위하게 특징화하였다. Jesse 등~\cite{jesse2023bugs}은 LLM이 사람과 유사한 단순 버그(simple, stupid bugs)를 생성함을, Pearce 등~\cite{pearce2022asleep}과 Moradi Dakhel 등~\cite{dakhel2023github}은 Copilot 생성 코드의 보안 취약점과 ``자산이냐 부채냐''라는 양면을 분석하였다. 교육 맥락에서는 Yeadon 등~\cite{yeadon2024comparison}이 대학 코딩 과목에서 사람과 GPT-3.5·GPT-4의 성능을 비교하여 LLM이 사람 수준에 근접하거나 이를 넘어섬을 보였고, 이는 학생 제출에 LLM 코드가 섞여 들어오는 현실을 뒷받침한다.
+LLM 코드의 결함을 경험적으로 분석한 연구가 본 논문과 가장 가깝다. 특히 Wang 등~\cite{wang2025characteristics}은 HumanEval에서 여섯 LLM의 코드 생성 오류를 open coding으로 분석하여 의미·구문 양면의 결함 분류 체계를 도출하고, 오류가 여러 위치에 걸친 비자명한 다중 라인 결함이라 탐지·수리가 어렵다고 보고하였다―이는 본 논문의 ``AI 버그는 한 줄로 환원되지 않는다''는 관찰과 부합한다. Tambon 등~\cite{tambon2025bugs}과 Dou 등~\cite{dou2026wrong}은 여러 모델·벤치마크에 걸쳐 LLM 코드 오류를 대규모로 분류하였고, Jesse 등~\cite{jesse2023bugs}은 LLM이 사람과 유사한 단순 버그(simple, stupid bugs)를, Pan 등~\cite{pan2024lost}은 코드 번역 과정에서 LLM이 도입하는 버그를 연구하였다. Pearce 등~\cite{pearce2022asleep}과 Moradi Dakhel 등~\cite{dakhel2023github}은 Copilot 코드의 보안 취약점과 ``자산이냐 부채냐''라는 양면을 분석하였고, 교육 맥락에서는 Yeadon 등~\cite{yeadon2024comparison}이 사람과 GPT-3.5·GPT-4의 코딩 성능을 비교하여 LLM이 사람 수준에 근접·초과함을 보였다.
 
-이들 연구는 LLM 결함의 존재·다양성·교육적 함의를 풍부하게 보였으나, 본 논문과 세 가지 점에서 구별된다. 첫째, 대부분 생성 모델의 data leakage를 명시적으로 통제하지 않아, 관찰된 결함이 추론과 암기 중 무엇을 반영하는지 모호하다. 둘째, 같은 문제에서 진정한 사람 버그와 짝지어 비교하지 않으므로 ``AI 버그가 사람 버그와 다른가''를 직접 검정하지 못한다. 셋째, 분석이 일회적 연구에 그쳐 후속 도구를 개발·평가할 재사용 가능한 실행 벤치마크로 공개되지 않는다. AIBugBench는 leakage-free 구간과 짝지어진 사람 버그를 함께 확보하고, 한 문제 안에서 버그가 수렴하는 systematicity와 사람 대비 분포 차이를 정량화하며, 표준 분할·평가 스크립트를 갖춘 실행 벤치마크로 이를 공개한다는 점에서 위 연구들을 보완·확장한다.
+이들 연구는 LLM 결함의 존재·다양성·교육적 함의를 풍부하게 보였으나, 본 논문과 세 가지 점에서 구별된다. 첫째, 평가 기반이 대체로 HumanEval 등 공개·합성 벤치마크여서 생성 모델의 data leakage가 통제되지 않으며(예: Wang 등은 HumanEval을 사용한다), 관찰된 결함이 추론과 암기 중 무엇을 반영하는지 모호하다. 둘째, 같은 문제에서 진정한 사람 버그와 짝지어 비교하지 않으므로 ``AI 버그가 사람 버그와 다른가''를 직접 검정하지 못한다. 셋째, 분석이 일회적 연구에 그쳐 후속 도구를 개발·평가할 재사용 가능한 실행 벤치마크로 공개되지 않으며, 한 문제 안에서 여러 생성 버그가 같은 오해로 수렴하는지(systematicity)도 다루지 않는다. AIBugBench는 leakage-free·human-authentic 구간에서 같은 문제의 사람 버그와 짝지어, 결함 분류·systematicity·사람 대비 분포 차이·수리 baseline을 표준 분할·평가 스크립트와 함께 제공함으로써 이들 연구를 재사용 가능한 벤치마크로 보완·확장한다.
 
 \subsection{Data Leakage and Contamination}
-공개 벤치마크가 학습 데이터에 포함되는 contamination은 LLM 평가의 타당성을 훼손하며, 이를 탐지하고 정량화하려는 연구가 활발하다~\cite{golchin2024contamination}. 코드 생성에서 contamination은 특히 심각한데, 모델이 정답을 암기했다면 측정된 능력이나 결함 특성이 실제 추론을 대표하지 못하기 때문이다. 모델 cutoff 이후에 출제된 문제만 사용하는 것이 가장 직접적인 완화책이며, ConDefects~\cite{wu2023condefects}는 이 원리로 fault localization과 program repair 평가의 leakage를 통제하였다. 본 논문은 여기서 한 걸음 더 나아가, 생성 모델의 leakage뿐 아니라 사람 대조군의 진정성까지 동시에 보장하는 시기 윈도우를 도입한다.
+공개 벤치마크가 학습 데이터에 포함되는 contamination은 LLM 평가의 타당성을 훼손하며, 이를 탐지하고 정량화하려는 연구가 활발하다~\cite{golchin2024contamination}. 코드 생성에서 contamination은 특히 심각한데, 모델이 정답을 암기했다면 측정된 능력이나 결함 특성이 실제 추론을 대표하지 못하기 때문이다. 모델 cutoff 이후에 출제된 문제만 사용하는 것이 가장 직접적인 완화책이며, ConDefects~\cite{wu2023condefects}는 이 원리로 fault localization과 program repair 평가의 leakage를 통제하였다. 특히 코드 도메인에서는 모델이 특정 문제의 정답이나 그 패치까지 기억할 수 있어, 결함의 종류를 분석하는 일은 물론 수리 능력을 측정하는 일까지 왜곡될 수 있다. 따라서 결함·수리 벤치마크에서 leakage 통제는 단순한 위생 문제가 아니라 결과의 해석 가능성을 좌우하는 핵심 설계 결정이다. 본 논문은 여기서 한 걸음 더 나아가, 생성 모델의 leakage뿐 아니라 사람 대조군의 진정성까지 동시에 보장하는 시기 윈도우를 도입함으로써, ``AI 버그가 사람 버그와 다른가''라는 비교가 두 교란 어느 쪽에도 오염되지 않도록 한다.
 
 \subsection{Automatic Program Repair and Fault Localization}
-APR은 탐색 기반, 의미 기반, 학습 기반으로 발전해 왔으며~\cite{monperrus2018survey}, 최근에는 LLM을 직접 수리에 활용하는 접근이 강력한 성능을 보인다~\cite{xia2023llmapr}. 수리의 전 단계인 fault localization은 의심 위치를 순위화하는 오랜 연구 주제로, 다양한 기법과 평가 지표가 정립되어 있다~\cite{wong2016flsurvey}. 이들 도구는 대체로 버그가 사람에 의해 작성되었다고 가정하며, 그 결함 분포에 맞춰 설계되거나 학습된다. AIBugBench는 이들 도구를 LLM 버그에 대해 평가할 수 있는 기반을 제공하고, ConDefects가 제공하는 사람 fault location을 fault localization의 정답으로 함께 제공한다.
+APR은 탐색 기반, 의미 기반, 학습 기반으로 발전해 왔으며~\cite{monperrus2018survey}, 최근에는 LLM을 직접 수리에 활용하는 접근이 강력한 성능을 보인다~\cite{xia2023llmapr}. 수리의 전 단계인 fault localization은 의심 위치를 순위화하는 오랜 연구 주제로, 다양한 기법과 평가 지표가 정립되어 있다~\cite{wong2016flsurvey}. 이들 도구는 대체로 버그가 사람에 의해 작성되었다고 가정하며, 그 결함 분포―흔히 한두 줄의 국소적 결함―에 맞춰 설계되거나 학습된다. 그러나 LLM 버그가 국소 슬립이 아니라 프로그램 전체의 의도 오류라면, 단일 위치를 가정하는 fault localization과 국소 변형을 가정하는 수리 연산자가 모두 불리해진다. AIBugBench는 이들 도구를 LLM 버그에 대해 평가할 수 있는 기반을 제공하고, ConDefects가 제공하는 사람 fault location을 fault localization의 정답으로 함께 제공하여 사람 버그와 AI 버그에서의 도구 정확도를 같은 자리에서 대조할 수 있게 한다.
 
 \subsection{Program Repair for Programming Education}
 교육용 입문 프로그래밍 수리에서는 같은 과제에 대한 다수의 정답 풀이를 활용하는 접근이 주류다. Clara~\cite{gulwani2018clara}는 정답을 클러스터링하여 학생 코드를 가장 가까운 정답으로 수리하고, Refactory~\cite{hu2019refactory}는 정답 풀이 군을 control flow에 따라 재구성하여 버기 프로그램에 맞춰 패치를 합성하며, Verifix~\cite{ahmed2022verifix}는 참조 풀이에 대해 검증된 수리를 생성한다. 이들은 사람 버그와 풍부한 정답 풀이 풀을 전제로 한다는 공통점이 있다. 본 연구의 결과는 LLM 버그가 의미적으로 틀리고 풀이가 다양한 경쟁 난이도 분포를 가져, 이들 도구의 가정과 어긋날 수 있음을 시사한다.
@@ -186,6 +188,8 @@ Fault locations (human) & provided \\
 \end{table}
 
 표~\ref{tab:breakdown}은 문제를 컨테스트 유형과 난이도로 나눈 분포이다. 난이도는 800대 미만부터 3{,}800대까지(중앙값 1{,}105) 폭넓게 분포하여, 쉬운 문제부터 매우 어려운 문제까지 균형 있게 포괄한다. 이 폭은 LLM과 수리 도구의 능력을 난이도 축에서 평가할 수 있게 한다.
+
+이 분포는 본 벤치마크가 특정 난이도나 컨테스트 유형에 치우치지 않음을 보인다. ABC·ARC·AGC 세 등급이 모두 포함되어 입문 수준부터 고난도까지 포괄하고, 네 난이도 구간이 각각 120/104/89/115문제로 고르게 분포한다. 또한 문제마다 사람 버그(중앙값 2개)와 AI 생성물(10개)이 모두 복수로 존재하므로, 한 문제 안에서의 결함 변이(systematicity)와 문제 간 변이를 동시에 분석할 수 있다. 이러한 균형은 RQ1{--}RQ5의 결과가 특정 난이도나 소수 문제에 의해 좌우된 표본 편향의 산물이 아니라 분포 전반의 성질임을 뒷받침한다. 한편 본 벤치마크는 한 언어(Python)와 한 출제 플랫폼(AtCoder)에 한정되는데, 이는 leakage-free·human-authentic 윈도우를 엄격히 지키기 위한 의도적 선택이며, 같은 원리를 다른 언어·플랫폼으로 확장하는 것은 직접적인 후속 작업이다.
 
 \begin{table}[t]
 \caption{Problem breakdown by contest type and difficulty}
@@ -334,10 +338,28 @@ Compile/output (CE) & 1.1\%  & 0.0\% \\
 \end{tabular}
 \end{table}
 
+이 차이는 난이도 전반에 걸쳐 유지된다(표~\ref{tab:aihumandiff}). 사람 버그의 WA 비중은 쉬운 문제 99\%에서 어려운 문제 86\%로 완만히 낮아지고 TLE가 0\%에서 11\%로 늘어, 사람도 어려운 문제에서는 더 다양하게 실패한다. 그러나 같은 난이도를 비교하면 AI의 WA 비중은 언제나 더 낮고 TLE·RE는 더 높다. 즉 ``AI가 더 다양·심각하게 실패한다''는 격차는 문제 난이도로 설명되는 인공물이 아니라 모든 구간에서 일관되게 관찰되는 성질이다.
+
+\begin{table}[t]
+\caption{AI vs human failure share by difficulty (WA / TLE)}
+\label{tab:aihumandiff}
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+Difficulty & AI WA & Hum WA & AI TLE & Hum TLE \\
+\midrule
+Easy      & 84\% & 99\% & 9\%  & 0\% \\
+Medium    & 72\% & 93\% & 17\% & 5\% \\
+Hard      & 79\% & 86\% & 10\% & 11\% \\
+Very hard & 72\% & 86\% & 16\% & 11\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \rabox{\textbf{RA2.} AI 버그는 사람 버그와 분포가 유의하게 다르고($\chi^2=139.8$, $p<10^{-29}$) TLE·RE·CE에서 2{--}4배 잦다. 사람 버그는 100\%가 단일 라인 슬립이지만 AI 버그는 프로그램 전체가 잘못된 접근이라, 같은 WA라도 결함의 성격이 질적으로 다르다.}
 
 \subsection{RQ3: Are LLM Bugs Systematic Within a Problem?}
-한 문제에 대한 10개 생성의 버그가 같은 실패 유형으로 수렴하는지 본다. 표~\ref{tab:systematicity}에서, 버그가 2개 이상인 387개 문제의 평균 modal-share는 0.845로 버그의 84.5\%가 같은 유형이었고, 38.8\%의 문제는 모든 버그가 단일 유형이었다. 예컨대 반올림 문제에서는 대부분의 시도가 동일하게 \texttt{round()}를 썼고, connectivity 문제에서는 동일하게 칸 존재 여부로 단순화하였다. 이 측정은 거친 유형 기준의 하한이며, Spec-Misinterpretation 하위 유형 기준으로는 더 강한 수렴이 관찰된다.
+한 문제에 대한 10개 생성의 버그가 같은 실패 유형으로 수렴하는지 본다. 표~\ref{tab:systematicity}에서, 버그가 2개 이상인 387개 문제의 평균 modal-share는 0.845로 버그의 84.5\%가 같은 유형이었고, 38.8\%의 문제는 모든 버그가 단일 유형이었다. 예컨대 반올림 문제에서는 대부분의 시도가 동일하게 \texttt{round()}를 썼고, connectivity 문제에서는 동일하게 칸 존재 여부로 단순화하였다. 이 측정은 거친 유형 기준의 하한이다. 더 세분된 Spec-Misinterpretation 하위 유형(S1--S5) 기준으로도 수렴은 강하여, WA 버그가 2개 이상인 362개 문제에서 평균 하위 유형 modal-share가 0.791, 완전 일치 비율이 33.4\%였다. 즉 5지선다 수준의 세분성에서도 한 문제의 오답 중 약 80\%가 같은 오해를 공유하며, 이는 모델이 문제를 ``우연히 다양하게''가 아니라 ``일관되게 같은 방식으로'' 오해함을 뒷받침한다.
 
 \begin{table}[t]
 \caption{Per-problem systematicity (387 problems with $\geq 2$ bugs)}
@@ -457,11 +479,17 @@ S5 edge / semantics       & 0/4   & 2/4 \\
 
 \rabox{\textbf{RA5.} 교육용 cluster 기반 수리는 본 분포로 전이되지 못하고, LLM 기반 수리도 실패 테스트를 주어도 교차 모델 10.7\%·자기 수리 1.1\%에 그치며 지배적 의미 범주(S2, S4)는 거의 고쳐지지 않는다. 다섯 가지 근본 한계가 이를 설명하며, AIBugBench는 semantics-aware하고 spec-grounded한 수리의 필요성을 드러낸다.}
 
-세 예시(그림~\ref{fig:example},~\ref{fig:example2},~\ref{fig:example3})는 본 벤치마크 결함이 공유하는 성질을 압축한다: 모두 문법적으로 정상이고 실행되며 그럴듯해 보이지만, 명세의 의미를 서로 다른 깊이에서 어긴다. 이 성질이 다섯 연구 질문을 관통한다. 결함은 본질적으로 의미적이고(RQ1), 사람의 국소적 슬립과 질적으로 다르며(RQ2), 한 문제 안에서 같은 오해로 수렴하고(RQ3), 난이도에 따라 단순 슬립에서 알고리즘 미인식으로 양상이 이동하며(RQ4), 테스트만을 oracle로 삼는 기존 수리가 이를 다루지 못한다(RQ5). 이 일관된 그림이 곧 본 벤치마크가 측정하고자 하는 것―LLM 코드를 위한 semantics-aware하고 spec-grounded한 테스트·디버깅·수리 기법―의 필요성을 정량적으로 입증한다.
+\subsection{Qualitative Synthesis}
+세 예시(그림~\ref{fig:example},~\ref{fig:example2},~\ref{fig:example3})는 본 벤치마크 결함이 공유하는 성질을 압축한다: 모두 문법적으로 정상이고 실행되며 그럴듯해 보이지만, 명세의 의미를 서로 다른 깊이에서 어긴다. 이 성질이 다섯 연구 질문을 관통한다. 결함은 본질적으로 의미적이고(RQ1), 사람의 국소적 슬립과 질적으로 다르며(RQ2), 한 문제 안에서 같은 오해로 수렴하고(RQ3), 난이도에 따라 단순 슬립에서 알고리즘 미인식으로 양상이 이동하며(RQ4), 테스트만을 oracle로 삼는 기존 수리가 이를 다루지 못한다(RQ5).
+
+세 예시는 왜 기존 수리가 실패하는지도 함께 설명한다. abc230\_a(S2)에서 누락된 ``42번 이후 +1'' 규칙은 코드 어디에도 ``틀린 줄''로 나타나지 않으므로, fault localization이 의심 라인을 지목할 수 없고 국소 변형 기반 수리는 추가해야 할 분기 자체를 합성하지 못한다. abc276\_c(S4)에서는 완전 탐색을 ``previous-permutation 알고리즘''으로 대체해야 하는데, 이는 한두 토큰의 수정이 아니라 알고리즘 전면 교체이므로 대부분의 패치 공간을 벗어난다. 반면 abc226\_a(S5)는 \texttt{round} 호출을 보정하는 국소 수정으로 고칠 수 있어, 표~\ref{tab:aprsub}에서 S1{\textperiodcentered}S5의 상대적 수리 용이성과 정확히 부합한다. 즉 수리 가능성은 결함의 의미적 깊이에 반비례하며, 가장 지배적인 유형(S2, S4)이 가장 깊고 가장 고치기 어렵다. 이 일관된 그림이 곧 본 벤치마크가 측정하고자 하는 것―LLM 코드를 위한 semantics-aware하고 spec-grounded한 테스트·디버깅·수리 기법―의 필요성을 정량적으로 입증한다.
 
 \section{Discussion}
 \subsection{Implications}
 연구자에게: (1) Spec-Misinterpretation이 지배적이고 systematic하므로, 명세에서 입력 범위·출력 형식·edge condition 등 의미적 제약을 추출하여 테스트 통과와 별개의 두 번째 oracle로 삼는 spec-grounded repair가 유망하다. 본 연구의 수리 baseline은 실패 테스트를 직접 주어도 지배적 의미 범주가 고쳐지지 않음을 보여, 테스트 외 신호의 필요성을 실증한다. (2) 한 문제의 오답이 같은 오해로 수렴하므로(그리고 같은 모델의 자기 수리가 1.1\%로 붕괴하므로), 그 오해를 한 번 교정하면 다수 오답을 일괄 수리할 여지가 있고, 수리 모델은 생성 모델과 분리되어야 한다. (3) fault localization 연구는 본 벤치마크의 사람 fault location과 AI 버그를 함께 사용해 사람과 AI 버그에서의 정확도를 비교할 수 있으며, AI 버그가 단일 라인으로 환원되지 않는다는 점은 라인 단위 평가 지표 자체의 재검토를 요청한다. 교육자에게: 학생이 제출한 LLM 코드의 결함은 대부분 명세 오해(특히 어려운 과제일수록 알고리즘 미인식)이므로, 피드백은 문법 수정이 아니라 ``무엇을 오해했는가''를 짚어야 한다. 실무자에게: LLM 생성 코드를 평가할 때 공개 sample이 아닌 전체 테스트를 사용하고, 생성 프롬프트가 결함 분포를 좌우함(언어 미지정 시 46\% 이탈)을 인지해야 한다.
+
+\subsection{Why Test-Only Oracles Fall Short}
+본 결과들은 하나의 일관된 진단을 가리킨다: LLM 코드의 지배적 결함은 테스트만으로는 다루기 어렵다. 첫째, 결함의 76\%가 의미적(Spec-Misinterpretation)이고 그 90\%가 핵심 조건 단순화(S2)나 패러다임 미인식(S4)이므로, 결함은 ``어느 한 줄''이 아니라 ``무엇이 맞는 동작인가''에 대한 오해에 자리한다. 둘째, 한 문제의 오답이 같은 오해로 수렴하므로(coarse modal-share 0.845, 하위 유형 0.791), 같은 모델로 재시도하면 같은 틀린 동작을 다시 만들어 낸다―이는 자기 수리율이 1.1\%로 붕괴하는 데서 직접 확인된다. 셋째, 실패 테스트를 명시적으로 제시해도 교차 모델 수리가 S2와 S4를 거의 고치지 못한다(각각 11\%, 6\%). 이 세 관찰을 종합하면, 통과해야 할 테스트는 ``현재 출력이 틀렸다''만 알려줄 뿐 ``올바른 동작이 무엇인가''는 알려주지 못한다는 결론에 이른다. 사람 버그라면 한 줄을 고치는 국소 수정으로 충분하지만, AI 버그는 프로그램이 구현하는 의도 자체가 틀려 있어 테스트 신호만으로는 그 의도를 복원할 수 없다. 명세에서 추출한 의미적 제약(입력 범위·출력 형식·edge condition)은 바로 이 결핍된 신호를 공급하는 두 번째 oracle이 될 수 있으며, AIBugBench는 이 가설을 검증하는 데 필요한 명세·전체 테스트·사람 정답을 한 자리에 모아 제공한다.
 
 \subsection{Relation to Existing Benchmarks}
 AIBugBench는 규모와 성격 모두에서 기존 벤치마크를 보완한다. Defects4J(수백 개 Java 결함)와 QuixBugs(소수의 단일 라인 버그)가 사람 버그에 집중하고 HumanEval·MBPP·SWE-bench가 코드의 통과/실패에 집중하는 데 비해, AIBugBench는 3{,}691개의 AI 버그를 같은 문제의 1{,}203개 사람 버그와 짝지어 결함 유형까지 라벨링한다. ConDefects는 leakage를 통제하였으나 자연어 명세와 AI 생성 버그가 없는데, 본 벤치마크는 거기에 정규화 명세·AI 생성물·분류 라벨을 더하여 fault localization과 repair뿐 아니라 AI 대 사람 비교와 spec-grounded repair까지 함께 지원한다. 표~\ref{tab:compare}의 일곱 차원을 모두 만족하는 것은 AIBugBench가 유일하며, 특히 ``leakage-free''와 ``human-authentic''을 동시에 보장하는 점이 다른 모든 데이터셋과 구별된다.
@@ -473,10 +501,12 @@ AIBugBench는 규모와 성격 모두에서 기존 벤치마크를 보완한다.
 현재의 한계와 확장 계획은 다음과 같다. 첫째, AI 생성은 단일 모델에 한정된다. 벤치마크의 문제·명세·테스트·사람 버그는 모델과 무관하므로, 제공된 파이프라인으로 cutoff가 윈도우 이전인 다른 모델을 추가하여 모델 간 결함 분포를 비교할 수 있다. 또한 이미 학습한(leaked) 최신 프런티어 모델을 같은 문제에 적용하면 ``암기 regime''에서의 결함 양상을 leakage-free 조건과 별도로 관찰하는 보완 실험이 가능하다. 둘째, 수리 baseline은 단발성 LLM 수리와 교육용 클러스터 기반 수리에 한정되며, 탐색·의미 기반 전통 APR과 반복적·agent 기반 LLM 수리로 확장하면 RQ5의 그림이 더 완전해진다. 셋째, 하위 유형 라벨링은 LLM 주석자에 의존하므로($\kappa=0.759$) 사람 검증으로 보강할 여지가 있다. 넷째, 본 벤치마크가 동기를 부여하는 spec-grounded repair―명세에서 입력 범위·출력 형식·edge condition 등 제약을 추출하여 테스트와 별개의 두 번째 oracle로 삼는 수리―의 프로토타입 구현과 평가가 자연스러운 다음 단계이며, 본 데이터셋의 명세와 짝지어진 사람 정답이 그 학습·평가 신호를 제공한다.
 
 \section{Conclusion}
-AIBugBench는 모델 cutoff와 ChatGPT 출시 사이의 겹치는 구간을 이용하여, data leakage가 없고 같은 문제에서 진정한 사람 버그와 짝지어진 최초의 LLM 생성 코드 결함 벤치마크를 제공한다. 정규화 명세, 전체 hidden test, fault location, AI와 사람 버그를 함께 담아 bug classification, fault localization, automatic program repair, AI 대 사람 비교, spec-grounded repair의 다섯 태스크를 지원한다. 특징 분석에서 결함의 76\%가 Spec-Misinterpretation이고(그 90\%가 핵심 조건 단순화와 패러다임 미인식, $\kappa=0.759$) 한 문제의 버그가 강하게 수렴함을 보였다. 또한 짝지어진 사람 버그와 분포가 유의하게 다르고($\chi^2=139.8$, $p<10^{-29}$) 사람 버그는 단일 라인 슬립인 반면 AI 버그는 전체-접근 오류였으며, 기존 교육용 수리뿐 아니라 LLM 기반 수리도 실패 테스트를 주어도 교차 모델 10.7\%·자기 수리 1.1\%에 그침을 확인하였다. AIBugBench는 LLM 코드의 테스트·디버깅·수리 기법을 개발하고 평가할 토대를 제공한다.
+AIBugBench는 모델 cutoff와 ChatGPT 출시 사이의 겹치는 구간을 이용하여, data leakage가 없고 같은 문제에서 진정한 사람 버그와 짝지어진 최초의 LLM 생성 코드 결함 벤치마크를 제공한다. 정규화 명세, 전체 hidden test, fault location, AI와 사람 버그를 함께 담아 bug classification, fault localization, automatic program repair, AI 대 사람 비교, spec-grounded repair의 다섯 태스크를 지원한다. 특징 분석에서 결함의 76\%가 Spec-Misinterpretation이고(그 90\%가 핵심 조건 단순화와 패러다임 미인식, $\kappa=0.759$) 한 문제의 버그가 강하게 수렴함을 보였다. 또한 짝지어진 사람 버그와 분포가 유의하게 다르고($\chi^2=139.8$, $p<10^{-29}$) 사람 버그는 단일 라인 슬립인 반면 AI 버그는 전체-접근 오류였으며, 기존 교육용 수리뿐 아니라 LLM 기반 수리도 실패 테스트를 주어도 교차 모델 10.7\%·자기 수리 1.1\%에 그침을 확인하였다. 방법론적으로, 본 논문의 핵심은 ``cutoff와 release의 분리''라는 단순한 관찰을 leakage-free와 human-authentic을 동시에 만족하는 구성 원리로 전환한 데 있다. 이 원리는 특정 모델이나 시기에 묶이지 않으므로, 새로운 생성 모델이 등장할 때마다 그 cutoff 이전의 컨테스트로 같은 절차를 반복하여 벤치마크를 갱신할 수 있다. 즉 AIBugBench는 한 번 만들어 고정되는 데이터셋이 아니라, LLM이 진화하는 동안 leakage 없이 따라가며 측정할 수 있는 ``살아 있는'' 평가 틀이다.
+
+향후 작업은 세 방향이다. 첫째, 본 파이프라인으로 여러 세대의 모델을 추가하여 결함 분포가 모델 능력에 따라 어떻게 이동하는지(예: 패러다임 미인식이 줄어드는지) 추적한다. 둘째, 탐색·의미 기반 전통 APR과 반복적 LLM 수리를 baseline에 더해 RQ5의 수리 지형을 완성한다. 셋째, 본 벤치마크가 동기를 부여한 spec-grounded repair―명세에서 추출한 제약을 두 번째 oracle로 삼는 수리―를 구현·평가하여, 테스트만으로는 닫히지 않던 의미적 결함을 닫을 수 있는지 검증한다. 이러한 확장을 통해 AIBugBench는 LLM 코드의 테스트·디버깅·수리 기법을 개발하고 공정하게 평가할 지속적 토대를 제공한다.
 
 \section*{Data Availability}
-데이터셋, 코드, 평가 스크립트, 재현 파이프라인은 \url{https://github.com/dwchoi95/aitaxo} 에서 공개한다.
+본 연구는 open science를 지향한다. 정규화 명세, 전체 hidden test, 문제당 10개의 AI 생성물과 채점 라벨, 짝지어진 사람 정답·버그·fault location, 그리고 생성·채점·라벨링·수리 baseline을 재현하는 전체 파이프라인을 공개한다. 보충 자료는 다음을 포함한다: (i) 428개 문제 디렉터리(\texttt{problem.txt}, \texttt{meta.json}, \texttt{testcases/}, \texttt{ai/}, \texttt{human/}), (ii) 생성·채점·하위 유형 라벨링·수리 baseline 스크립트, (iii) 표준 train/validation/test 분할 파일, (iv) 본 논문의 모든 표와 그림을 재생성하는 분석 스크립트. 각 연구 질문이 단일 명령으로 재현되도록 구성하였으며(RQ1 분류 분포, RQ2 사람 비교의 $\chi^2$, RQ3 systematicity 지표, RQ4 난이도별 프로파일, RQ5 수리율), 채점은 본문과 동일한 시간 제한·라이브러리 환경을 사용하는 컨테이너로 고정하여 결과가 실행 환경에 무관하게 재현되도록 한다. 이중 익명 심사 정책에 따라 식별 가능한 저장소 링크는 본문에서 익명화하였으며, 검토 기간에는 익명 아카이브를 보충 자료로 제공하고 게재 시 연구 목적의 공개 라이선스와 영구 DOI로 정식 공개한다. 전체 artifact는 컨테이너화된 실행 환경과 단계별 재현 지침을 포함하여 artifact evaluation의 ``available''과 ``reusable'' 기준을 충족하도록 패키징하였으며, 이를 통해 본 논문의 모든 정량 결과가 제3자에 의해 독립적으로 검증될 수 있도록 한다.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
