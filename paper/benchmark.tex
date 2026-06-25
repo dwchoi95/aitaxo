@@ -9,6 +9,8 @@
 \usepackage{textcomp}
 \usepackage{url}
 \usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
 
 \lstset{basicstyle=\ttfamily\footnotesize,breaklines=true,frame=single,columns=fullflexible,keepspaces=true}
 \newcommand{\rabox}[1]{\par\smallskip\noindent\fbox{\parbox{0.92\columnwidth}{#1}}\par\smallskip}
@@ -29,6 +31,8 @@ benchmark, LLM-generated code, bug dataset, data leakage, automatic program repa
 
 \section{Introduction}
 LLM(Large Language Model)이 작성한 코드가 교육과 산업 전반으로 빠르게 확산되고 있다. 프로그래밍 교육에서는 학생이 과제 코드를 LLM으로 생성해 제출하는 일이 흔해졌고, 산업에서는 코딩 보조 도구가 일상화되었다~\cite{chen2021codex,tambon2024bugs}. 그 결과 코드 결함을 만드는 주체가 사람에서 LLM으로 옮겨가고 있으며, 이는 두 가지 실천적 질문을 제기한다. 첫째, LLM이 만드는 버그는 사람 버그와 같은 분포인가? 둘째, 사람 버그를 전제로 설계된 기존 fault localization과 APR(Automatic Program Repair) 도구가 LLM 버그에도 효과적인가? 이 질문들에 답하려면 LLM 코드 결함을 특징화하고 같은 문제에서 사람 버그와 비교할 수 있는 데이터가 필요하다.
+
+이 질문의 답은 단지 학술적 호기심을 넘어선다. 교육 현장에서는 교수자가 학생이 제출한 LLM 코드의 결함을 진단하고 피드백을 주어야 하며, 결함의 유형과 그 수리 가능성을 알아야 적절한 도구와 교습 전략을 선택할 수 있다. 산업에서는 코딩 보조 도구가 만든 코드가 코드베이스에 직접 들어오므로, 그 결함 분포를 이해하는 것이 코드 리뷰와 테스트 자동화의 우선순위를 정하는 데 도움이 된다. 그러나 잘못된(예: contamination된) 데이터로 도출한 결론은 이러한 의사결정을 오도할 수 있다.
 
 그러나 기존 코드 벤치마크는 이 목적에 잘 맞지 않는다. HumanEval~\cite{chen2021codex}과 MBPP~\cite{austin2021mbpp}는 손으로 만든 합성 과제로 사람 버그가 없고, 코드가 맞는지/틀리는지의 pass/fail만 측정할 뿐 어떤 종류의 결함이 왜 발생하는지는 특징화하지 않는다. EvalPlus~\cite{liu2023evalplus}는 테스트를 보강하면 LLM 코드의 통과율이 크게 하락함을 보였으나 여전히 실패를 분류하지 않으며, 공개 벤치마크의 contamination 문제도 보고된다~\cite{golchin2024contamination}. Defects4J~\cite{just2014defects4j}, CodeNet~\cite{puri2021codenet}, ConDefects~\cite{wu2023condefects} 같은 결함 데이터셋은 사람 버그를 담지만 AI 생성 버그를 담지 않는다. 따라서 LLM 코드의 결함을 분류하고 기존 도구로 평가할 표준 데이터가 없다.
 
@@ -51,7 +55,7 @@ AIBugBench를 구축하기 위해, ConDefects~\cite{wu2023condefects}에서 이 
 본 논문의 기여는 다음과 같다.
 \begin{itemize}
 \item leakage가 없고 같은 문제에서 진정한 사람 버그와 짝지어진 최초의 LLM 생성 코드 결함 벤치마크 AIBugBench.
-\item 428개 문제, 4{,}280개 AI 생성물(문제당 10개)과 채점 라벨, 1{,}215개의 짝지어진 사람 버그(fault location 포함), 정규화 명세, 전체 hidden test로 이루어진 데이터셋과, 4개 defect type 및 11개 sub type의 분류 체계.
+\item 428개 문제, 4{,}280개 AI 생성물(문제당 10개)과 채점 라벨, 1{,}204개의 짝지어진 사람 버그(fault location 포함), 정규화 명세, 전체 hidden test로 이루어진 데이터셋과, 4개 defect type 및 11개 sub type의 분류 체계.
 \item 벤치마크가 지원하는 다섯 평가 태스크와 측정 지표, 그리고 표준 분할과 평가 스크립트로 이루어진 평가 프로토콜.
 \item 생성 모델의 난이도별 통과율과 결함 분포, systematicity를 reference 특성으로 보고하고, 교육용 수리 도구의 전이 실패와 그 근본 한계를 분석.
 \item 데이터, 코드, 재현 파이프라인을 담은 replication package를 \url{https://github.com/dwchoi95/aitaxo} 에 공개.
@@ -59,34 +63,71 @@ AIBugBench를 구축하기 위해, ConDefects~\cite{wu2023condefects}에서 이 
 
 \section{Background and Related Work}
 \subsection{LLM Code Generation and Its Evaluation}
-Codex와 그 평가 벤치마크 HumanEval~\cite{chen2021codex}, 그리고 MBPP~\cite{austin2021mbpp} 이후 LLM 기반 코드 생성은 빠르게 발전하였다. 그러나 이들 벤치마크는 코드가 맞는지/틀린지의 pass/fail만 측정하고 결함의 종류를 특징화하지 않으며, 빈약한 테스트로 정확도를 과대평가하기 쉽다. EvalPlus~\cite{liu2023evalplus}는 테스트를 보강하면 LLM 코드의 통과율이 크게 하락함을 보였다. AIBugBench는 같은 관찰을 결함 분석 맥락에서 재현하면서(전체 hidden test 사용), 나아가 실패 코드를 분류하고 사람과 짝짓는다.
+Codex와 그 평가 벤치마크 HumanEval~\cite{chen2021codex}, 그리고 MBPP~\cite{austin2021mbpp} 이후 LLM 기반 코드 생성은 빠르게 발전하였고, 표준 지표로 pass@$k$가 자리 잡았다. 그러나 이 지표는 코드가 맞는지/틀리는지만 보고하고 어떤 종류의 결함이 왜 발생하는지는 알려주지 않는다. 더욱이 통과/실패 판정은 테스트 스위트의 강도에 민감하다. EvalPlus~\cite{liu2023evalplus}는 HumanEval의 테스트를 대폭 보강하면 여러 모델의 통과율이 크게 하락함을 보여, 빈약한 테스트가 정확도를 과대평가함을 입증하였다. AIBugBench는 이 관찰을 결함 분석 맥락에서 재현하면서(공개 sample이 아닌 전체 hidden test 사용), 통과/실패를 넘어 실패 코드를 분류하고 같은 문제에서 사람 버그와 짝짓는다는 점에서 평가 벤치마크와 구분된다.
 
-\subsection{Bugs in LLM-Generated Code}
-LLM 코드의 결함을 경험적으로 분석한 연구가 늘고 있다. Tambon 등~\cite{tambon2024bugs}은 LLM 생성 코드의 버그 유형을 조사하였고, Jesse 등~\cite{jesse2023bugs}은 LLM이 사람과 유사한 단순 버그를 만든다고 보고하였다. 그러나 이들은 leakage 통제나 같은 문제에서의 사람 대조군 짝짓기를 명시적으로 다루지 않으며, 재사용 가능한 실행 벤치마크 형태로 공개되지 않았다. AIBugBench는 leakage-free 구간과 짝지어진 사람 버그를 함께 확보하고, 표준 분할과 평가 스크립트를 갖춘 벤치마크로 공개한다는 점에서 다르다.
+\subsection{Empirical Studies of Bugs in LLM-Generated Code}
+LLM 코드의 결함을 경험적으로 분석한 연구가 늘고 있다. Tambon 등~\cite{tambon2024bugs}은 LLM 생성 코드의 버그 유형을 조사하여 다양한 결함 범주를 보고하였고, Jesse 등~\cite{jesse2023bugs}은 LLM이 사람과 유사한 단순 버그(simple, stupid bugs)를 생성함을 보였다. 이러한 연구는 LLM 결함의 존재와 다양성을 보였으나, 대체로 leakage 통제나 같은 문제에서의 진정한 사람 대조군 짝짓기를 명시적으로 다루지 않으며, 재사용 가능한 실행 벤치마크 형태로 공개되지도 않았다. AIBugBench는 leakage-free 구간과 짝지어진 사람 버그를 함께 확보하고, 한 문제 안에서 버그가 수렴하는 systematicity를 정량화하며, 표준 분할과 평가 스크립트를 갖춘 실행 벤치마크로 공개한다.
 
-\subsection{Existing Defect Benchmarks}
-Defects4J~\cite{just2014defects4j}는 실세계 Java 결함의 버기/패치 버전을 손쉽게 체크아웃해 controlled study를 가능하게 한 대표적 벤치마크다. CodeNet~\cite{puri2021codenet}과 Codeforces 계열은 사람 제출(정답과 오답)을 풍부히 제공하나 AI 생성 버그가 없고 LLM 이전에 구축되어 생성 모델에 leakage가 있다. ConDefects~\cite{wu2023condefects}는 모델 cutoff 이후에 출제된 AtCoder 문제만 모아 fault localization과 program repair 평가의 leakage를 통제하였으나, 자연어 명세와 AI 생성 버그를 포함하지 않는다. \textbf{즉 LLM 생성 버그를, leakage가 없는 동시에 진정한 사람 버그와 짝지어 제공하는 결함 벤치마크는 부재하다.}
+\subsection{Data Leakage and Contamination}
+공개 벤치마크가 학습 데이터에 포함되는 contamination은 LLM 평가의 타당성을 훼손하며, 이를 탐지하고 정량화하려는 연구가 활발하다~\cite{golchin2024contamination}. 코드 생성에서 contamination은 특히 심각한데, 모델이 정답을 암기했다면 측정된 능력이나 결함 특성이 실제 추론을 대표하지 못하기 때문이다. 모델 cutoff 이후에 출제된 문제만 사용하는 것이 가장 직접적인 완화책이며, ConDefects~\cite{wu2023condefects}는 이 원리로 fault localization과 program repair 평가의 leakage를 통제하였다. 본 논문은 여기서 한 걸음 더 나아가, 생성 모델의 leakage뿐 아니라 사람 대조군의 진정성까지 동시에 보장하는 시기 윈도우를 도입한다.
 
-\subsection{Program Repair and Fault Localization}
-전통적 APR은 탐색, 의미, 학습 기반으로 발전해 왔고~\cite{monperrus2018survey}, 최근에는 LLM을 직접 수리에 활용한다~\cite{xia2023llmapr}. 수리의 전 단계인 fault localization은 오랜 연구 주제이다~\cite{wong2016flsurvey}. 교육용 입문 프로그래밍 수리로는 Clara~\cite{gulwani2018clara}, Refactory~\cite{hu2019refactory}, Verifix~\cite{ahmed2022verifix}가 있으며, 모두 사람 버그와 다수의 정답 풀이를 전제로 한다. AIBugBench는 이들 도구를 LLM 버그에 대해 평가할 수 있는 기반을 제공하며, 사람 fault location을 fault localization의 정답으로 함께 제공한다.
+\subsection{Automatic Program Repair and Fault Localization}
+APR은 탐색 기반, 의미 기반, 학습 기반으로 발전해 왔으며~\cite{monperrus2018survey}, 최근에는 LLM을 직접 수리에 활용하는 접근이 강력한 성능을 보인다~\cite{xia2023llmapr}. 수리의 전 단계인 fault localization은 의심 위치를 순위화하는 오랜 연구 주제로, 다양한 기법과 평가 지표가 정립되어 있다~\cite{wong2016flsurvey}. 이들 도구는 대체로 버그가 사람에 의해 작성되었다고 가정하며, 그 결함 분포에 맞춰 설계되거나 학습된다. AIBugBench는 이들 도구를 LLM 버그에 대해 평가할 수 있는 기반을 제공하고, ConDefects가 제공하는 사람 fault location을 fault localization의 정답으로 함께 제공한다.
+
+\subsection{Program Repair for Programming Education}
+교육용 입문 프로그래밍 수리에서는 같은 과제에 대한 다수의 정답 풀이를 활용하는 접근이 주류다. Clara~\cite{gulwani2018clara}는 정답을 클러스터링하여 학생 코드를 가장 가까운 정답으로 수리하고, Refactory~\cite{hu2019refactory}는 정답 풀이 군을 control flow에 따라 재구성하여 버기 프로그램에 맞춰 패치를 합성하며, Verifix~\cite{ahmed2022verifix}는 참조 풀이에 대해 검증된 수리를 생성한다. 이들은 사람 버그와 풍부한 정답 풀이 풀을 전제로 한다는 공통점이 있다. 본 연구의 결과는 LLM 버그가 의미적으로 틀리고 풀이가 다양한 경쟁 난이도 분포를 가져, 이들 도구의 가정과 어긋날 수 있음을 시사한다.
+
+\subsection{Defect Benchmarks}
+Defects4J~\cite{just2014defects4j}는 실세계 Java 결함의 버기/패치 버전을 손쉽게 체크아웃해 controlled study를 가능하게 한 대표적 실행 벤치마크로, 이후 수많은 도메인에서 유사한 벤치마크의 모범이 되었다. CodeNet~\cite{puri2021codenet}과 Codeforces 계열은 사람 제출(정답과 오답)을 대규모로 제공하나 AI 생성 버그가 없고 LLM 이전에 구축되어 생성 모델 입장에서 leakage가 있다. ConDefects~\cite{wu2023condefects}는 모델 cutoff 이후의 AtCoder 문제만 모아 leakage를 통제하였으나 자연어 명세와 AI 생성 버그를 포함하지 않는다. \textbf{즉 LLM 생성 버그를, leakage가 없는 동시에 진정한 사람 버그와 짝지어 실행 가능한 형태로 제공하는 결함 벤치마크는 부재하며, AIBugBench가 이 공백을 메운다.}
 
 \section{Methodology}
-AIBugBench 구축은 다섯 단계로 이루어진다: (1) leakage-free이면서 human-authentic한 시기 윈도우 선택, (2) 기반 데이터 선별, (3) 명세와 테스트 확보, (4) AI 버그 생성과 채점, (5) 분류 체계 도출. 각 단계를 아래에서 설명한다.
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[box/.style={draw,rounded corners,align=center,minimum height=8mm,inner sep=3pt,font=\footnotesize},arr/.style={-{Latex[length=2mm]},thick}]
+\node[box](a){ConDefects\\(AtCoder)};
+\node[box,right=4mm of a](b){Window\\filter};
+\node[box,right=4mm of b](c){Problem\\selection};
+\node[box,right=4mm of c](d){Scrape \&\\normalize spec};
+\node[box,right=4mm of d](e){Hidden\\tests};
+\node[box,right=4mm of e](f){Generate\\$10{\times}$ LLM};
+\node[box,right=4mm of f](g){Judge\\(full tests)};
+\node[box,right=4mm of g](h){Open-coding\\taxonomy};
+\node[box,right=4mm of h](i){AIBugBench};
+\draw[arr](a)--(b);\draw[arr](b)--(c);\draw[arr](c)--(d);\draw[arr](d)--(e);\draw[arr](e)--(f);\draw[arr](f)--(g);\draw[arr](g)--(h);\draw[arr](h)--(i);
+\end{tikzpicture}
+\caption{The AIBugBench construction methodology. ConDefects 문제를 시기 윈도우로 거르고, 명세를 수집·정규화하며 전체 hidden test를 확보한 뒤, 각 문제에 대해 LLM으로 10개씩 생성·채점하고 실패 코드를 open coding으로 분류하여 벤치마크를 구성한다.}
+\label{fig:pipeline}
+\end{figure*}
+그림~\ref{fig:pipeline}은 AIBugBench 구축 방법을 보여준다. 구축은 다섯 단계로 이루어진다: (1) leakage-free이면서 human-authentic한 시기 윈도우 선택(Section~III-A), (2) 기반 데이터에서 문제 선별(Section~III-B), (3) 명세와 테스트 확보(Section~III-C, III-D), (4) AI 버그 생성과 채점(Section~III-E, III-F), (5) 분류 체계 도출과 systematicity 정의(Section~III-F, III-G). 아래에서 각 단계를 상세히 기술한다.
 
 \subsection{Selecting the Leakage-Free, Human-Authentic Window}
-생성 모델로 \texttt{gpt-3.5-turbo}(knowledge cutoff 2021년 9월)를 고정한다. leakage가 없으려면 문제가 2021년 9월 이후 출제여야 하고, 사람 대조군이 진정하려면 ChatGPT 출시(2022년 11월 30일) 이전 컨테스트여야 한다. 두 cutoff가 다르므로 [2021-09, 2022-11] 구간에서 두 조건이 동시에 성립한다. 이 구간만 사용한다.
+생성 모델로는 knowledge cutoff가 잘 문서화되어 있고 그 cutoff가 대화형 코딩 보조 도구의 대중적 등장보다 앞서는 모델이 필요하다. 우리는 \texttt{gpt-3.5-turbo}(knowledge cutoff 2021년 9월)를 고정한다. data leakage가 없으려면 대상 문제가 2021년 9월 이후 출제여야 한다. 한편 사람 대조군이 진정하려면 사람 제출이 LLM이 대중화되기 전에 작성되어야 하는데, 우리는 대중화의 분기점으로 ChatGPT의 공개 출시(2022년 11월 30일)를 택한다. ChatGPT는 학생과 개발자가 코드 생성을 위해 LLM을 일상적으로 쓰기 시작한 가장 뚜렷한 변곡점이기 때문이다. 두 시점이 다르므로 그 사이의 [2021-09, 2022-11] 구간에서 두 조건이 동시에 성립한다. 이 구간에 출제된 문제는 모델이 학습하지 못했고, 그 컨테스트의 사람 제출은 ChatGPT 이전이므로 진정하다. 다만 사람 진정성은 ``컨테스트 시기''라는 proxy에 의존하며, 옛 문제에 대한 후대 재제출 가능성은 한계로 남는다(Section~VIII).
 
-\subsection{Base Data and Problem Selection}
-ConDefects~\cite{wu2023condefects}에서 위 구간의 Python 과제 중 사람 정답과 버그 짝, 그리고 전체 hidden test를 갖춘 문제를 선별한다. AtCoder가 마지막 문제의 표시 라벨을 ``Ex''로 바꾼 경우 ConDefects의 \texttt{\_h} 표기와 매핑하여 테스트를 복구하였고, stdin/stdout 채점이 불가능한 interactive 문제는 제외하였다. 최종적으로 428개 문제와 1{,}215개의 짝지어진 사람 버그(fault location 포함)를 얻는다.
+\subsection{Problem Selection from ConDefects}
+ConDefects는 각 과제를 \texttt{Code/<task>/<lang>/<id>/} 아래에 사람 버기 버전, 그에 대응하는 사람 정답, 그리고 fault location으로 제공한다. 우리는 다음 기준으로 문제를 선별한다: (i) Python 과제일 것, (ii) contest date가 시기 윈도우 안일 것, (iii) 사람 정답과 버기 짝이 모두 존재할 것, (iv) 전체 hidden test가 확보될 것. AtCoder는 2021년 후반부터 Beginner Contest의 마지막 문제 표시 라벨을 ``Ex''로 바꾸었는데, ConDefects는 이를 \texttt{\_h}로 표기한다. 이 불일치 때문에 테스트 디렉터리를 \texttt{\_h}로만 찾으면 22개 문제의 전체 테스트를 놓치므로, \texttt{\_h}를 ``Ex''로 매핑하여 복구하였다. 또한 표준 stdin/stdout 채점이 불가능한 interactive 문제 4개는 제외하였고, 복수 정답을 허용하는 special judge 문제는 메타데이터로 표시하여 정확 일치 비교의 한계를 명시한다. 최종적으로 85개 컨테스트에 걸친 428개 문제와, 그에 짝지어진 1{,}204개의 사람 버기 프로그램(및 동수의 사람 정답과 fault location)을 얻는다.
 
-\subsection{Specifications and Tests}
-ConDefects는 자연어 명세를 포함하지 않으므로, 각 과제의 영어 명세를 AtCoder에서 수집하여 구조적으로 정규화하고 \texttt{problem.txt}로 제공한다. 채점에는 ConDefects의 전체 hidden test(문제당 평균 약 32개)를 사용한다. 채점 샌드박스에는 \texttt{sympy}와 \texttt{sortedcontainers} 같은 표준 라이브러리를 설치하여 라이브러리 부재로 인한 거짓 RE를 방지하고, 각 문제의 시간 제한을 적용한다.
+\subsection{Specifications}
+ConDefects는 코드와 테스트는 제공하나 자연어 명세는 포함하지 않으므로, 각 과제의 영어 명세를 AtCoder 문제 페이지에서 수집한다. 명세는 \texttt{task-statement} 영역의 영어 블록에 있으며, 문제 설명·제약·입출력 형식·예시로 구성된다. 단순히 HTML에서 텍스트를 추출하면 수식 변수가 토큰마다 줄바꿈되어 가독성이 크게 떨어지므로, 우리는 문단과 예시 블록을 구조적으로 재구성하는 정규화를 적용한다: 문단은 한 줄로 합치고 예시 입출력 블록은 원형을 보존한다. 정규화된 명세는 \texttt{problem.txt}로 제공되며 생성과 spec-grounded repair의 입력이 된다.
 
-\subsection{Generating and Judging AI Bugs}
-각 문제에 대해 \texttt{gpt-3.5-turbo}로 temperature 1.0, 문제당 10개의 솔루션을 생성한다. 프롬프트는 ``Output ONLY a complete Python 3 program''이라는 system 지시와 정규화 명세(user 메시지)로 구성한다. 이 지시가 없으면 생성물의 46\%가 비-Python으로 이탈하므로 이를 통제하여 모든 생성물이 100\% Python이도록 한다. 생성물은 전체 hidden test로 채점하여 pass, WA(Wrong Answer), TLE(Time Limit Exceeded), RE(Runtime Error), CE(Compile Error)로 라벨링한다.
+\subsection{Tests and Execution Environment}
+채점에는 ConDefects의 전체 hidden test를 사용한다. 솔루션은 각 테스트에 대해 stdin을 주입하고 stdout을 기대 출력과 비교하며, 출력 비교는 줄 단위 후행 공백과 마지막 개행을 무시하는 관용 비교를 따른다. 실행은 격리된 subprocess에서 이루어지고, 문제별 시간 제한과 메모리 상한을 적용하며 네트워크를 차단한다. AtCoder의 표준 라이브러리 가정을 반영하기 위해 채점 샌드박스에 \texttt{sympy}, \texttt{sortedcontainers}, \texttt{numpy}를 설치하여, 라이브러리 부재로 인한 거짓 RE를 방지한다. 공개 sample만으로 채점하면 통과율이 13.8\%가 아니라 23\%로 과대평가되므로, 전체 hidden test가 타당한 채점에 필수임을 확인하였다.
 
-\subsection{Deriving the Taxonomy}
-사전 범주를 두지 않고 실패 코드를 open coding으로 분류한다. TLE, RE, CE는 채점 status와 예외 정보로 직접 태깅한다. 의미 판단이 필요한 WA는 각 AI 버그를 같은 문제의 사람 정답(\texttt{correct.py})과 대조하여 무엇을 오해했는지 파악하고, Spec-Misinterpretation의 하위 유형을 도출한다. 두 저자가 독립적으로 분류하고 Cohen's $\kappa$~\cite{cohen1960kappa}로 신뢰도를 보고하며(목표 $\kappa\geq 0.7$), 불일치는 합의로 조정한다. 최종 분류 체계는 4개 defect type과 11개 sub type으로 이루어진다(표~\ref{tab:taxonomy}).
+\subsection{Generating AI Solutions}
+각 문제에 대해 \texttt{gpt-3.5-turbo}로 temperature 1.0, 문제당 10개의 솔루션을 생성한다. 프롬프트는 ``Output ONLY a complete Python 3 program''이라는 간결한 system 지시와 정규화된 명세(user 메시지)로 구성한다. 이 system 지시가 없으면 생성물의 46\%가 C++ 등 비-Python으로 이탈하는데, 이는 AtCoder 문제가 관습적으로 C++ 중심이기 때문이다. system 지시 한 줄로 이를 통제하여 본 설정의 모든 생성물이 100\% Python이도록 한다. 응답에서 코드는 fenced block로 추출하고, 재현성을 위해 모델 응답이 보고하는 정확한 snapshot을 레코드에 함께 저장한다. \texttt{gpt-3.5-turbo}는 저렴하고 빠르므로 문제당 10개 생성의 비용은 작다.
+
+\subsection{Judging and Deriving the Taxonomy}
+각 솔루션을 전체 hidden test로 채점하여 pass와 WA(Wrong Answer), TLE(Time Limit Exceeded), RE(Runtime Error), CE(Compile Error)로 분류한다. 결함 분류 체계는 사전 범주 없이 open coding으로 도출한다. TLE, RE, CE는 채점 status와 예외 정보로 직접 태깅한다. 의미 판단이 필요한 WA는 실행은 되나 출력이 틀린 경우로, 두 저자가 각 AI 버그를 같은 문제의 사람 정답(\texttt{correct.py})과 대조하여 무엇을 오해했는지 파악하고, 유사한 오해를 반복적으로 병합하여 하위 유형을 만든다. 이 과정에서 Spec-Misinterpretation은 다섯 하위 유형(S1--S5)으로, RE는 세 하위 유형으로 세분되어 전체 4개 defect type과 11개 sub type의 분류 체계가 도출된다(Section~VI-A). 신뢰도는 범주 확정 후 두 저자의 독립 분류로 Cohen's $\kappa$~\cite{cohen1960kappa}를 측정하여 보고하며(목표 $\kappa\geq 0.7$), 불일치는 합의로 조정한다.
+
+\subsection{Systematicity Metric}
+LLM 버그가 무작위인지 systematic한지 평가하기 위해, 한 문제에 대한 여러 생성의 버그가 같은 실패 유형으로 수렴하는 정도를 정량화한다. 문제 $p$의 버그들을 범주 $c$별로 센 분포를 $\{n_c\}$, 버그 수를 $N_p=\sum_c n_c$, 서로 다른 범주 수를 $k_p$라 하자. modal-share를
+\[
+m_p \;=\; \frac{\max_c n_c}{N_p}
+\]
+로 정의한다. $m_p=1$이면 모든 버그가 같은 유형(완전 systematic)이다. 또한 분포의 정규화 Shannon entropy를
+\[
+H_p \;=\; \frac{-\sum_c (n_c/N_p)\,\log_2 (n_c/N_p)}{\log_2 k_p}
+\]
+로 정의하며($k_p>1$일 때), $H_p=0$이면 완전 systematic, $H_p=1$이면 균등 분산이다. 버그가 2개 이상인 문제에 대해 $m_p$와 $H_p$를 집계하여 systematicity를 보고한다.
 
 \section{Benchmark Composition}
 표~\ref{tab:compare}는 AIBugBench를 대표 벤치마크와 비교한 것이다. AIBugBench는 (i) AI 생성 버그와 (ii) 같은 문제의 사람 버그를, (iii) leakage가 없고 (iv) 사람이 진정한 구간에서, (v) 전체 hidden test, (vi) 사람 fault location, (vii) 자연어 명세와 함께 제공하는 유일한 벤치마크다.
@@ -111,7 +152,7 @@ ConDefects~\cite{wu2023condefects} & -- & \checkmark & \checkmark & -- & \checkm
 \end{tabular}
 \end{table}
 
-표~\ref{tab:stats}는 벤치마크 구성이다. 428개 문제에 대해 AI 생성물 4{,}280개(문제당 10개)와 사람 버그 1{,}215개를 제공하며, AI 생성물 중 3{,}691개가 버그이다. 모든 문제는 정규화 명세, 전체 hidden test, 사람 정답과 fault location을 갖는다.
+표~\ref{tab:stats}는 벤치마크 구성이다. 2021년 10월부터 2022년 11월까지 85개 컨테스트에 걸친 428개 문제에 대해, AI 생성물 4{,}280개(문제당 10개)와 사람 버그 1{,}204개를 제공하며, AI 생성물 중 3{,}691개가 버그이다. 모든 문제는 정규화 명세, 전체 hidden test, 사람 정답과 fault location을 갖는다. hidden test는 문제당 중앙값 28개, 평균 32.9개, 최대 148개로 총 14{,}073개이며, 사람 버그는 문제당 중앙값 2개, 평균 2.8개, 최대 13개이다.
 
 \begin{table}[t]
 \caption{Composition of AIBugBench}
@@ -119,21 +160,44 @@ ConDefects~\cite{wu2023condefects} & -- & \checkmark & \checkmark & -- & \checkm
 \centering
 \begin{tabular}{lr}
 \toprule
-Item & Count \\
+Item & Value \\
 \midrule
 Problems (AtCoder, 2021-10--2022-11) & 428 \\
-Hidden tests per problem (avg.) & $\approx$32 \\
+Contests & 85 \\
+Hidden tests (total / median / max per problem) & 14{,}073 / 28 / 148 \\
 AI generations (\texttt{gpt-3.5-turbo}, 10/problem) & 4{,}280 \\
 \quad of which buggy & 3{,}691 \\
-Paired human faulty programs & 1{,}215 \\
-NL specifications / human correct programs & 428 / provided \\
+Paired human faulty programs & 1{,}204 \\
+\quad per problem (median / mean / max) & 2 / 2.8 / 13 \\
+NL specifications / human correct programs & 428 / 1{,}204 \\
 Fault locations (human) & provided \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+표~\ref{tab:breakdown}은 문제를 컨테스트 유형과 난이도로 나눈 분포이다. 난이도는 800대 미만부터 3{,}800대까지(중앙값 1{,}105) 폭넓게 분포하여, 쉬운 문제부터 매우 어려운 문제까지 균형 있게 포괄한다. 이 폭은 LLM과 수리 도구의 능력을 난이도 축에서 평가할 수 있게 한다.
+
+\begin{table}[t]
+\caption{Problem breakdown by contest type and difficulty}
+\label{tab:breakdown}
+\centering
+\begin{tabular}{lr}
+\toprule
+Stratum & \#Problems \\
+\midrule
+Contest type: ABC / ARC / AGC & 330 / 92 / 6 \\
+Difficulty Easy ($<$400) & 120 \\
+Difficulty Medium (400--1200) & 104 \\
+Difficulty Hard (1200--2000) & 89 \\
+Difficulty Very hard ($\geq$2000) & 115 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Supported Tasks and Evaluation Protocol}
-AIBugBench는 다섯 태스크를 지원하며 각 태스크의 입력, 정답, 측정 지표를 표준화한다. Bug classification은 AI 버그를 결함 범주로 분류하는 태스크로 accuracy와 두 평가자 간 Cohen's $\kappa$로 측정한다. Fault localization은 사람 fault location을 정답으로 사용하며 top-$k$ accuracy와 EXAM score로 측정한다~\cite{wong2016flsurvey}. Automatic program repair는 버기 프로그램과 전체 테스트, 참조 정답을 제공하며 수리 후 전체 테스트 통과율(plausible와 correct를 구분)로 측정한다~\cite{monperrus2018survey,xia2023llmapr}. AI 대 사람 버그 비교는 같은 문제에서 두 분포를 비교하는 태스크로 범주 분포에 대한 $\chi^2$ 검정으로 측정한다. Spec-grounded repair는 명세에서 추출한 제약을 두 번째 oracle로 활용하는 수리 평가로 Spec-Misinterpretation 한정 수리율 향상으로 측정한다. 표준 분할은 문제 단위로 나누어 같은 문제의 솔루션이 분할을 넘나들지 않게 하여 누수 없는 평가를 보장한다.
+AIBugBench는 다섯 태스크를 지원하며 각 태스크의 입력, 정답, 측정 지표를 표준화한다. Bug classification은 AI 버그(코드, 명세, 채점 결과)를 입력으로 결함 범주를 예측하는 태스크로, 정답 라벨에 대한 accuracy와 두 평가자 간 Cohen's $\kappa$로 측정한다. Fault localization은 버기 프로그램과 테스트를 입력으로 결함 라인을 순위화하는 태스크로, 사람 버그에 대해 제공된 fault location을 정답으로 사용하며 top-$k$ accuracy와 EXAM score로 측정한다~\cite{wong2016flsurvey}. Automatic program repair는 버기 프로그램, 전체 테스트, 참조 정답을 입력으로 패치를 생성하는 태스크로, 수리 후 전체 테스트를 통과하는 plausible 패치율과 정답과 동치인 correct 패치율을 구분해 측정한다~\cite{monperrus2018survey,xia2023llmapr}. AI 대 사람 버그 비교는 같은 문제에서 AI와 사람 버그의 범주 분포를 비교하는 태스크로, 분포 차이에 대한 $\chi^2$ 검정과 난이도별 교차표로 측정한다. Spec-grounded repair는 명세에서 추출한 의미적 제약을 테스트와 별개의 두 번째 oracle로 활용하는 수리 평가로, 일반 수리 대비 Spec-Misinterpretation 한정 수리율 향상으로 측정한다.
+
+재현 가능한 평가를 위해 표준 분할과 실행 하네스를 함께 제공한다. 표준 분할은 문제 단위로 train/validation/test를 약 70/15/15로 나누어(대략 300/64/64 문제), 같은 문제의 솔루션이 분할을 넘나들지 않게 함으로써 누수 없는 평가를 보장한다. 모든 채점은 제공된 평가 스크립트와 동일한 시간 제한 및 라이브러리 환경에서 수행하여 결과를 비교 가능하게 한다.
 
 \section{Evaluation}
 이 절은 서론의 세 연구 질문에 답한다.
