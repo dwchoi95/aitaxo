@@ -1,0 +1,37 @@
+{
+  "human_bugs": 1203,
+  "human_pass": 1,
+  "human_dist": {
+    "wrong_answer": 1101,
+    "timeout": 73,
+    "runtime_error": 29,
+    "compile_error": 0
+  },
+  "ai_dist": {
+    "wrong_answer": 2808,
+    "timeout": 504,
+    "runtime_error": 338,
+    "compile_error": 41
+  },
+  "human_share": {
+    "wrong_answer": 0.915,
+    "timeout": 0.061,
+    "runtime_error": 0.024,
+    "compile_error": 0.0
+  },
+  "ai_share": {
+    "wrong_answer": 0.761,
+    "timeout": 0.137,
+    "runtime_error": 0.092,
+    "compile_error": 0.011
+  },
+  "chi2": 139.82,
+  "p_value": 4.126758830212202e-30,
+  "dof": 3,
+  "human_fault_lines": {
+    "median": 1.0,
+    "mean": 1.0,
+    "pct_single_line": 100.0,
+    "n": 1204
+  }
+}
