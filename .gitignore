@@ -233,3 +233,12 @@ __marimo__/
 results/*.jsonl
 results/*_log.txt
 results/phase3_bugs_readable.txt
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.pdf
+paper/*.toc
