@@ -1,9 +1,0 @@
-{
-  "runtime_error": 166,
-  "wrong_answer": 1430,
-  "timeout": 244,
-  "pass": 291,
-  "compile_error": 9,
-  "generations": 2140,
-  "tasks": 428
-}
