@@ -1,0 +1,47 @@
+{
+  "gpt-3.5-turbo": {
+    "gens": 4280,
+    "pass": 589,
+    "pass_rate": 13.8,
+    "bugs": 3691,
+    "dist": {
+      "wrong_answer": 76.1,
+      "timeout": 13.7,
+      "runtime_error": 9.2,
+      "compile_error": 1.1
+    },
+    "modal_share": 0.845,
+    "fully_consistent_pct": 38.8,
+    "problems_ge2_bugs": 387
+  },
+  "gpt-4-0613": {
+    "gens": 2140,
+    "pass": 369,
+    "pass_rate": 17.2,
+    "bugs": 1771,
+    "dist": {
+      "wrong_answer": 66.8,
+      "timeout": 8.2,
+      "runtime_error": 23.2,
+      "compile_error": 1.9
+    },
+    "modal_share": 0.76,
+    "fully_consistent_pct": 33.1,
+    "problems_ge2_bugs": 363
+  },
+  "gpt-5.5": {
+    "gens": 2140,
+    "pass": 1149,
+    "pass_rate": 53.7,
+    "bugs": 991,
+    "dist": {
+      "wrong_answer": 74.1,
+      "timeout": 23.3,
+      "runtime_error": 2.5,
+      "compile_error": 0.1
+    },
+    "modal_share": 0.904,
+    "fully_consistent_pct": 67.0,
+    "problems_ge2_bugs": 212
+  }
+}
