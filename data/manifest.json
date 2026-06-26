@@ -1,0 +1,2049 @@
+{
+  "source": "deepmind/code_contests",
+  "window": "leakage-free (>= CF round 1575, 2021-10)",
+  "language": "Python 3",
+  "n_problems": 112,
+  "problems": [
+    {
+      "pid": "1575A",
+      "contest_id": 1575,
+      "index": "A",
+      "name": "1575_A. Another Sorting Problem",
+      "rating": 1100,
+      "tags": [
+        "data structures",
+        "sortings",
+        "strings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 3,
+      "n_correct": 15
+    },
+    {
+      "pid": "1575D",
+      "contest_id": 1575,
+      "index": "D",
+      "name": "1575_D. Divisible by Twenty-Five",
+      "rating": 1800,
+      "tags": [
+        "brute force",
+        "dfs and similar",
+        "dp"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 39,
+      "n_correct": 9
+    },
+    {
+      "pid": "1575J",
+      "contest_id": 1575,
+      "index": "J",
+      "name": "1575_J. Jeopardy of Dropped Balls",
+      "rating": 1500,
+      "tags": [
+        "binary search",
+        "brute force",
+        "dsu",
+        "implementation"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 5,
+      "n_correct": 8
+    },
+    {
+      "pid": "1575K",
+      "contest_id": 1575,
+      "index": "K",
+      "name": "1575_K. Knitting Batik",
+      "rating": 2200,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 1,
+      "n_correct": 2
+    },
+    {
+      "pid": "1575L",
+      "contest_id": 1575,
+      "index": "L",
+      "name": "1575_L. Longest Array Deconstruction",
+      "rating": 2100,
+      "tags": [
+        "data structures",
+        "divide and conquer",
+        "dp",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 3,
+      "n_correct": 3
+    },
+    {
+      "pid": "1579A",
+      "contest_id": 1579,
+      "index": "A",
+      "name": "1579_A. Casimir's String Solitaire",
+      "rating": 800,
+      "tags": [
+        "math",
+        "strings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 97,
+      "n_correct": 151
+    },
+    {
+      "pid": "1579B",
+      "contest_id": 1579,
+      "index": "B",
+      "name": "1579_B. Shifting Sort",
+      "rating": 1100,
+      "tags": [
+        "implementation",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 97,
+      "n_correct": 94
+    },
+    {
+      "pid": "1579C",
+      "contest_id": 1579,
+      "index": "C",
+      "name": "1579_C. Ticks",
+      "rating": 1500,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 86,
+      "n_correct": 127
+    },
+    {
+      "pid": "1579D",
+      "contest_id": 1579,
+      "index": "D",
+      "name": "1579_D. Productive Meeting",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "graphs",
+        "greedy"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 105,
+      "n_correct": 95
+    },
+    {
+      "pid": "1579E2",
+      "contest_id": 1579,
+      "index": "E2",
+      "name": "1579_E2. Array Optimization by Deque",
+      "rating": 1700,
+      "tags": [
+        "data structures",
+        "greedy"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 21,
+      "n_correct": 62
+    },
+    {
+      "pid": "1579F",
+      "contest_id": 1579,
+      "index": "F",
+      "name": "1579_F. Array Stabilization (AND version)",
+      "rating": 1700,
+      "tags": [
+        "brute force",
+        "graphs",
+        "math",
+        "number theory",
+        "shortest paths"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 28,
+      "n_correct": 56
+    },
+    {
+      "pid": "1579G",
+      "contest_id": 1579,
+      "index": "G",
+      "name": "1579_G. Minimal Coverage",
+      "rating": 2200,
+      "tags": [
+        "dp"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 10,
+      "n_correct": 21
+    },
+    {
+      "pid": "1580A",
+      "contest_id": 1580,
+      "index": "A",
+      "name": "1580_A. Portal",
+      "rating": 1700,
+      "tags": [
+        "brute force",
+        "data structures",
+        "dp",
+        "greedy",
+        "implementation"
+      ],
+      "points": 500.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 3,
+      "n_correct": 1
+    },
+    {
+      "pid": "1581A",
+      "contest_id": 1581,
+      "index": "A",
+      "name": "1581_A. CQXYM Count Permutations",
+      "rating": 800,
+      "tags": [
+        "combinatorics",
+        "math",
+        "number theory"
+      ],
+      "points": 500.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 33,
+      "n_correct": 125
+    },
+    {
+      "pid": "1581B",
+      "contest_id": 1581,
+      "index": "B",
+      "name": "1581_B. Diameter of Graph",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "graphs",
+        "greedy",
+        "math"
+      ],
+      "points": 1000.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 149,
+      "n_correct": 95
+    },
+    {
+      "pid": "1582A",
+      "contest_id": 1582,
+      "index": "A",
+      "name": "1582_A. Luntik and Concerts",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "points": 500.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 101,
+      "n_correct": 123
+    },
+    {
+      "pid": "1582B",
+      "contest_id": 1582,
+      "index": "B",
+      "name": "1582_B. Luntik and Subsequences",
+      "rating": 900,
+      "tags": [
+        "combinatorics",
+        "math"
+      ],
+      "points": 750.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 100,
+      "n_correct": 149
+    },
+    {
+      "pid": "1582C",
+      "contest_id": 1582,
+      "index": "C",
+      "name": "1582_C. Grandma Capa Knits a Scarf",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "data structures",
+        "greedy",
+        "strings",
+        "two pointers"
+      ],
+      "points": 1500.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 65,
+      "n_correct": 114
+    },
+    {
+      "pid": "1582D",
+      "contest_id": 1582,
+      "index": "D",
+      "name": "1582_D. Vupsen, Pupsen and 0",
+      "rating": 1600,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "points": 1750.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 184,
+      "n_correct": 96
+    },
+    {
+      "pid": "1582F1",
+      "contest_id": 1582,
+      "index": "F1",
+      "name": "1582_F1. Korney Korneevich and XOR (easy version)",
+      "rating": 1800,
+      "tags": [
+        "bitmasks",
+        "dp",
+        "greedy"
+      ],
+      "points": 2000.0,
+      "time_limit_s": 1.5,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 18,
+      "n_correct": 18
+    },
+    {
+      "pid": "1582F2",
+      "contest_id": 1582,
+      "index": "F2",
+      "name": "1582_F2. Korney Korneevich and XOR (hard version)",
+      "rating": 2400,
+      "tags": [
+        "binary search",
+        "brute force",
+        "dp",
+        "greedy",
+        "two pointers"
+      ],
+      "points": 1500.0,
+      "time_limit_s": 1.5,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 2,
+      "n_correct": 3
+    },
+    {
+      "pid": "1586A",
+      "contest_id": 1586,
+      "index": "A",
+      "name": "1586_A. Windblume Ode",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "greedy",
+        "math",
+        "number theory"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 99,
+      "n_correct": 107
+    },
+    {
+      "pid": "1586B",
+      "contest_id": 1586,
+      "index": "B",
+      "name": "1586_B. Omkar and Heavenly Tree",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "trees"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 69,
+      "n_correct": 104
+    },
+    {
+      "pid": "1586C",
+      "contest_id": 1586,
+      "index": "C",
+      "name": "1586_C. Omkar and Determination",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "dp",
+        "greedy",
+        "implementation",
+        "two pointers"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 51,
+      "n_correct": 36
+    },
+    {
+      "pid": "1586D",
+      "contest_id": 1586,
+      "index": "D",
+      "name": "1586_D. Omkar and the Meaning of Life",
+      "rating": 1800,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "interactive",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 61,
+      "n_correct": 1
+    },
+    {
+      "pid": "1586E",
+      "contest_id": 1586,
+      "index": "E",
+      "name": "1586_E. Moment of Bloom",
+      "rating": 2200,
+      "tags": [
+        "constructive algorithms",
+        "dfs and similar",
+        "dsu",
+        "graph matchings",
+        "graphs",
+        "greedy",
+        "trees"
+      ],
+      "points": 0.0,
+      "time_limit_s": 3.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 4,
+      "n_correct": 8
+    },
+    {
+      "pid": "1586F",
+      "contest_id": 1586,
+      "index": "F",
+      "name": "1586_F. Defender of Childhood Dreams",
+      "rating": 2500,
+      "tags": [
+        "bitmasks",
+        "constructive algorithms",
+        "divide and conquer",
+        "graphs",
+        "greedy",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 3.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 6,
+      "n_correct": 9
+    },
+    {
+      "pid": "1586I",
+      "contest_id": 1586,
+      "index": "I",
+      "name": "1586_I. Omkar and Mosaic",
+      "rating": 3500,
+      "tags": [
+        "combinatorics",
+        "constructive algorithms",
+        "math"
+      ],
+      "points": 4000.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 1,
+      "n_correct": 2
+    },
+    {
+      "pid": "1591A",
+      "contest_id": 1591,
+      "index": "A",
+      "name": "1591_A. Life of a Flower",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 100,
+      "n_correct": 139
+    },
+    {
+      "pid": "1591B",
+      "contest_id": 1591,
+      "index": "B",
+      "name": "1591_B. Array Eversion",
+      "rating": 900,
+      "tags": [
+        "greedy"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 67,
+      "n_correct": 122
+    },
+    {
+      "pid": "1591C",
+      "contest_id": 1591,
+      "index": "C",
+      "name": "1591_C. Minimize Distance",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 87,
+      "n_correct": 106
+    },
+    {
+      "pid": "1591D",
+      "contest_id": 1591,
+      "index": "D",
+      "name": "1591_D. Yet Another Sorting Problem",
+      "rating": 1900,
+      "tags": [
+        "constructive algorithms",
+        "data structures",
+        "math",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 18,
+      "n_correct": 29
+    },
+    {
+      "pid": "1591F",
+      "contest_id": 1591,
+      "index": "F",
+      "name": "1591_F. Non-equal Neighbours",
+      "rating": 2400,
+      "tags": [
+        "combinatorics",
+        "data structures",
+        "dp",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 3.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 2,
+      "n_correct": 6
+    },
+    {
+      "pid": "1594A",
+      "contest_id": 1594,
+      "index": "A",
+      "name": "1594_A. Consecutive Sum Riddle",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "points": 500.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 99,
+      "n_correct": 134
+    },
+    {
+      "pid": "1594B",
+      "contest_id": 1594,
+      "index": "B",
+      "name": "1594_B. Special Numbers",
+      "rating": 1100,
+      "tags": [
+        "bitmasks",
+        "math"
+      ],
+      "points": 1000.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 66,
+      "n_correct": 136
+    },
+    {
+      "pid": "1594C",
+      "contest_id": 1594,
+      "index": "C",
+      "name": "1594_C. Make Them Equal",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "greedy",
+        "math",
+        "strings"
+      ],
+      "points": 1500.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 190,
+      "n_correct": 95
+    },
+    {
+      "pid": "1594D",
+      "contest_id": 1594,
+      "index": "D",
+      "name": "1594_D. The Number of Imposters",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "dfs and similar",
+        "dp",
+        "dsu",
+        "graphs"
+      ],
+      "points": 1750.0,
+      "time_limit_s": 3.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 56,
+      "n_correct": 57
+    },
+    {
+      "pid": "1594E1",
+      "contest_id": 1594,
+      "index": "E1",
+      "name": "1594_E1. Rubik's Cube Coloring (easy version)",
+      "rating": 1300,
+      "tags": [
+        "combinatorics",
+        "math"
+      ],
+      "points": 1000.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 63,
+      "n_human": 84,
+      "n_correct": 118
+    },
+    {
+      "pid": "1594E2",
+      "contest_id": 1594,
+      "index": "E2",
+      "name": "1594_E2. Rubik's Cube Coloring (hard version)",
+      "rating": 2300,
+      "tags": [
+        "brute force",
+        "dp",
+        "implementation",
+        "math",
+        "trees"
+      ],
+      "points": 1500.0,
+      "time_limit_s": 3.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 5,
+      "n_correct": 15
+    },
+    {
+      "pid": "1594F",
+      "contest_id": 1594,
+      "index": "F",
+      "name": "1594_F. Ideal Farm",
+      "rating": 2400,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "points": 2750.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 27,
+      "n_correct": 16
+    },
+    {
+      "pid": "1598A",
+      "contest_id": 1598,
+      "index": "A",
+      "name": "1598_A. Computer Game",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "dfs and similar",
+        "dp",
+        "implementation"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 99,
+      "n_correct": 146
+    },
+    {
+      "pid": "1598B",
+      "contest_id": 1598,
+      "index": "B",
+      "name": "1598_B. Groups",
+      "rating": 1000,
+      "tags": [
+        "brute force",
+        "implementation"
+      ],
+      "points": 0.0,
+      "time_limit_s": 4.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 99,
+      "n_correct": 108
+    },
+    {
+      "pid": "1598C",
+      "contest_id": 1598,
+      "index": "C",
+      "name": "1598_C. Delete Two Elements",
+      "rating": 1200,
+      "tags": [
+        "data structures",
+        "dp",
+        "implementation",
+        "math",
+        "two pointers"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 97,
+      "n_correct": 123
+    },
+    {
+      "pid": "1598D",
+      "contest_id": 1598,
+      "index": "D",
+      "name": "1598_D. Training Session",
+      "rating": 1700,
+      "tags": [
+        "combinatorics",
+        "data structures",
+        "geometry",
+        "implementation",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 61,
+      "n_correct": 97
+    },
+    {
+      "pid": "1598E",
+      "contest_id": 1598,
+      "index": "E",
+      "name": "1598_E. Staircases",
+      "rating": 2100,
+      "tags": [
+        "brute force",
+        "combinatorics",
+        "data structures",
+        "dfs and similar",
+        "dp",
+        "implementation",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 5,
+      "n_correct": 9
+    },
+    {
+      "pid": "1598F",
+      "contest_id": 1598,
+      "index": "F",
+      "name": "1598_F. RBS",
+      "rating": 2400,
+      "tags": [
+        "binary search",
+        "bitmasks",
+        "brute force",
+        "data structures",
+        "dp"
+      ],
+      "points": 0.0,
+      "time_limit_s": 3.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 7,
+      "n_correct": 7
+    },
+    {
+      "pid": "1599C",
+      "contest_id": 1599,
+      "index": "C",
+      "name": "1599_C. Bubble Strike",
+      "rating": 2000,
+      "tags": [
+        "combinatorics",
+        "math",
+        "probabilities",
+        "ternary search"
+      ],
+      "points": 0.0,
+      "time_limit_s": 0.5,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 13,
+      "n_correct": 7
+    },
+    {
+      "pid": "1600E",
+      "contest_id": 1600,
+      "index": "E",
+      "name": "1600_E. Array Game",
+      "rating": 1900,
+      "tags": [
+        "games",
+        "greedy",
+        "two pointers"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 18,
+      "n_correct": 8
+    },
+    {
+      "pid": "1600J",
+      "contest_id": 1600,
+      "index": "J",
+      "name": "1600_J. Robot Factory",
+      "rating": 1400,
+      "tags": [
+        "bitmasks",
+        "dfs and similar"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 9,
+      "n_human": 10,
+      "n_correct": 10
+    },
+    {
+      "pid": "1601A",
+      "contest_id": 1601,
+      "index": "A",
+      "name": "1601_A. Array Elimination",
+      "rating": 1300,
+      "tags": [
+        "bitmasks",
+        "greedy",
+        "math",
+        "number theory"
+      ],
+      "points": 500.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 5,
+      "n_correct": 13
+    },
+    {
+      "pid": "1601B",
+      "contest_id": 1601,
+      "index": "B",
+      "name": "1601_B. Frog Traveler",
+      "rating": 1900,
+      "tags": [
+        "data structures",
+        "dfs and similar",
+        "dp",
+        "graphs",
+        "shortest paths",
+        "two pointers"
+      ],
+      "points": 1250.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 3,
+      "n_correct": 3
+    },
+    {
+      "pid": "1604A",
+      "contest_id": 1604,
+      "index": "A",
+      "name": "1604_A. Era",
+      "rating": 800,
+      "tags": [
+        "greedy"
+      ],
+      "points": 500.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 100,
+      "n_correct": 124
+    },
+    {
+      "pid": "1604B",
+      "contest_id": 1604,
+      "index": "B",
+      "name": "1604_B. XOR Specia-LIS-t",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms"
+      ],
+      "points": 1000.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 100,
+      "n_correct": 113
+    },
+    {
+      "pid": "1604C",
+      "contest_id": 1604,
+      "index": "C",
+      "name": "1604_C. Di-visible Confusion",
+      "rating": 1300,
+      "tags": [
+        "brute force",
+        "greedy",
+        "math",
+        "number theory"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 105,
+      "n_correct": 99
+    },
+    {
+      "pid": "1604D",
+      "contest_id": 1604,
+      "index": "D",
+      "name": "1604_D. Moderate Modular Mode",
+      "rating": 1600,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 72,
+      "n_correct": 82
+    },
+    {
+      "pid": "1606A",
+      "contest_id": 1606,
+      "index": "A",
+      "name": "1606_A. AB Balance",
+      "rating": 900,
+      "tags": [
+        "strings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 100,
+      "n_correct": 129
+    },
+    {
+      "pid": "1606B",
+      "contest_id": 1606,
+      "index": "B",
+      "name": "1606_B. Update Files",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 171,
+      "n_correct": 97
+    },
+    {
+      "pid": "1606C",
+      "contest_id": 1606,
+      "index": "C",
+      "name": "1606_C. Banknotes",
+      "rating": 1400,
+      "tags": [
+        "greedy",
+        "number theory"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 72,
+      "n_correct": 104
+    },
+    {
+      "pid": "1606D",
+      "contest_id": 1606,
+      "index": "D",
+      "name": "1606_D. Red-Blue Matrix",
+      "rating": 2400,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "implementation",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 4.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 1,
+      "n_correct": 3
+    },
+    {
+      "pid": "1607A",
+      "contest_id": 1607,
+      "index": "A",
+      "name": "1607_A. Linear Keyboard",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "strings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 52,
+      "n_correct": 133
+    },
+    {
+      "pid": "1607B",
+      "contest_id": 1607,
+      "index": "B",
+      "name": "1607_B. Odd Grasshopper",
+      "rating": 900,
+      "tags": [
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 96,
+      "n_correct": 147
+    },
+    {
+      "pid": "1607C",
+      "contest_id": 1607,
+      "index": "C",
+      "name": "1607_C. Minimum Extraction",
+      "rating": 1000,
+      "tags": [
+        "brute force",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 100,
+      "n_correct": 129
+    },
+    {
+      "pid": "1607D",
+      "contest_id": 1607,
+      "index": "D",
+      "name": "1607_D. Blue-Red Permutation",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 74,
+      "n_correct": 111
+    },
+    {
+      "pid": "1607E",
+      "contest_id": 1607,
+      "index": "E",
+      "name": "1607_E. Robot on the Board 1",
+      "rating": 1600,
+      "tags": [
+        "implementation"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 69,
+      "n_correct": 82
+    },
+    {
+      "pid": "1607G",
+      "contest_id": 1607,
+      "index": "G",
+      "name": "1607_G. Banquet Preparations 1",
+      "rating": 2200,
+      "tags": [
+        "greedy"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 1,
+      "n_correct": 5
+    },
+    {
+      "pid": "1607H",
+      "contest_id": 1607,
+      "index": "H",
+      "name": "1607_H. Banquet Preparations 2",
+      "rating": 2200,
+      "tags": [
+        "greedy",
+        "sortings",
+        "two pointers"
+      ],
+      "points": 0.0,
+      "time_limit_s": 3.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 11,
+      "n_correct": 5
+    },
+    {
+      "pid": "1608A",
+      "contest_id": 1608,
+      "index": "A",
+      "name": "1608_A. Find Array",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "points": 250.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 98,
+      "n_correct": 150
+    },
+    {
+      "pid": "1608B",
+      "contest_id": 1608,
+      "index": "B",
+      "name": "1608_B. Build the Permutation",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ],
+      "points": 750.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 148,
+      "n_correct": 98
+    },
+    {
+      "pid": "1608C",
+      "contest_id": 1608,
+      "index": "C",
+      "name": "1608_C. Game Master",
+      "rating": 1700,
+      "tags": [
+        "data structures",
+        "dfs and similar",
+        "dp",
+        "graphs",
+        "greedy",
+        "two pointers"
+      ],
+      "points": 1000.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 58,
+      "n_correct": 29
+    },
+    {
+      "pid": "1608D",
+      "contest_id": 1608,
+      "index": "D",
+      "name": "1608_D. Dominoes",
+      "rating": 2400,
+      "tags": [
+        "combinatorics",
+        "fft",
+        "graphs",
+        "math",
+        "number theory"
+      ],
+      "points": 1500.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 2,
+      "n_correct": 8
+    },
+    {
+      "pid": "1613A",
+      "contest_id": 1613,
+      "index": "A",
+      "name": "1613_A. Long Comparison",
+      "rating": 900,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 103,
+      "n_correct": 120
+    },
+    {
+      "pid": "1613B",
+      "contest_id": 1613,
+      "index": "B",
+      "name": "1613_B. Absent Remainder",
+      "rating": 1000,
+      "tags": [
+        "greedy",
+        "implementation",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 100,
+      "n_correct": 130
+    },
+    {
+      "pid": "1613C",
+      "contest_id": 1613,
+      "index": "C",
+      "name": "1613_C. Poisoned Dagger",
+      "rating": 1200,
+      "tags": [
+        "binary search"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 84,
+      "n_correct": 112
+    },
+    {
+      "pid": "1613D",
+      "contest_id": 1613,
+      "index": "D",
+      "name": "1613_D. MEX Sequences",
+      "rating": 1900,
+      "tags": [
+        "dp",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 74,
+      "n_correct": 30
+    },
+    {
+      "pid": "1613E",
+      "contest_id": 1613,
+      "index": "E",
+      "name": "1613_E. Crazy Robot",
+      "rating": 2000,
+      "tags": [
+        "dfs and similar",
+        "graphs"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 39,
+      "n_correct": 28
+    },
+    {
+      "pid": "1615A",
+      "contest_id": 1615,
+      "index": "A",
+      "name": "1615_A. Closing The Gap",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "points": 250.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 101,
+      "n_correct": 146
+    },
+    {
+      "pid": "1615B",
+      "contest_id": 1615,
+      "index": "B",
+      "name": "1615_B. And It's Non-Zero",
+      "rating": 1300,
+      "tags": [
+        "bitmasks",
+        "greedy",
+        "math"
+      ],
+      "points": 1000.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 64,
+      "n_correct": 35
+    },
+    {
+      "pid": "1615C",
+      "contest_id": 1615,
+      "index": "C",
+      "name": "1615_C. Menorah",
+      "rating": 1600,
+      "tags": [
+        "brute force",
+        "graphs",
+        "greedy",
+        "math"
+      ],
+      "points": 1750.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 61,
+      "n_correct": 70
+    },
+    {
+      "pid": "1615D",
+      "contest_id": 1615,
+      "index": "D",
+      "name": "1615_D. X(or)-mas Tree",
+      "rating": 2200,
+      "tags": [
+        "bitmasks",
+        "dfs and similar",
+        "dsu",
+        "graphs",
+        "trees"
+      ],
+      "points": 2250.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 5,
+      "n_correct": 7
+    },
+    {
+      "pid": "1615E",
+      "contest_id": 1615,
+      "index": "E",
+      "name": "1615_E. Purple Crayon",
+      "rating": 2400,
+      "tags": [
+        "data structures",
+        "dfs and similar",
+        "games",
+        "graphs",
+        "greedy",
+        "math",
+        "sortings",
+        "trees"
+      ],
+      "points": 2750.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 1,
+      "n_correct": 2
+    },
+    {
+      "pid": "1617A",
+      "contest_id": 1617,
+      "index": "A",
+      "name": "1617_A. Forbidden Subsequence",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "sortings",
+        "strings"
+      ],
+      "points": 750.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 99,
+      "n_correct": 108
+    },
+    {
+      "pid": "1617B",
+      "contest_id": 1617,
+      "index": "B",
+      "name": "1617_B. GCD Problem",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "points": 1000.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 98,
+      "n_correct": 112
+    },
+    {
+      "pid": "1617C",
+      "contest_id": 1617,
+      "index": "C",
+      "name": "1617_C. Paprika and Permutation",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "greedy",
+        "math",
+        "sortings"
+      ],
+      "points": 1500.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 101,
+      "n_correct": 100
+    },
+    {
+      "pid": "1618A",
+      "contest_id": 1618,
+      "index": "A",
+      "name": "1618_A. Polycarp and Sums of Subsequences",
+      "rating": 800,
+      "tags": [
+        "math",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 28,
+      "n_human": 99,
+      "n_correct": 163
+    },
+    {
+      "pid": "1618B",
+      "contest_id": 1618,
+      "index": "B",
+      "name": "1618_B. Missing Bigram",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 100,
+      "n_correct": 137
+    },
+    {
+      "pid": "1618C",
+      "contest_id": 1618,
+      "index": "C",
+      "name": "1618_C. Paint the Array",
+      "rating": 1100,
+      "tags": [
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 100,
+      "n_correct": 119
+    },
+    {
+      "pid": "1618D",
+      "contest_id": 1618,
+      "index": "D",
+      "name": "1618_D. Array and Operations",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "greedy",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 99,
+      "n_correct": 130
+    },
+    {
+      "pid": "1618E",
+      "contest_id": 1618,
+      "index": "E",
+      "name": "1618_E. Singers' Tour",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 122,
+      "n_correct": 91
+    },
+    {
+      "pid": "1618F",
+      "contest_id": 1618,
+      "index": "F",
+      "name": "1618_F. Reverse",
+      "rating": 2000,
+      "tags": [
+        "bitmasks",
+        "constructive algorithms",
+        "dfs and similar",
+        "implementation",
+        "math",
+        "strings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 239,
+      "n_correct": 81
+    },
+    {
+      "pid": "1619A",
+      "contest_id": 1619,
+      "index": "A",
+      "name": "1619_A. Square String?",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "strings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 99,
+      "n_correct": 151
+    },
+    {
+      "pid": "1619B",
+      "contest_id": 1619,
+      "index": "B",
+      "name": "1619_B. Squares and Cubes",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 100,
+      "n_correct": 132
+    },
+    {
+      "pid": "1619C",
+      "contest_id": 1619,
+      "index": "C",
+      "name": "1619_C. Wrong Addition",
+      "rating": 1200,
+      "tags": [
+        "implementation"
+      ],
+      "points": 0.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 99,
+      "n_correct": 107
+    },
+    {
+      "pid": "1619D",
+      "contest_id": 1619,
+      "index": "D",
+      "name": "1619_D. New Year's Problem",
+      "rating": 1800,
+      "tags": [
+        "binary search",
+        "greedy",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 24,
+      "n_correct": 72
+    },
+    {
+      "pid": "1619E",
+      "contest_id": 1619,
+      "index": "E",
+      "name": "1619_E. MEX and Increments",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "data structures",
+        "dp",
+        "greedy",
+        "implementation",
+        "math",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 42,
+      "n_correct": 76
+    },
+    {
+      "pid": "1619F",
+      "contest_id": 1619,
+      "index": "F",
+      "name": "1619_F. Let's Play the Hat?",
+      "rating": 2000,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 13,
+      "n_correct": 28
+    },
+    {
+      "pid": "1619G",
+      "contest_id": 1619,
+      "index": "G",
+      "name": "1619_G. Unusual Minesweeper",
+      "rating": 2000,
+      "tags": [
+        "binary search",
+        "dfs and similar",
+        "dsu",
+        "greedy",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 13,
+      "n_correct": 19
+    },
+    {
+      "pid": "1619H",
+      "contest_id": 1619,
+      "index": "H",
+      "name": "1619_H. Permutation and Queries",
+      "rating": 2400,
+      "tags": [
+        "brute force",
+        "data structures",
+        "divide and conquer",
+        "two pointers"
+      ],
+      "points": 0.0,
+      "time_limit_s": 4.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 6,
+      "n_correct": 5
+    },
+    {
+      "pid": "1620A",
+      "contest_id": 1620,
+      "index": "A",
+      "name": "1620_A. Equal or Not Equal",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "dsu",
+        "implementation"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 107,
+      "n_correct": 97
+    },
+    {
+      "pid": "1620B",
+      "contest_id": 1620,
+      "index": "B",
+      "name": "1620_B. Triangles on a Rectangle",
+      "rating": 1000,
+      "tags": [
+        "geometry",
+        "greedy",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 74,
+      "n_correct": 132
+    },
+    {
+      "pid": "1620C",
+      "contest_id": 1620,
+      "index": "C",
+      "name": "1620_C. BA-String",
+      "rating": 1800,
+      "tags": [
+        "brute force",
+        "dp",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 89,
+      "n_correct": 103
+    },
+    {
+      "pid": "1620D",
+      "contest_id": 1620,
+      "index": "D",
+      "name": "1620_D. Exact Change",
+      "rating": 2000,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "greedy"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 149,
+      "n_correct": 55
+    },
+    {
+      "pid": "1620E",
+      "contest_id": 1620,
+      "index": "E",
+      "name": "1620_E. Replace the Numbers",
+      "rating": 1900,
+      "tags": [
+        "constructive algorithms",
+        "data structures",
+        "dsu",
+        "implementation"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 27,
+      "n_correct": 53
+    },
+    {
+      "pid": "1622A",
+      "contest_id": 1622,
+      "index": "A",
+      "name": "1622_A. Construct a Rectangle",
+      "rating": 800,
+      "tags": [
+        "geometry",
+        "math"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 99,
+      "n_correct": 112
+    },
+    {
+      "pid": "1622B",
+      "contest_id": 1622,
+      "index": "B",
+      "name": "1622_B. Berland Music",
+      "rating": 1000,
+      "tags": [
+        "data structures",
+        "greedy",
+        "math",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 97,
+      "n_human": 85,
+      "n_correct": 139
+    },
+    {
+      "pid": "1622C",
+      "contest_id": 1622,
+      "index": "C",
+      "name": "1622_C. Set or Decrease",
+      "rating": 1600,
+      "tags": [
+        "binary search",
+        "brute force",
+        "greedy",
+        "sortings"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 179,
+      "n_correct": 94
+    },
+    {
+      "pid": "1622D",
+      "contest_id": 1622,
+      "index": "D",
+      "name": "1622_D. Shuffle",
+      "rating": 2000,
+      "tags": [
+        "combinatorics",
+        "math",
+        "two pointers"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 512.0,
+      "n_tests": 100,
+      "n_human": 41,
+      "n_correct": 31
+    },
+    {
+      "pid": "1622E",
+      "contest_id": 1622,
+      "index": "E",
+      "name": "1622_E. Math Test",
+      "rating": 2200,
+      "tags": [
+        "bitmasks",
+        "brute force",
+        "greedy"
+      ],
+      "points": 0.0,
+      "time_limit_s": 2.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 19,
+      "n_correct": 4
+    },
+    {
+      "pid": "1622F",
+      "contest_id": 1622,
+      "index": "F",
+      "name": "1622_F. Quadratic Set",
+      "rating": 2900,
+      "tags": [
+        "constructive algorithms",
+        "hashing",
+        "math",
+        "number theory"
+      ],
+      "points": 0.0,
+      "time_limit_s": 4.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 1,
+      "n_correct": 2
+    },
+    {
+      "pid": "1623A",
+      "contest_id": 1623,
+      "index": "A",
+      "name": "1623_A. Robot Cleaner",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ],
+      "points": 500.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 99,
+      "n_correct": 130
+    },
+    {
+      "pid": "1623B",
+      "contest_id": 1623,
+      "index": "B",
+      "name": "1623_B. Game on Ranges",
+      "rating": 1100,
+      "tags": [
+        "brute force",
+        "dfs and similar",
+        "implementation",
+        "sortings"
+      ],
+      "points": 1000.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 43,
+      "n_human": 58,
+      "n_correct": 110
+    },
+    {
+      "pid": "1623C",
+      "contest_id": 1623,
+      "index": "C",
+      "name": "1623_C. Balanced Stone Heaps",
+      "rating": 1600,
+      "tags": [
+        "binary search",
+        "greedy"
+      ],
+      "points": 1750.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 32,
+      "n_correct": 45
+    },
+    {
+      "pid": "1623E",
+      "contest_id": 1623,
+      "index": "E",
+      "name": "1623_E. Middle Duplication",
+      "rating": 2500,
+      "tags": [
+        "data structures",
+        "dfs and similar",
+        "greedy",
+        "strings",
+        "trees"
+      ],
+      "points": 2750.0,
+      "time_limit_s": 1.0,
+      "memory_limit_mb": 256.0,
+      "n_tests": 100,
+      "n_human": 3,
+      "n_correct": 2
+    }
+  ]
+}
