@@ -27,8 +27,6 @@ class RqAnalysis:
 
     def run(self, classifications_path, residual_path=None, turn0_path=None):
         df = self._load(classifications_path)
-        (self.results / "tables").mkdir(parents=True, exist_ok=True)
-        (self.results / "figures").mkdir(parents=True, exist_ok=True)
         rq1 = self.rq1(df)
         rq2 = self.rq2(df)
         self.figure_leaf_frequencies(rq1["per_leaf"])
@@ -38,6 +36,16 @@ class RqAnalysis:
                    "rq2_models": rq2["n_models"], "rq3": rq3}
         self._summary_md(summary, rq1)
         return summary
+
+    def _tables(self):
+        d = self.results / "tables"
+        d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    def _figures(self):
+        d = self.results / "figures"
+        d.mkdir(parents=True, exist_ok=True)
+        return d
 
     def _load(self, path):
         recs = [json.loads(l) for l in Path(path).read_text(encoding="utf-8").split("\n") if l]
@@ -72,7 +80,7 @@ class RqAnalysis:
         table = [[c[0] for c in per_leaf.values()], [c[1] for c in per_leaf.values()]]
         overall = chi2_or_fisher(table) if len(per_leaf) > 1 else {"test": "n/a"}
         overall["cramers_v"] = cramers_v(table) if len(per_leaf) > 1 else 0.0
-        pd.DataFrame(rows).to_csv(self.results / "tables" / "rq1_leaf_frequencies.csv", index=False)
+        pd.DataFrame(rows).to_csv(self._tables() / "rq1_leaf_frequencies.csv", index=False)
         return {"per_leaf": per_leaf, "rows": rows, "overall": overall,
                 "n_significant": sum(1 for r in rows if r.get("significant"))}
 
@@ -87,7 +95,7 @@ class RqAnalysis:
             res = self._clustered_logit(d)
             if res:
                 out.append({"leaf": leaf, **res})
-        pd.DataFrame(out).to_csv(self.results / "tables" / "rq2_adjusted_associations.csv", index=False)
+        pd.DataFrame(out).to_csv(self._tables() / "rq2_adjusted_associations.csv", index=False)
         return {"rows": out, "n_models": len(out)}
 
     def _clustered_logit(self, d):
@@ -114,7 +122,7 @@ class RqAnalysis:
         leaves = sorted(set(res) | set(t0))
         rows = [{"leaf": l, "turn0": t0.get(l, 0), "residual": res.get(l, 0),
                  "fixed": t0.get(l, 0) - res.get(l, 0)} for l in leaves]
-        pd.DataFrame(rows).to_csv(self.results / "tables" / "rq3_persistence.csv", index=False)
+        pd.DataFrame(rows).to_csv(self._tables() / "rq3_persistence.csv", index=False)
         return {"leaves": len(leaves), "turn0_total": sum(t0.values()), "residual_total": sum(res.values())}
 
     def _leaf_freq(self, path):
@@ -140,7 +148,7 @@ class RqAnalysis:
         ax.set_ylabel("submissions with leaf")
         ax.legend()
         fig.tight_layout()
-        fig.savefig(self.results / "figures" / "rq1_leaf_frequencies.pdf")
+        fig.savefig(self._figures() / "rq1_leaf_frequencies.pdf")
         plt.close(fig)
 
     def _summary_md(self, summary, rq1):
@@ -152,4 +160,4 @@ class RqAnalysis:
                  f"RQ2 clustered models fit: {summary['rq2_models']}", ""]
         if summary.get("rq3"):
             lines += [f"RQ3: {summary['rq3']}", ""]
-        (self.results / "SUMMARY.md").write_text("\n".join(lines), encoding="utf-8")
+        self.results.mkdir(parents=True, exist_ok=True) or (self.results / "SUMMARY.md").write_text("\n".join(lines), encoding="utf-8")
