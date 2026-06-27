@@ -23,6 +23,7 @@ from src.data.problem_set_builder import ProblemSetBuilder
 from src.analysis.rq_analysis import RqAnalysis
 from src.classify.classifier import Classifier
 from src.generation.ai_generator import AiGenerator
+from src.gold.gold_adjudicator import GoldAdjudicator
 from src.gold.gold_sampler import GoldSampler
 from src.judge.submission_judge import SubmissionJudge
 
@@ -42,6 +43,7 @@ def main():
     ba.add_argument("--dry-run", action="store_true")
     sub.add_parser("finalize-dataset")
     sub.add_parser("prepare-gold")
+    sub.add_parser("adjudicate-gold")
     cl = sub.add_parser("classify")
     cl.add_argument("--dataset", default="final", choices=["final", "gold"])
     cl.add_argument("--model", default=None)
@@ -85,6 +87,9 @@ def main():
     elif args.cmd == "prepare-gold":
         r = GoldSampler(config).run()
         print(json.dumps(r, indent=2))
+    elif args.cmd == "adjudicate-gold":
+        r = GoldAdjudicator(config).run()
+        print(json.dumps(r, indent=2, ensure_ascii=False))
     elif args.cmd == "classify":
         r = Classifier(config).run(dataset=args.dataset, model=args.model,
                                    limit=args.limit, dry_run=args.dry_run)
