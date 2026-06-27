@@ -43,3 +43,16 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   C++ 164/165, Python3 114/165 -> C++ is the larger arm (relevant to the Phase D primary-
   language review). The validation split (117 problems) is stashed in data/sensitivity/
   for the contamination probe only, never merged.
+
+## Phase A data layout revision (2026-06-27, user request)
+- Per-problem storage is JSONL-split: `tests.jsonl` (one `{kind,input,output}` per line,
+  kind in public/private/generated); `<lang>/correct.jsonl` and `<lang>/incorrect.jsonl`
+  (one `{idx, code}` per line) for lang in {cpp, python3}. Replaces the earlier single
+  JSON blobs so records are separable.
+- code_contests solutions carry ONLY `code` + `language` (anonymized): no userid, no
+  timestamp, no per-submission verdict/time/memory. `verdict`, `exec_time_ms`,
+  `peak_mem_kb` are produced by our sandbox judge and enriched into `incorrect.jsonl`
+  during Phase B (oracle self-test) / Phase C (human) / Phase D (AI). `tests.jsonl` keeps
+  `kind` because the public sample tests feed the generation prompt's example I/O.
+- problems/ (test split, post-2021-09-21) is the main study; sensitivity/ (validation
+  split, pre-cutoff) is the contamination probe only and is never merged.
