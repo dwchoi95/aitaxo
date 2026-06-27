@@ -56,3 +56,34 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   `kind` because the public sample tests feed the generation prompt's example I/O.
 - problems/ (test split, post-2021-09-21) is the main study; sensitivity/ (validation
   split, pre-cutoff) is the contamination probe only and is never merged.
+
+## Plan revision — Decision 1: single language C++ (2026-06-27, confirmed)
+- **Analysis language fixed to C++; Python3 dropped from the pipeline.** Rationale:
+  (a) the reused Wei et al. taxonomy has language-dependent leaves — GE4 integer
+  overflow/precision is C++-specific and essentially unreachable in Python3's
+  arbitrary-precision ints; GE5.1 compile errors and GE5.2 slow unsynchronized I/O
+  manifest differently per language — so a single C++ arm maximizes taxonomy fit and
+  removes language as a confound; (b) C++ is the competitive-programming standard;
+  (c) data volume: collected human non-AC = 17,670 C++ vs 7,273 Python3 (Java 8,463,
+  Python2 166), and C++ coverage is uniform across difficulty bins while Python3 is
+  sparse on hard/expert problems (expert: 13/51 problems, 92 submissions).
+- Plan edits: 2.2 -> C++ single FIXED; removed the Phase D language-review STOP (0.3 and
+  Phase D step 5); simplified Phase B/C/D to single-language; 2.4 gained a construct-
+  validity note + instruction to pin language-dependent leaves from the authors' repo
+  (github.com/minnanWei/LLMs-Competitive-Program-Generation); Phase H Threats now states
+  single-language control removes the language confound, with Python3 generalization as
+  future work; config.yaml languages=[cpp], primary_language=cpp.
+- Already-collected Python3/Java/Python2 human data is retained for the descriptive
+  language-distribution report only and never enters the analysis pipeline (not deleted).
+
+## Plan revision — Decision 2: final dataset composition rules (2026-06-27, confirmed)
+- Added Section 2.9 (authoritative) with the one-line definition
+  **Final dataset = {problems with (human C++ non-AC >=1) AND (AI C++ non-AC >=1)}**
+  and 8 rules: (1) problem start = test ∩ Codeforces ∩ post-2021-09-21; (2) human filter
+  = C++ non-AC after harness re-judge (unexpected AC dropped+counted); (3) AI gen = C++
+  gpt-3.5-turbo until 10 non-AC (cap k_max 15-20); (4) per-problem floor >=1 non-AC;
+  (5) primary analysis on the both-arm intersection, report intersection count + per-arm
+  totals; (6) symmetric ~10 cap with uniform random sampling (seed logged), no forced
+  1:1 count match; (7) sparse-category collapse to parent family (expected freq <5);
+  (8) appendix 1:1 matched sensitivity analysis. Rules are operationalized in Phase A
+  (1,2,4), end of Phase D (3,5,6), and Phase G (5,7,8).

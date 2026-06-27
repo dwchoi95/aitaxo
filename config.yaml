@@ -23,9 +23,9 @@ self_reflection:                        # FIXED
   n_iters: 5
   feedback: verdict_plus_one_failing_test
 
-languages:                              # collect both; primary chosen after Phase D (STOP)
-  collect: [cpp, python3]
-  primary: null                         # set after Phase D language review
+languages:                              # FIXED — C++ only (Section 2.2; no post-collection language step)
+  collect: [cpp]
+  primary: cpp
 
 human_arm:
   cap_per_problem: 10                   # non-FIXED (mirror AI ~10); see DECISIONS.md
