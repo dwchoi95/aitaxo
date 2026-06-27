@@ -53,13 +53,18 @@ class AiGenerator:
     def _one(self, pid, dry_run):
         zs = self._zero_shot(pid, dry_run)
         sr = self._self_reflection(pid, dry_run)
-        (self.out / "zero_shot" / f"{pid}.json").write_text(json.dumps(zs, ensure_ascii=False), encoding="utf-8")
-        (self.out / "self_reflection" / f"{pid}.json").write_text(json.dumps(sr, ensure_ascii=False), encoding="utf-8")
+        self._write_jsonl(self.out / "zero_shot" / f"{pid}.jsonl", pid, "ai_zero_shot", zs)
+        self._write_jsonl(self.out / "self_reflection" / f"{pid}.jsonl", pid, "ai_reflection", sr)
         non_ac = [s for s in zs if s["verdict"] not in ("AC", "NO_CODE")][:self.cap]
         return {"problem_id": pid, "zero_shot": zs, "kept_non_ac": len(non_ac),
                 "zs_ac": sum(1 for s in zs if s["verdict"] == "AC"),
                 "zs_no_code": sum(1 for s in zs if s["verdict"] == "NO_CODE"),
                 "sr_turns": len(sr), "sr_final": sr[-1]["verdict"] if sr else None}
+
+    def _write_jsonl(self, path, pid, arm, records):
+        with path.open("w", encoding="utf-8") as f:
+            for r in records:
+                f.write(json.dumps({"problem_id": pid, "arm": arm, **r}, ensure_ascii=False) + "\n")
 
     def _zero_shot(self, pid, dry_run):
         prompt = self._prompt(pid)

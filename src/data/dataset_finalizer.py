@@ -49,9 +49,9 @@ class DatasetFinalizer:
 
     def _ai_by_problem(self):
         out = {}
-        for f in sorted((self.art / "ai_submissions" / "zero_shot").glob("*.json")):
+        for f in sorted((self.art / "ai_submissions" / "zero_shot").glob("*.jsonl")):
             pid = f.stem
-            samples = json.loads(f.read_text(encoding="utf-8"))
+            samples = [json.loads(l) for l in f.read_text(encoding="utf-8").split("\n") if l]
             non_ac = [s for s in samples if s["verdict"] not in ("AC", "NO_CODE")][:self.cap]
             out[pid] = [self._ai_record(pid, s) for s in non_ac]
         return out
