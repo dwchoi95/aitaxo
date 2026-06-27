@@ -22,9 +22,11 @@ def test_parse_filters_to_known_leaves():
 
 def test_aggregate_majority_vote():
     j = _j()
-    samples = ([{"leaves": ["GE4.2"], "uncovered": False, "rationale": ""}] * 3 +
-               [{"leaves": ["AE3.2"], "uncovered": False, "rationale": ""}] * 2)
+    m = j.m
+    maj = m // 2 + 1                          # strict-majority count for any m
+    samples = ([{"leaves": ["GE4.2"], "uncovered": False, "rationale": ""}] * maj +
+               [{"leaves": ["AE3.2"], "uncovered": False, "rationale": ""}] * (m - maj))
     agg = j._aggregate(samples)
-    assert agg["leaves"] == ["GE4.2"]        # 3/5 >= ceil(5/2)=3; AE3.2 only 2/5
+    assert agg["leaves"] == ["GE4.2"]        # majority on GE4.2; AE3.2 below threshold
     assert agg["uncovered"] is False
     assert agg["needs_review"] is False

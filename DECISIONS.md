@@ -188,3 +188,10 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   (problem, submission, verdict, first failing test, messages, reference oracle), two annotator
   CSVs, gold_manifest.json (item→submission scoring key). `/human/items/` is gitignored
   (regenerable); README/CODEBOOK/CSVs/manifest are tracked. STOP for human labeling.
+
+## Phase F/E — self-consistency m dropped 5 -> 3 (2026-06-27)
+- gpt-5.5 reasoning judge calls run ~8.6 s each and the account rate-limits concurrency to
+  ~18 effective calls/min, making m=5 over the full 2800-submission Phase E set impractical
+  (~10^4 calls). The config pre-registered m=5 as the default "may drop to 3"; we drop to
+  **m=3** (majority = 2/3) for both judge selection and Phase E. Cached m=5 samples (nonce
+  0-2) are reused, so the switch wastes no prior spend.

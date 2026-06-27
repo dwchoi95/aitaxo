@@ -38,7 +38,7 @@ judge:                                  # selected empirically in Phase F (not c
     - gpt-5.5
     - claude-sonnet-4-6
   chosen: null                          # set after Phase F judge selection
-  m: 5                                  # self-consistency samples (FIXED default; may drop to 3)
+  m: 3                                  # self-consistency samples (dropped 5->3 for API-rate tractability; see DECISIONS.md)
   provenance_blind: true                # FIXED
   temperature: 0.4                      # non-FIXED; mild diversity for self-consistency; see DECISIONS.md
   max_tokens: 2048                      # non-FIXED; headroom for reasoning models before the JSON
