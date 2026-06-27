@@ -9,9 +9,19 @@ from src.judge.submission_judge import SubmissionJudge
 from src.taxonomy.taxonomy import TAXONOMY, VERDICT_CANDIDATES
 
 PROMPT = (
-    "You are labeling a bug in a competitive-programming submission using a FIXED taxonomy.\n"
-    "You may assign MULTIPLE leaves. Choose ONLY from the candidate set when possible.\n"
-    'Return STRICT JSON: {{"leaves":["GE1.2"], "rationale":"...", "uncovered":false}}\n\n'
+    "You are labeling the bug in a competitive-programming submission using a FIXED taxonomy.\n"
+    "Identify the PRIMARY bug: the single most-specific leaf that best explains the failure.\n"
+    "List a SECONDARY leaf ONLY if a clearly distinct, independent second bug is also present "
+    "— never a near-synonym or a downstream consequence of the primary bug. Secondary is "
+    "usually empty.\n"
+    'Return STRICT JSON: {{"primary":"GE4.2","secondary":[],"rationale":"..."}}\n\n'
+    "Disambiguation rules:\n"
+    "- GE1.2 (Misunderstanding Requirements): use ONLY when the code solves the WRONG problem "
+    "(misread the statement). Do NOT use it merely because the output is wrong.\n"
+    "- GE1.1 (Incorrect Algorithm): the right problem but a wrong method/formula.\n"
+    "- When the fault is in a specific algorithmic step (math, greedy, DP, divide & conquer, "
+    "recursion/memoization, graph search), prefer the specific AE* leaf over the generic GE1.1.\n"
+    "- If genuinely no leaf fits, set primary to \"UNCOVERED\".\n\n"
     "Problem: {description}\n"
     "Submission verdict: {verdict}\n"
     "First failing test: input={inp} expected={exp} actual={act}\n"
@@ -20,19 +30,21 @@ PROMPT = (
     "Candidate leaves (from verdict): {candidates}\n"
     "Taxonomy with one example per leaf:\n{rubric}\n"
 )
+UNCOVERED = "UNCOVERED"
 
 
 class TaxonomyJudge:
     # Phase E classification. Tier 1 narrows leaves by verdict; Tier 2 asks the (provenance-
-    # blind) judge model to assign taxonomy leaves, with self-consistency over m samples
-    # aggregated by majority vote. The arm (human/AI) is never put in the prompt.
+    # blind) judge model for a PRIMARY leaf plus optional SECONDARY leaves, with self-consistency
+    # over m samples. Primary/secondary separation curbs the over-prediction that flattened
+    # precision. The arm (human/AI) is never put in the prompt.
     def __init__(self, config):
         self.config = config
         self.client = LlmClient(config)
         self.exec = SubmissionJudge(config)
         self.m = config["judge"]["m"]
         self.temperature = config["judge"].get("temperature", 0.4)
-        self.max_tokens = config["judge"].get("max_tokens", 1024)
+        self.max_tokens = config["judge"].get("max_tokens", 2048)
         self.reasoning_effort = config["judge"].get("reasoning_effort")
         self.size_cap = config["prompt"]["size_cap_chars"]
         self.lang = config["languages"]["primary"]
@@ -43,22 +55,24 @@ class TaxonomyJudge:
     def tier1_candidates(verdict):
         return VERDICT_CANDIDATES.get(verdict, list(TAXONOMY))
 
-    def classify(self, submission, model, dry_run=False):
+    def classify(self, submission, model, dry_run=False, effort="inherit"):
         prompt = self._prompt(submission)
         if dry_run:
             return {"submission_id": submission["submission_id"], "model": model,
                     "prompt_chars": len(prompt), "dry_run": True}
+        eff = self.reasoning_effort if effort == "inherit" else effort
         samples = []
         for i in range(self.m):
             r = self.client.complete(model, [{"role": "user", "content": prompt}],
                                      temperature=self.temperature, max_tokens=self.max_tokens,
-                                     n=1, nonce=i, reasoning_effort=self.reasoning_effort)
+                                     n=1, nonce=i, reasoning_effort=eff)
             samples.append(self._parse(r["texts"][0]))
         agg = self._aggregate(samples)
         return {"submission_id": submission["submission_id"], "problem_id": submission["problem_id"],
                 "arm": submission.get("arm"), "verdict": submission["verdict"], "model": model,
-                "leaves": agg["leaves"], "uncovered": agg["uncovered"],
-                "needs_review": agg["needs_review"], "per_sample": [s["leaves"] for s in samples],
+                "primary": agg["primary"], "secondary": agg["secondary"], "leaves": agg["leaves"],
+                "uncovered": agg["uncovered"], "needs_review": agg["needs_review"],
+                "per_sample": [{"primary": s["primary"], "secondary": s["secondary"]} for s in samples],
                 "rationale": next((s["rationale"] for s in samples if s["rationale"]), "")}
 
     def _prompt(self, submission):
@@ -77,25 +91,38 @@ class TaxonomyJudge:
             rubric=self.rubric)
 
     def _parse(self, text):
-        leaves, rationale, uncovered = [], "", False
+        primary, secondary, rationale, uncovered = None, [], "", False
         m = re.search(r"\{.*\}", text, re.DOTALL)
         if m:
             try:
                 obj = json.loads(m.group(0))
-                leaves = [c for c in obj.get("leaves", []) if c in TAXONOMY]
+                p = obj.get("primary")
+                if isinstance(p, str) and p in TAXONOMY:
+                    primary = p
+                elif isinstance(p, str) and p.strip().upper() == UNCOVERED:
+                    uncovered = True
+                secondary = [c for c in (obj.get("secondary") or [])
+                             if c in TAXONOMY and c != primary]
                 rationale = str(obj.get("rationale", ""))[:500]
-                uncovered = bool(obj.get("uncovered", False))
+                uncovered = uncovered or bool(obj.get("uncovered", False))
             except (ValueError, TypeError):
                 pass
-        return {"leaves": leaves, "rationale": rationale, "uncovered": uncovered}
+        return {"primary": primary, "secondary": secondary, "uncovered": uncovered, "rationale": rationale}
 
     def _aggregate(self, samples):
         thresh = math.ceil(self.m / 2)
-        counts = Counter(leaf for s in samples for leaf in set(s["leaves"]))
-        leaves = sorted(c for c, k in counts.items() if k >= thresh)
+        primaries = [s["primary"] for s in samples if s["primary"]]
+        primary = Counter(primaries).most_common(1)[0][0] if primaries else None
+        sets = [({s["primary"]} if s["primary"] else set()) | set(s["secondary"]) for s in samples]
+        counts = Counter(leaf for st in sets for leaf in st)
+        full = {leaf for leaf, c in counts.items() if c >= thresh}
+        if primary:
+            full.add(primary)
+        secondary = sorted(full - ({primary} if primary else set()))
+        leaves = ([primary] if primary else []) + secondary
         uncovered = sum(1 for s in samples if s["uncovered"]) >= thresh
-        needs_review = not leaves and not uncovered
-        return {"leaves": leaves, "uncovered": uncovered, "needs_review": needs_review}
+        return {"primary": primary, "secondary": secondary, "leaves": leaves,
+                "uncovered": uncovered, "needs_review": not leaves and not uncovered}
 
     def _rubric(self):
         return "\n".join(f"{c} {v[0]}: {v[1]}" for c, v in TAXONOMY.items())

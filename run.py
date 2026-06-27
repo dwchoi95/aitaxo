@@ -22,6 +22,7 @@ from src.data.human_corpus_builder import HumanCorpusBuilder
 from src.data.problem_set_builder import ProblemSetBuilder
 from src.analysis.rq_analysis import RqAnalysis
 from src.classify.classifier import Classifier
+from src.classify.judge_ablation import JudgeAblation
 from src.classify.judge_selector import JudgeSelector
 from src.generation.ai_generator import AiGenerator
 from src.gold.gold_adjudicator import GoldAdjudicator
@@ -50,6 +51,9 @@ def main():
     sj = sub.add_parser("select-judge")
     sj.add_argument("--limit", type=int, default=None)
     sj.add_argument("--dry-run", action="store_true")
+    ab = sub.add_parser("ablate-judge")
+    ab.add_argument("--limit", type=int, default=None)
+    ab.add_argument("--efforts", default="low,medium")
     cl = sub.add_parser("classify")
     cl.add_argument("--dataset", default="final", choices=["final", "gold"])
     cl.add_argument("--model", default=None)
@@ -101,6 +105,9 @@ def main():
         print(json.dumps(r, indent=2, ensure_ascii=False))
     elif args.cmd == "select-judge":
         r = JudgeSelector(config).run(limit=args.limit, dry_run=args.dry_run)
+        print(json.dumps(r, indent=2, ensure_ascii=False))
+    elif args.cmd == "ablate-judge":
+        r = JudgeAblation(config).run(efforts=tuple(args.efforts.split(",")), limit=args.limit)
         print(json.dumps(r, indent=2, ensure_ascii=False))
     elif args.cmd == "classify":
         r = Classifier(config).run(dataset=args.dataset, model=args.model,
