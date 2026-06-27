@@ -208,3 +208,23 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   Phase E labels are noisy; the provenance-blind judge applies the SAME noise to both arms, so
   the between-arm comparison (RQ1/RQ2) remains estimable if the noise is symmetric, but absolute
   per-leaf frequencies are uncertain. Family-level analysis is the more reliable granularity.
+
+## Phase F — judge prompt v2 ablation (2026-06-28)
+- Diagnosis: the baseline judge over-predicted (avg 1.58 leaves vs gold 1.04), tanking
+  precision (0.37); 116/346 items had gold-correct + spurious extras (mostly GE1.2 as a
+  catch-all). Fixed with a primary/secondary schema + disambiguation rules.
+- Validated on gold (gpt-5.5, m=3, revised+low vs baseline):
+  - avg leaves 1.58 -> 0.98 (over-prediction removed)
+  - exact-match 0.225 -> 0.431 (doubled); precision 0.372 -> 0.463; recall 0.564 -> 0.436;
+    F1 0.449 -> 0.449. Family-level revised F1 0.556, exact 0.535.
+  - Recall drop is genuine wrong-single-leaf disagreement (gold is 96% single-leaf; 176
+    wrong-single vs 14 multi-undercovered), i.e. irreducible taxonomy ambiguity, not over-
+    suppression.
+- Systematic confusion (provenance-blind, so equal across arms -> arm comparison stays valid;
+  absolute frequencies skew): GE1.1->AE1.1 (15, judge over-applies "prefer AE* over GE1.1"),
+  GE1.1<->GE1.2 (11/8), GE4.1->GE4.2 (8), GE5.1->GE1.1 (6).
+- Full 4-cell ablation (baseline / revised x {low,medium} x {gpt-5.5,claude}) was abandoned:
+  severe API rate limits (~12-20 calls/min) made 4152 calls a ~5h job (1/4 conditions done in
+  3.5h). claude trailed gpt-5.5 on the baseline (F1 0.359 < 0.449). gpt-5.5 medium untested.
+- Open decision (with user): (a) Phase E with gpt-5.5 revised+low + family-level primary;
+  (b) one more prompt tweak to soften the AE*-over-GE1.1 rule; (c) test gpt-5.5 medium first.
