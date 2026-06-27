@@ -38,6 +38,10 @@ htmlcov/
 # ---- Manuscript: excluded from the public artifact repo ----
 /paper/
 
+# ---- Gold annotation: per-item detail files are regenerable from final.jsonl + seed ----
+# (README, CODEBOOK, manifest, and the filled annotator CSVs ARE tracked)
+/human/items/
+
 # ---- LaTeX build by-products (in case paper/ is ever tracked elsewhere) ----
 *.aux
 *.bbl

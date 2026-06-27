@@ -53,6 +53,8 @@ gold:                                   # Cochran proportion sizing
   confidence: 0.95
   margin: 0.05
   p: 0.5
+  min_per_cell: 5                       # floor per arm x verdict stratum so rare cells are represented
+  seed: 20260627                        # FIXED for reproducible gold sampling
 
 stats:                                  # FIXED at method level
   alpha: 0.05

@@ -16,9 +16,10 @@ def test_difficulty_bin():
 
 def test_algo_families_maps_cf_tags():
     b = _b()
-    assert b._algo_families(["dp", "greedy", "implementation"]) == ["AE2", "AE5"]
-    assert b._algo_families(["graphs", "dfs and similar"]) == ["AE3"]
+    assert b._algo_families(["dp", "greedy", "implementation"]) == ["AE2", "AE3"]
+    assert b._algo_families(["graphs", "dfs and similar"]) == ["AE6"]
     assert b._algo_families([]) == []
+    assert b._algo_families(None) == []
 
 
 def test_solutions_filtered_by_language():

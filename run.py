@@ -21,6 +21,7 @@ from src.data.dataset_finalizer import DatasetFinalizer
 from src.data.human_corpus_builder import HumanCorpusBuilder
 from src.data.problem_set_builder import ProblemSetBuilder
 from src.generation.ai_generator import AiGenerator
+from src.gold.gold_sampler import GoldSampler
 from src.judge.submission_judge import SubmissionJudge
 
 
@@ -38,6 +39,7 @@ def main():
     ba.add_argument("--limit", type=int, default=None)
     ba.add_argument("--dry-run", action="store_true")
     sub.add_parser("finalize-dataset")
+    sub.add_parser("prepare-gold")
     # one add_parser(...) per step is added as each phase's step class is implemented
     args = parser.parse_args()
     config = Config("config.yaml")
@@ -69,6 +71,9 @@ def main():
     elif args.cmd == "finalize-dataset":
         r = DatasetFinalizer(config).run()
         print(json.dumps({k: v for k, v in r.items() if k != "intersection_pids"}, indent=2))
+    elif args.cmd == "prepare-gold":
+        r = GoldSampler(config).run()
+        print(json.dumps(r, indent=2))
 
 
 if __name__ == "__main__":

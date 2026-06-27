@@ -1,0 +1,145 @@
+# Wei et al. (2025) bug taxonomy, pinned from the authors' repository
+# github.com/minnanWei/LLMs-Competitive-Program-Generation (README Tables 1-2).
+# Codes, family names, and leaf names are verbatim from that source. The one-line operational
+# definitions and examples are this study's codebook authoring (the source gives names only),
+# used to make the leaves annotatable; see DECISIONS.md.
+
+FAMILIES = {
+    "GE1": "Algorithm Understanding",
+    "GE2": "Syntax / Language-Specific",
+    "GE3": "Input/Output Handling",
+    "GE4": "Edge Cases & Indexing",
+    "GE5": "Control Logic",
+    "GE6": "Data Type Selection",
+    "AE1": "Mathematical Reasoning",
+    "AE2": "Greedy Algorithms",
+    "AE3": "Dynamic Programming",
+    "AE4": "Divide & Conquer",
+    "AE5": "Recursion / Memoization",
+    "AE6": "Graph Traversal / Search",
+}
+
+# leaf -> (name, operational definition, example, language_dependent)
+TAXONOMY = {
+    "GE1.1": ("Incorrect Algorithm",
+              "The chosen approach is fundamentally wrong for the problem.",
+              "Uses a greedy scan where the problem provably needs DP, wrong on non-trivial cases.", False),
+    "GE1.2": ("Misunderstanding Problem Requirements",
+              "Misreads what the problem asks for.",
+              "Outputs the maximum when the minimum is requested.", False),
+    "GE1.3": ("Overly Complex or Inefficient Design",
+              "Approach is logically correct but too slow/complex for the constraints.",
+              "O(n^2) loop with n=1e6 where O(n log n) is required, causing TLE.", False),
+    "GE2.1": ("Compilation Errors",
+              "The code fails to compile.",
+              "Undeclared identifier, missing semicolon, or a type the compiler rejects.", True),
+    "GE2.2": ("Language-specific Syntax Misuse",
+              "Misuse of a language construct that compiles but violates its rules or intent.",
+              "Misusing an STL container API, or relying on unspecified evaluation order.", True),
+    "GE3.1": ("Incorrect Input Format Handling",
+              "Parses the input incorrectly.",
+              "Reads one integer per line when the input is space-separated on one line.", False),
+    "GE3.2": ("Output Format Mismatches",
+              "Output shape/format does not match the expected one.",
+              "Missing newline/space, wrong float precision, or extra/missing tokens.", False),
+    "GE4.1": ("Incorrect Edge Case/Boundary Handling",
+              "Fails on extreme, empty, or boundary inputs.",
+              "Does not handle n=0 or a single-element array.", False),
+    "GE4.2": ("Off-by-one Errors in Loops/Indexing",
+              "Loop bounds or indices are off by one.",
+              "`for(i=0;i<=n;i++)` indexing an n-length array out of bounds.", False),
+    "GE5.1": ("Faulty Condition Expressions",
+              "A branch condition is wrong.",
+              "`if(a<b)` where `a<=b` was intended.", False),
+    "GE5.2": ("Incorrect Logical Operators/Precedence",
+              "Wrong boolean operator or operator precedence.",
+              "`a && b || c` grouped differently than intended.", False),
+    "GE6.1": ("Overflow or Precision Loss Due to Improper Data Type Selection",
+              "Numeric overflow or floating precision loss from the wrong type.",
+              "Summing 1e5 values up to 1e9 in 32-bit int overflows (C++-specific; Python3 has bigints).", True),
+    "GE6.2": ("Implicit Type Conversions Causing Unexpected Behavior",
+              "A silent type conversion changes the result.",
+              "int/int truncates before assignment to a double.", True),
+    "AE1.1": ("Misuse/Derivation Error of Mathematical Formulas",
+              "A formula or its derivation is wrong.",
+              "Incorrect combinatorial identity or wrong modular inverse.", False),
+    "AE1.2": ("Special Mathematical Structures Handling Errors",
+              "Mishandles a special mathematical structure.",
+              "Wrong handling of gcd/primes or matrix exponentiation boundary.", False),
+    "AE2.1": ("Incorrect Local Decision-making",
+              "The greedy choice itself is wrong.",
+              "Picks the largest item when smallest-first is optimal.", False),
+    "AE2.2": ("Lack of Proof for Greedy Choice Correctness",
+              "A greedy that is not globally optimal.",
+              "Passes samples but fails where an exchange argument breaks.", False),
+    "AE3.1": ("Incorrect State Definition",
+              "The DP state does not capture the information needed.",
+              "Omits a dimension required to distinguish subproblems.", False),
+    "AE3.2": ("Errors in State Transition Logic",
+              "The recurrence/transition is wrong.",
+              "Transition misses a case or double-counts.", False),
+    "AE3.3": ("Improper Base State Initialization",
+              "DP base values are wrong.",
+              "dp[0]=0 where -infinity is required.", False),
+    "AE4.1": ("Incorrect Base Cases (D&C)",
+              "The divide-and-conquer base case is wrong.",
+              "Returns the wrong value for a size-1 segment.", False),
+    "AE4.2": ("Faulty Subproblem Merging (D&C)",
+              "The combine step is wrong.",
+              "Merge step in merge-sort/segment combine drops elements.", False),
+    "AE4.3": ("Missing/Incorrect Recursive Calls (D&C)",
+              "Wrong split or missing recursive call.",
+              "Recurses on incorrect half boundaries.", False),
+    "AE5.1": ("Incorrect Base Cases (Recursion)",
+              "The recursion base case is wrong.",
+              "Missing or wrong terminating value.", False),
+    "AE5.2": ("Faulty Subproblem Merging (Recursion)",
+              "Recursive results are combined incorrectly.",
+              "Adds instead of taking the max over recursive results.", False),
+    "AE5.3": ("Missing Recursive Calls/Incorrect Depth",
+              "Under/over-recursion or wrong recursion depth.",
+              "Forgets one branch, or unbounded recursion overflowing the stack.", False),
+    "AE5.4": ("Overlapping Subproblems Not Identified",
+              "No memoization where overlapping subproblems recur.",
+              "Naive recursion recomputes and times out for lack of caching.", False),
+    "AE6.1": ("Incomplete State Space Traversal",
+              "Misses reachable states/nodes.",
+              "Forgets to enqueue some neighbors in BFS.", False),
+    "AE6.2": ("Over-pruning or Missing Transitions",
+              "Prunes valid paths or omits edges/transitions.",
+              "Marks nodes visited too early and skips valid paths.", False),
+    "AE6.3": ("Incorrect BFS/DFS/Heuristic Use",
+              "Uses the wrong traversal/heuristic.",
+              "Plain BFS for a weighted shortest path instead of Dijkstra.", False),
+    "AE6.4": ("Infinite Loops or Cycles in Graph Traversal",
+              "Does not handle cycles, looping forever.",
+              "No visited set on a cyclic graph causes an infinite loop.", False),
+}
+
+LANGUAGE_DEPENDENT_LEAVES = [c for c, v in TAXONOMY.items() if v[3]]  # GE2.1, GE2.2, GE6.1, GE6.2
+
+# Tier-1: verdict -> candidate leaves the judge should prefer (guidance, not a hard restriction)
+VERDICT_CANDIDATES = {
+    "CE": ["GE2.1", "GE2.2"],
+    "RE": ["GE4.1", "GE4.2", "GE6.1", "GE6.2", "AE5.3", "AE6.4", "GE2.2"],
+    "TLE": ["GE1.3", "AE5.4", "AE6.4", "AE6.1"],
+    "WA": [c for c in TAXONOMY if c != "GE2.1"],
+}
+
+# Problem algorithm-family covariate for RQ2 stratification: cf_tag -> AE family (aligned to the
+# pinned AE taxonomy). Tags with no clear family (implementation, strings, sortings, data
+# structures, ...) are left unmapped and fall into an "other" stratum.
+TAG_TO_FAMILY = {
+    "math": "AE1", "number theory": "AE1", "combinatorics": "AE1", "probabilities": "AE1",
+    "geometry": "AE1", "matrices": "AE1", "fft": "AE1",
+    "greedy": "AE2",
+    "dp": "AE3",
+    "divide and conquer": "AE4",
+    "graphs": "AE6", "dfs and similar": "AE6", "trees": "AE6", "shortest paths": "AE6",
+    "dsu": "AE6", "flows": "AE6", "graph matchings": "AE6", "2-sat": "AE6",
+}
+
+
+def families_for_tags(tags):
+    fams = sorted({TAG_TO_FAMILY[t] for t in (tags or []) if t in TAG_TO_FAMILY})
+    return fams

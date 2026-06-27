@@ -6,6 +6,7 @@ import pandas as pd
 from huggingface_hub import HfApi, hf_hub_download
 
 from src.common.paths import Paths
+from src.taxonomy.taxonomy import families_for_tags
 
 
 class ProblemSetBuilder:
@@ -16,18 +17,6 @@ class ProblemSetBuilder:
             "solutions", "incorrect_solutions", "source", "difficulty",
             "cf_contest_id", "cf_index", "cf_rating", "cf_tags", "cf_points",
             "time_limit", "memory_limit_bytes"]
-    # cf_tags -> Wei et al. Algorithm-specific Error families
-    TAG_TO_FAMILY = {
-        "math": "AE1", "number theory": "AE1", "combinatorics": "AE1", "probabilities": "AE1",
-        "geometry": "AE1", "matrices": "AE1", "fft": "AE1",
-        "greedy": "AE2",
-        "graphs": "AE3", "dfs and similar": "AE3", "trees": "AE3", "shortest paths": "AE3",
-        "dsu": "AE3", "flows": "AE3", "graph matchings": "AE3", "2-sat": "AE3",
-        "divide and conquer": "AE4",
-        "dp": "AE5",
-        "brute force": "AE6", "binary search": "AE6", "two pointers": "AE6",
-        "meet-in-the-middle": "AE6", "ternary search": "AE6",
-    }
 
     def __init__(self, config):
         self.config = config
@@ -111,9 +100,7 @@ class ProblemSetBuilder:
         return self.bins["labels"][-1]
 
     def _algo_families(self, tags):
-        if tags is None:
-            return []
-        return sorted({self.TAG_TO_FAMILY[t] for t in tags if t in self.TAG_TO_FAMILY})
+        return families_for_tags(tags)
 
     def _write_jsonl(self, path, records):
         with open(path, "w", encoding="utf-8") as f:

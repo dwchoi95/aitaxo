@@ -147,3 +147,44 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
 - **Final dataset (Section 2.9 rule 5) = both-arm intersection = 142 problems**
   (human-only 0, ai-only 2). human non-AC 1397, AI non-AC 1403 (~balanced arms, 2800 total).
   artifacts/dataset/{final.jsonl,summary.json}.
+
+## Phase F prep — taxonomy pinned from authors' repo (2026-06-27)
+- Wei et al. taxonomy pinned from github.com/minnanWei/LLMs-Competitive-Program-Generation
+  (README Tables 1-2) into `src/taxonomy/taxonomy.py` (single source for codebook + judge):
+  **6 GE families / 13 leaves, 6 AE families / 18 leaves = 31 leaves.** Codes + family/leaf
+  names are verbatim; one-line operational definitions + one example per leaf are this study's
+  codebook authoring (the source provides names only) and are marked as such.
+- **Language-dependent leaves (per the source) = GE2.1, GE2.2 (compilation / language-specific
+  syntax), GE6.1, GE6.2 (overflow / implicit type conversion).** These directly justify the
+  single-C++ design: GE6.1 integer overflow is reachable in C++ but not Python3 (arbitrary
+  precision), and GE2.1 compile errors are C++-specific. Recorded for the construct-validity
+  note (Section 2.4) and Threats.
+- **Corrected the placeholder `TAG_TO_FAMILY`:** the earlier mapping mislabeled AE codes
+  (had AE3=graphs, AE5=dp, AE6=brute force). Pinned meanings are AE1 Math, AE2 Greedy,
+  **AE3 Dynamic Programming**, AE4 Divide&Conquer, AE5 Recursion/Memoization, **AE6 Graph
+  Traversal/Search**. Mapping moved to the taxonomy module; `meta.json` algo_families
+  recomputed from raw cf_tags (99/165 changed). **meta.json is the authoritative source for
+  problem covariates** (difficulty_bin, algo_families, cf_tags); Phase G joins submissions to
+  meta by problem_id rather than trusting baked corpus copies.
+
+## Record for paper (2026-06-27, per user)
+- **Unexpected-AC = 19.5%** of judged human incorrect_solutions pass our test subset ->
+  evidence that CodeContests public/sample tests are weaker than the original Codeforces hidden
+  suite, which **justifies harness re-judging** (we keep only harness-confirmed non-AC). Stage
+  as a Threats sentence.
+- **AI zero-shot pass rate = 3.8%** on post-2021-09-21 leakage-free Codeforces problems ->
+  evidence the **contamination control is working** (a memorizing model would score far higher);
+  use in Results/Threats.
+- **Human non-AC count 1,397 is AFTER the <=10/problem cap** (137 problems at the cap of 10,
+  5 below; max per problem = 10). AI non-AC 1,403 is likewise post-cap. Arms are ~balanced.
+
+## Phase F — gold sampling (2026-06-27)
+- Cochran proportion sizing on the final dataset (N=2800): n0=384.2 (z=1.96, p=0.5, e=0.05),
+  after finite-population correction target=338; with a per-stratum floor of 5 the realized
+  sample is **346 items**, stratified by **arm × verdict** (8 cells, all represented; WA
+  dominates: human 158, AI 151; CE/RE/TLE at the floor except AI-CE=12). gold seed 20260627.
+- Packet emitted to `human/` (provenance-blind, verified no arm leakage in item files):
+  README.md, CODEBOOK.md (31 leaves + examples, lang-dependent marked), items/g0001..g0346.md
+  (problem, submission, verdict, first failing test, messages, reference oracle), two annotator
+  CSVs, gold_manifest.json (item→submission scoring key). `/human/items/` is gitignored
+  (regenerable); README/CODEBOOK/CSVs/manifest are tracked. STOP for human labeling.
