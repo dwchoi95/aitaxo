@@ -28,7 +28,8 @@ class SandboxRunner:
         # code relies on (assert via <bits/stdc++.h>); -std=gnu++17 enables the GNU extensions
         # competitive solutions assume.
         r = subprocess.run([self.compiler, "-O2", f"-std={self.std}", "-include", "cassert",
-                            "-o", str(binp), str(src)], capture_output=True, text=True, timeout=60)
+                            "-o", str(binp), str(src)], capture_output=True, text=True,
+                           errors="replace", timeout=60)
         return r.returncode == 0, r.stderr, binp
 
     def _strip_x86_pragmas(self, source):
@@ -39,8 +40,10 @@ class SandboxRunner:
     def run(self, cmd, stdin_text, time_limit, mem_mb, workdir):
         wrapped = ["/usr/bin/sandbox-exec", "-p", self._profile(workdir)] + cmd
         t0 = time.time()
+        # errors="replace": buggy submissions can emit non-UTF-8 bytes on stdout/stderr;
+        # decode leniently instead of crashing the judge
         p = subprocess.Popen(wrapped, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, text=True, cwd=str(workdir),
+                             stderr=subprocess.PIPE, text=True, errors="replace", cwd=str(workdir),
                              preexec_fn=self._limits(time_limit), start_new_session=True)
         try:
             out, err = p.communicate(input=stdin_text, timeout=time_limit + self.margin)
