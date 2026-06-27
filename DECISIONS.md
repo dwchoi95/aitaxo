@@ -195,3 +195,16 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   (~10^4 calls). The config pre-registered m=5 as the default "may drop to 3"; we drop to
   **m=3** (majority = 2/3) for both judge selection and Phase E. Cached m=5 samples (nonce
   0-2) are reused, so the switch wastes no prior spend.
+
+## Phase F — judge selection result + RQ4 (2026-06-28)
+- Ran both slate judges over the 346 gold items (provenance-blind, m=3), scored vs gold:
+  - gpt-5.5: micro-F1 0.449, mean Jaccard 0.396, exact-set 0.225 (leaf); F1 0.566 (family).
+  - claude-sonnet-4-6: micro-F1 0.359, Jaccard 0.293, exact-set 0.188 (leaf); F1 0.514 (family).
+  - **Chosen judge = gpt-5.5** (config judge.chosen).
+- **RQ4 reliability finding (important):** the LLM judge agrees with the human gold far less
+  than the two human annotators agree with each other (gold inter-annotator macro-kappa 0.62,
+  exact-set 0.71). At leaf level F1~0.45 / exact 0.23; at family level F1~0.57 / exact 0.35.
+  Fine-grained 31-leaf competitive-bug classification is hard for the LLM judge. Implication:
+  Phase E labels are noisy; the provenance-blind judge applies the SAME noise to both arms, so
+  the between-arm comparison (RQ1/RQ2) remains estimable if the noise is symmetric, but absolute
+  per-leaf frequencies are uncertain. Family-level analysis is the more reliable granularity.

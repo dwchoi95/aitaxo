@@ -37,7 +37,7 @@ judge:                                  # selected empirically in Phase F (not c
   slate:
     - gpt-5.5
     - claude-sonnet-4-6
-  chosen: null                          # set after Phase F judge selection
+  chosen: gpt-5.5                       # selected in Phase F: micro-F1 0.449 vs claude 0.359 (vs gold)
   m: 3                                  # self-consistency samples (dropped 5->3 for API-rate tractability; see DECISIONS.md)
   provenance_blind: true                # FIXED
   temperature: 0.4                      # non-FIXED; mild diversity for self-consistency; see DECISIONS.md
