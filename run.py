@@ -17,6 +17,7 @@ def _load_env():
             os.environ.setdefault(k.strip(), v.strip())
 
 from src.common.config import Config
+from src.data.dataset_finalizer import DatasetFinalizer
 from src.data.human_corpus_builder import HumanCorpusBuilder
 from src.data.problem_set_builder import ProblemSetBuilder
 from src.generation.ai_generator import AiGenerator
@@ -36,6 +37,7 @@ def main():
     ba = sub.add_parser("build-ai")
     ba.add_argument("--limit", type=int, default=None)
     ba.add_argument("--dry-run", action="store_true")
+    sub.add_parser("finalize-dataset")
     # one add_parser(...) per step is added as each phase's step class is implemented
     args = parser.parse_args()
     config = Config("config.yaml")
@@ -64,6 +66,9 @@ def main():
         print(json.dumps({k: r[k] for k in ("problems", "zero_shot_samples", "zero_shot_ac",
                           "zero_shot_no_code", "kept_non_ac_total", "problems_with_ge1_non_ac",
                           "self_reflection_solved")}, indent=2))
+    elif args.cmd == "finalize-dataset":
+        r = DatasetFinalizer(config).run()
+        print(json.dumps({k: v for k, v in r.items() if k != "intersection_pids"}, indent=2))
 
 
 if __name__ == "__main__":
