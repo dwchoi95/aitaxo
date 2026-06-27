@@ -87,3 +87,29 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   1:1 count match; (7) sparse-category collapse to parent family (expected freq <5);
   (8) appendix 1:1 matched sensitivity analysis. Rules are operationalized in Phase A
   (1,2,4), end of Phase D (3,5,6), and Phase G (5,7,8).
+
+## Phase B — judge harness (2026-06-27)
+- **Sandbox:** Docker unavailable on host -> hardened subprocess (sandbox-exec network/FS
+  isolation + rlimits + process-group teardown + non-root). Full rationale + limits in
+  ASSUMPTIONS.md.
+- **C++ compiler = GNU g++-16** (Homebrew), not Apple clang: clang lacks `<bits/stdc++.h>`
+  and GCC extensions competitive C++ relies on (clang -> 100% oracle CE). Flags
+  `-O2 -std=gnu++17 -include cassert`. `-include cassert` is needed because GCC 16 trimmed
+  transitive includes that 2021-era code assumed; `gnu++17` enables GNU extensions. An
+  era-faithful older GCC (g++-11) is **unusable on this macOS** (links against an SDK whose
+  `assert.h` it cannot find). x86 SIMD `#pragma GCC target(...)` lines are stripped (invalid
+  on Apple ARM; pure optimization hints, no semantic effect).
+- **rlimits:** CPU time + output file size enforced; **RLIMIT_STACK raised to the hard cap
+  (~64MB)** for deep competitive recursion (verified: recursion depth 1e6 runs clean, so no
+  systemic false-RE); **RLIMIT_AS deliberately NOT set** (on macOS it falsely kills normal
+  processes rather than capping real memory).
+- **Output comparison:** whitespace-token, **case-insensitive** (Codeforces YES/No
+  convention), numeric tokens at **1e-4 relative/absolute tolerance** (stored float answers
+  are approximations; 1e-6 rejected valid oracles). Recorded as the harness comparison rule.
+- **Judgeable subset (gate):** a problem is judgeable iff its known-correct oracle judges AC
+  under the harness. Result: **144/165 judgeable, oracle-AC = 100% on judgeable**; 21 excluded
+  — 19 special-judge/interactive (verified: multiple oracle solutions of the same problem
+  produce mutually different valid outputs, so static output comparison is invalid), 1
+  runtime-incompatible (1580F: ARM/UB segfault unrelated to stack), 1 compiler-incompatible
+  (1608G). Excluded set persisted to `artifacts/judgeable_problems.json`; Phases C/D operate
+  only on the 144 judgeable problems. This is the standard special-judge/interactive exclusion.

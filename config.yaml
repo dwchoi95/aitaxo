@@ -59,6 +59,8 @@ prompt:
   size_cap_chars: 6000                  # head+tail truncation for description/tests; non-FIXED
 
 execution:
+  cpp_compiler: /opt/homebrew/bin/g++-16  # GNU GCC (not Apple clang) for faithful competitive C++ (bits/stdc++.h, GCC extensions)
+  cpp_std: gnu++17                        # GNU extensions competitive code assumes; g++-11 unusable on this macOS (old SDK headers)
   time_margin_s: 1.0                    # added to problem time_limit
   default_time_limit_s: 2.0
   default_memory_mb: 256
