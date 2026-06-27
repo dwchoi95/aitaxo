@@ -32,3 +32,14 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   study to Codeforces-sourced test problems for clean dates + full `cf_rating`/`cf_tags`
   needed by RQ2. Count reported in Phase A.
 - **`judge.m = 5`** (plan default; may drop to 3 to cut cost, logged if so).
+
+## Phase A (2026-06-27)
+- **difficulty_bins finalized = edges [1400,1900,2400]** (easy/medium/hard/expert). On the
+  165 Codeforces test problems the resulting counts are easy 53 / medium 25 / hard 36 /
+  expert 51 (rating 800-3500, median 1900) — a workable spread for CMH/logistic
+  stratification; kept as provisionally set.
+- **Problem set P = 165 Codeforces-sourced test problems** (source==CODEFORCES). All have
+  >=1 oracle solution and >=1 test (median 203 tests/problem). Human incorrect coverage:
+  C++ 164/165, Python3 114/165 -> C++ is the larger arm (relevant to the Phase D primary-
+  language review). The validation split (117 problems) is stashed in data/sensitivity/
+  for the contamination probe only, never merged.
