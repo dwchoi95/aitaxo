@@ -138,3 +138,12 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   `gpt-3.5-turbo-0125` (contamination-critical). `max_tokens = 2048` (non-FIXED). No oracle is
   ever shown to the generator.
 - Smoke test (1575A): zero-shot AC 3 / WA 9 / CE 4, kept 10 non-AC; self-reflection WA->AC.
+
+## Phase D + finalize — results (2026-06-27)
+- AI generation (gpt-3.5-turbo C++, 144 judgeable problems): 2304 zero-shot samples,
+  **88 AC (3.8% pass)** — very low, as expected for leakage-free post-2021-09-21 CF problems;
+  1 no-code; 1423 non-AC kept (cap 10); 144/144 problems with >=1 AI non-AC; self-reflection
+  solved 13.
+- **Final dataset (Section 2.9 rule 5) = both-arm intersection = 142 problems**
+  (human-only 0, ai-only 2). human non-AC 1397, AI non-AC 1403 (~balanced arms, 2800 total).
+  artifacts/dataset/{final.jsonl,summary.json}.
