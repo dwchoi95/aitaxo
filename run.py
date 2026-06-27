@@ -20,6 +20,7 @@ from src.common.config import Config
 from src.data.dataset_finalizer import DatasetFinalizer
 from src.data.human_corpus_builder import HumanCorpusBuilder
 from src.data.problem_set_builder import ProblemSetBuilder
+from src.analysis.rq_analysis import RqAnalysis
 from src.classify.classifier import Classifier
 from src.generation.ai_generator import AiGenerator
 from src.gold.gold_sampler import GoldSampler
@@ -46,6 +47,10 @@ def main():
     cl.add_argument("--model", default=None)
     cl.add_argument("--limit", type=int, default=None)
     cl.add_argument("--dry-run", action="store_true")
+    an = sub.add_parser("analyze")
+    an.add_argument("--classifications", required=True)
+    an.add_argument("--residual", default=None)
+    an.add_argument("--turn0", default=None)
     # one add_parser(...) per step is added as each phase's step class is implemented
     args = parser.parse_args()
     config = Config("config.yaml")
@@ -84,6 +89,9 @@ def main():
         r = Classifier(config).run(dataset=args.dataset, model=args.model,
                                    limit=args.limit, dry_run=args.dry_run)
         print(json.dumps(r, indent=2, ensure_ascii=False))
+    elif args.cmd == "analyze":
+        r = RqAnalysis(config).run(args.classifications, args.residual, args.turn0)
+        print(json.dumps(r, indent=2, default=str))
 
 
 if __name__ == "__main__":
