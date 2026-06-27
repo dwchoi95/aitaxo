@@ -1,0 +1,34 @@
+# DECISIONS
+
+Append-only log of concrete choices (especially non-FIXED config values), with rationale.
+
+## Phase 0 (2026-06-27)
+
+- **Python 3.13 (venv `env/`) instead of plan-default 3.11.** Use the existing `env/`
+  virtualenv (Python 3.13.7) the user created. 3.13 is compatible with all required
+  packages; pinning the venv avoids a redundant rebuild. (Plan 0.5 allows adapting the
+  stack if justified and logged.)
+- **Sandbox Dockerfiles live in `judge_docker/`, not `env/`.** The plan puts sandbox
+  Dockerfiles in `env/`, but `env/` is our Python virtualenv. To avoid the clash, the
+  Phase-B Dockerfiles go in `judge_docker/`.
+- **Test filename convention: `tests/<pkg>/test_<step>.py`** (with the `test_` prefix),
+  mirroring `src/<pkg>/<step>.py` 1:1 (plan 3.0.1 asks to pick one convention).
+- **`generator.k_max = 16`** (plan range 15-20). gpt-3.5-turbo has a low pass rate on
+  these competitive problems, so most attempts are buggy; 16 attempts reliably yields
+  the target of >=10 non-AC submissions for most problems while capping wasted calls.
+  Raise and document if the Phase-G saturation curve still climbs.
+- **`human_arm.cap_per_problem = 10`.** Mirrors the AI side (plan 2.2 symmetry) so no
+  single high-traffic problem dominates; sampled uniformly within a problem+language
+  when over the cap.
+- **`difficulty_bins.edges = [1400, 1900, 2400]`** (labels easy/medium/hard/expert).
+  Provisional, roughly aligned with Codeforces Div2/Div1 difficulty bands; finalized in
+  Phase A after inspecting the test-split `cf_rating` distribution.
+- **`repair.model = gpt-5.5`, `repair.attempts = 3`.** A strong coder distinct from the
+  generator (gpt-3.5-turbo) to produce verified minimal patches for label grounding
+  (E.3); 3 attempts caps cost while allowing retries.
+- **`prompt.size_cap_chars = 6000`** (head+tail truncation). Bounds context for large
+  CodeContests tests/descriptions (plan Appendix D size cap).
+- **`dataset.source_restriction = CODEFORCES`.** Plan A.6 default: restrict the main
+  study to Codeforces-sourced test problems for clean dates + full `cf_rating`/`cf_tags`
+  needed by RQ2. Count reported in Phase A.
+- **`judge.m = 5`** (plan default; may drop to 3 to cut cost, logged if so).
