@@ -22,8 +22,10 @@ from src.data.human_corpus_builder import HumanCorpusBuilder
 from src.data.problem_set_builder import ProblemSetBuilder
 from src.analysis.rq_analysis import RqAnalysis
 from src.classify.classifier import Classifier
+from src.classify.judge_selector import JudgeSelector
 from src.generation.ai_generator import AiGenerator
 from src.gold.gold_adjudicator import GoldAdjudicator
+from src.gold.gold_finalizer import GoldFinalizer
 from src.gold.gold_sampler import GoldSampler
 from src.judge.submission_judge import SubmissionJudge
 
@@ -44,6 +46,10 @@ def main():
     sub.add_parser("finalize-dataset")
     sub.add_parser("prepare-gold")
     sub.add_parser("adjudicate-gold")
+    sub.add_parser("finalize-gold")
+    sj = sub.add_parser("select-judge")
+    sj.add_argument("--limit", type=int, default=None)
+    sj.add_argument("--dry-run", action="store_true")
     cl = sub.add_parser("classify")
     cl.add_argument("--dataset", default="final", choices=["final", "gold"])
     cl.add_argument("--model", default=None)
@@ -89,6 +95,12 @@ def main():
         print(json.dumps(r, indent=2))
     elif args.cmd == "adjudicate-gold":
         r = GoldAdjudicator(config).run()
+        print(json.dumps(r, indent=2, ensure_ascii=False))
+    elif args.cmd == "finalize-gold":
+        r = GoldFinalizer(config).run()
+        print(json.dumps(r, indent=2, ensure_ascii=False))
+    elif args.cmd == "select-judge":
+        r = JudgeSelector(config).run(limit=args.limit, dry_run=args.dry_run)
         print(json.dumps(r, indent=2, ensure_ascii=False))
     elif args.cmd == "classify":
         r = Classifier(config).run(dataset=args.dataset, model=args.model,

@@ -33,6 +33,7 @@ class TaxonomyJudge:
         self.m = config["judge"]["m"]
         self.temperature = config["judge"].get("temperature", 0.4)
         self.max_tokens = config["judge"].get("max_tokens", 1024)
+        self.reasoning_effort = config["judge"].get("reasoning_effort")
         self.size_cap = config["prompt"]["size_cap_chars"]
         self.lang = config["languages"]["primary"]
         self.problems = Path(config["paths"]["data"]) / "problems"
@@ -51,7 +52,7 @@ class TaxonomyJudge:
         for i in range(self.m):
             r = self.client.complete(model, [{"role": "user", "content": prompt}],
                                      temperature=self.temperature, max_tokens=self.max_tokens,
-                                     n=1, nonce=i)
+                                     n=1, nonce=i, reasoning_effort=self.reasoning_effort)
             samples.append(self._parse(r["texts"][0]))
         agg = self._aggregate(samples)
         return {"submission_id": submission["submission_id"], "problem_id": submission["problem_id"],

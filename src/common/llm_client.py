@@ -15,10 +15,13 @@ class LlmClient:
     # one public method: complete a chat request, with cache + retry + logging.
     # nonce gives self-consistency samples distinct cache keys (and an OpenAI seed) so repeated
     # identical prompts produce independent draws instead of a single cached one.
-    def complete(self, model, messages, temperature=0.0, max_tokens=1024, n=1, nonce=None, dry_run=False):
+    def complete(self, model, messages, temperature=0.0, max_tokens=1024, n=1, nonce=None,
+                 reasoning_effort=None, dry_run=False):
         params = {"temperature": temperature, "max_tokens": max_tokens, "n": n}
         if nonce is not None:
             params["nonce"] = nonce
+        if reasoning_effort is not None:
+            params["reasoning_effort"] = reasoning_effort
         key = self._key(model, params, messages)
         if dry_run:
             return {"dry_run": True, "model": model, "params": params,
@@ -56,6 +59,8 @@ class LlmClient:
         # gpt-5 / o-series reasoning models: no temperature, use max_completion_tokens
         if model.startswith(("gpt-5", "o1", "o3", "o4")):
             kw["max_completion_tokens"] = params["max_tokens"]
+            if "reasoning_effort" in params:
+                kw["reasoning_effort"] = params["reasoning_effort"]
         else:
             kw["max_tokens"] = params["max_tokens"]
             kw["temperature"] = params["temperature"]
@@ -67,8 +72,11 @@ class LlmClient:
         client = self._anthropic_client()
         system = "\n".join(m["content"] for m in messages if m["role"] == "system")
         convo = [m for m in messages if m["role"] != "system"]
-        r = client.messages.create(model=model, system=system or None, messages=convo,
-                                   max_tokens=params["max_tokens"], temperature=params["temperature"])
+        kw = {"model": model, "messages": convo, "max_tokens": params["max_tokens"],
+              "temperature": params["temperature"]}
+        if system:
+            kw["system"] = system
+        r = client.messages.create(**kw)
         return {"texts": ["".join(b.text for b in r.content if b.type == "text")],
                 "usage": {"in": r.usage.input_tokens, "out": r.usage.output_tokens}}
 
