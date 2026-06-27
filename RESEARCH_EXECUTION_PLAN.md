@@ -140,7 +140,7 @@ This is the authoritative definition of what enters the analysis; the rules are 
 
 > **Final dataset = { problems with (human C++ non-AC ≥ 1) **AND** (AI C++ non-AC ≥ 1) }.** Report the intersection problem count and the per-arm total retained submissions.
 
-1. **Problem-set start.** CodeContests **test** split ∩ **Codeforces** source (has `cf_rating`/`cf_tags`) ∩ published **post-2021-09-21**.
+1. **Problem-set start.** CodeContests **test** split ∩ **Codeforces** source (has `cf_rating`/`cf_tags`) ∩ published **post-2021-09-21** ∩ **judgeable** (the known-correct oracle judges AC under the Phase B harness). Special-judge / interactive / compiler- or runtime-incompatible problems — where exact output comparison is invalid — are excluded with a recorded reason (`artifacts/judgeable_problems.json`). Realized: 144 / 165 judgeable (21 excluded: 19 special-judge/interactive, 1 runtime, 1 compiler).
 2. **Human-arm filter.** Of each problem's `incorrect_solutions`, keep **C++ only**, and keep only those whose **harness re-judged verdict is non-AC**; submissions that unexpectedly judge AC are dropped and counted.
 3. **AI-arm generation.** For the same problems, generate **C++** with `gpt-3.5-turbo`, collecting until **10 non-AC** per problem (hard cap `k_max` = 15–20).
 4. **Per-problem inclusion floor.** Include a problem if it has **≥ 1 non-AC** (no high per-problem floor); problems with 0 non-AC are excluded (in C++ this is only 1 of the 165 on the human side).
@@ -369,7 +369,7 @@ Include at least: dataset name/split; generator model id + snapshot; generator t
 
 **Deliverables.** The `judge` package (sandbox runner + verdict logic) plus a `run.py check-judge` subcommand that judges single and batch submissions and runs the oracle-AC self-test.
 
-**Validation gate.** Sanity tests: every problem's **oracle** solutions must judge **AC** under your harness. If an oracle solution is not AC, your harness or comparison rule is wrong — fix before proceeding. Report oracle-AC rate (should be ~100%; investigate any miss). Confirm sandbox blocks network and enforces limits (include a deliberately offending test program).
+**Validation gate.** Sanity test: every problem's **oracle** solution must judge **AC** under the harness. An oracle that is not AC means either the harness/comparison rule is wrong (fix it — e.g., float tolerance, case-insensitivity, compiler flags, stack limit) **or** the problem is not exactly judgeable (special-judge / interactive / compiler- or runtime-incompatible), in which case it is **excluded** with a recorded reason. The gate is **oracle-AC = 100% on the retained (judgeable) subset**, with the excluded set enumerated and reasonable in size. Realized: **144 / 165 judgeable, oracle-AC = 100%**; 21 excluded (19 special-judge/interactive — verified by mutually-divergent oracle outputs — 1 runtime, 1 compiler), persisted to `artifacts/judgeable_problems.json`. Sandbox isolation is verified separately (network blocked, writes confined to scratch, CPU/output/wall limits, process-group teardown) — see ASSUMPTIONS.md.
 
 ---
 

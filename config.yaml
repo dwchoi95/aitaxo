@@ -15,8 +15,9 @@ generator:                              # FIXED — contamination-critical
   snapshot: gpt-3.5-turbo-0125
   temperature: 1.0                      # FIXED
   top_p: 1.0
-  k_max: 16                             # non-FIXED (plan: 15-20); see DECISIONS.md
+  k_max: 16                             # non-FIXED (plan: 15-20); zero-shot samples per problem (single n=k_max call)
   min_non_ac_per_problem: 10            # FIXED
+  max_tokens: 2048                      # non-FIXED; generation length cap; see DECISIONS.md
   shutdown_deadline: "2026-10-23"       # OpenAI gpt-3.5-turbo API shutdown
 
 self_reflection:                        # FIXED
@@ -28,7 +29,9 @@ languages:                              # FIXED — C++ only (Section 2.2; no po
   primary: cpp
 
 human_arm:
-  cap_per_problem: 10                   # non-FIXED (mirror AI ~10); see DECISIONS.md
+  cap_per_problem: 10                   # non-FIXED (mirror AI ~10); kept non-AC per problem
+  max_judge_per_problem: 40             # non-FIXED; random sample judged per problem (rate + >=10 non-AC); see DECISIONS.md
+  sample_seed: 20260627                 # FIXED for reproducible uniform sampling
 
 judge:                                  # selected empirically in Phase F (not contamination-critical)
   slate:

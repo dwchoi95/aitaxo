@@ -113,3 +113,28 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   runtime-incompatible (1580F: ARM/UB segfault unrelated to stack), 1 compiler-incompatible
   (1608G). Excluded set persisted to `artifacts/judgeable_problems.json`; Phases C/D operate
   only on the 144 judgeable problems. This is the standard special-judge/interactive exclusion.
+
+## Phase C — human corpus (2026-06-27)
+- **Sampling:** per judgeable problem, judge a seeded random sample of up to
+  `max_judge_per_problem = 40` C++ incorrect_solutions, keep up to `cap_per_problem = 10`
+  non-AC (uniform random within problem), enforce the >=1 non-AC floor. `sample_seed =
+  20260627` (FIXED) for reproducibility. 40 is enough to surface >=10 non-AC while bounding
+  cost; the kept 10 mirror the AI cap (symmetry, Section 2.9 rule 6).
+- **Unexpected-AC is expected and reported:** ~24% (pilot) of CodeContests incorrect_solutions
+  pass our test subset because CodeContests ships only a sample of the original Codeforces
+  hidden tests. These are dropped + counted (rule 2); the rate is a reported test-weakness
+  metric that motivates a stronger oracle (proposal's Spec-Grounded direction).
+- **Enrichment:** each kept record carries judge verdict + peak_time_ms (peak_mem_kb = 0;
+  memory is not measured — no reliable RLIMIT_AS on macOS), difficulty_bin, algo_families.
+
+## Phase D — AI generation (2026-06-27)
+- **Zero-shot = a single `n = k_max (16)` temperature-1.0 call per problem** (not 16 repeated
+  calls): identical prompt+params would collide in the LLM cache, so one batch of 16 yields
+  the diverse sample set; keep up to 10 non-AC (mirror human cap). Shortfall (<10 non-AC) is
+  allowed and recorded.
+- **Self-reflection:** conversation history grows each turn (initial D.2 attempt + up to
+  n_iters = 5 D.3 repair turns fed verdict + one failing test), so each turn has a distinct
+  cache key; stop on AC; full trajectory persisted. Generator = pinned snapshot
+  `gpt-3.5-turbo-0125` (contamination-critical). `max_tokens = 2048` (non-FIXED). No oracle is
+  ever shown to the generator.
+- Smoke test (1575A): zero-shot AC 3 / WA 9 / CE 4, kept 10 non-AC; self-reflection WA->AC.

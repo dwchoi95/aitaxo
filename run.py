@@ -1,21 +1,41 @@
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
+
+def _load_env():
+    f = Path(".env")
+    if not f.exists():
+        return
+    for line in f.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
+
 from src.common.config import Config
+from src.data.human_corpus_builder import HumanCorpusBuilder
 from src.data.problem_set_builder import ProblemSetBuilder
+from src.generation.ai_generator import AiGenerator
 from src.judge.submission_judge import SubmissionJudge
 
 
 def main():
+    _load_env()
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("test")
     sub.add_parser("build-problems")
     cj = sub.add_parser("check-judge")
     cj.add_argument("--limit", type=int, default=None)
+    bh = sub.add_parser("build-human")
+    bh.add_argument("--limit", type=int, default=None)
+    ba = sub.add_parser("build-ai")
+    ba.add_argument("--limit", type=int, default=None)
+    ba.add_argument("--dry-run", action="store_true")
     # one add_parser(...) per step is added as each phase's step class is implemented
     args = parser.parse_args()
     config = Config("config.yaml")
@@ -35,6 +55,15 @@ def main():
                                             "ac_rate_on_judgeable")}, indent=2))
         print("excluded by reason:", dict(by_reason))
         print("wrote", out)
+    elif args.cmd == "build-human":
+        r = HumanCorpusBuilder(config).run(limit=args.limit)
+        print(json.dumps({k: r[k] for k in ("problems", "kept_submissions",
+                          "unexpected_ac_dropped", "problems_with_ge1_non_ac")}, indent=2))
+    elif args.cmd == "build-ai":
+        r = AiGenerator(config).run(limit=args.limit, dry_run=args.dry_run)
+        print(json.dumps({k: r[k] for k in ("problems", "zero_shot_samples", "zero_shot_ac",
+                          "zero_shot_no_code", "kept_non_ac_total", "problems_with_ge1_non_ac",
+                          "self_reflection_solved")}, indent=2))
 
 
 if __name__ == "__main__":
