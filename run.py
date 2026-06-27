@@ -20,6 +20,7 @@ from src.common.config import Config
 from src.data.dataset_finalizer import DatasetFinalizer
 from src.data.human_corpus_builder import HumanCorpusBuilder
 from src.data.problem_set_builder import ProblemSetBuilder
+from src.classify.classifier import Classifier
 from src.generation.ai_generator import AiGenerator
 from src.gold.gold_sampler import GoldSampler
 from src.judge.submission_judge import SubmissionJudge
@@ -40,6 +41,11 @@ def main():
     ba.add_argument("--dry-run", action="store_true")
     sub.add_parser("finalize-dataset")
     sub.add_parser("prepare-gold")
+    cl = sub.add_parser("classify")
+    cl.add_argument("--dataset", default="final", choices=["final", "gold"])
+    cl.add_argument("--model", default=None)
+    cl.add_argument("--limit", type=int, default=None)
+    cl.add_argument("--dry-run", action="store_true")
     # one add_parser(...) per step is added as each phase's step class is implemented
     args = parser.parse_args()
     config = Config("config.yaml")
@@ -74,6 +80,10 @@ def main():
     elif args.cmd == "prepare-gold":
         r = GoldSampler(config).run()
         print(json.dumps(r, indent=2))
+    elif args.cmd == "classify":
+        r = Classifier(config).run(dataset=args.dataset, model=args.model,
+                                   limit=args.limit, dry_run=args.dry_run)
+        print(json.dumps(r, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

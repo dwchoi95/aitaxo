@@ -13,8 +13,12 @@ class LlmClient:
         self._anthropic = None
 
     # one public method: complete a chat request, with cache + retry + logging.
-    def complete(self, model, messages, temperature=0.0, max_tokens=1024, n=1, dry_run=False):
+    # nonce gives self-consistency samples distinct cache keys (and an OpenAI seed) so repeated
+    # identical prompts produce independent draws instead of a single cached one.
+    def complete(self, model, messages, temperature=0.0, max_tokens=1024, n=1, nonce=None, dry_run=False):
         params = {"temperature": temperature, "max_tokens": max_tokens, "n": n}
+        if nonce is not None:
+            params["nonce"] = nonce
         key = self._key(model, params, messages)
         if dry_run:
             return {"dry_run": True, "model": model, "params": params,
@@ -47,6 +51,8 @@ class LlmClient:
     def _call_openai(self, model, messages, params):
         client = self._openai_client()
         kw = {"model": model, "messages": messages, "n": params["n"]}
+        if "nonce" in params:
+            kw["seed"] = params["nonce"]
         # gpt-5 / o-series reasoning models: no temperature, use max_completion_tokens
         if model.startswith(("gpt-5", "o1", "o3", "o4")):
             kw["max_completion_tokens"] = params["max_tokens"]

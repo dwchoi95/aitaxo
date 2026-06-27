@@ -40,6 +40,8 @@ judge:                                  # selected empirically in Phase F (not c
   chosen: null                          # set after Phase F judge selection
   m: 5                                  # self-consistency samples (FIXED default; may drop to 3)
   provenance_blind: true                # FIXED
+  temperature: 0.4                      # non-FIXED; mild diversity for self-consistency; see DECISIONS.md
+  max_tokens: 1024                      # non-FIXED; classification JSON is short
 
 repair:                                 # Phase E.3 grounding
   model: gpt-5.5                        # non-FIXED; see DECISIONS.md
