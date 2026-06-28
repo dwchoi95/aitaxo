@@ -307,3 +307,34 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   (non-independence inflates p) -> RQ1 used descriptively (distributions + effect sizes).
 - [5] Interpretation caveats: GE6 overflow is a C++-specific leaf (note within-C++ comparison);
   scope the headline to "gpt-3.5-turbo", not LLMs in general.
+
+## Phase H enhancements (paper hardening before Phase I) — 2026-06-28
+
+**References (integrity, 1순위).** Semantic Scholar keyless API rate-limited this host (429), so
+ReferenceFetcher was switched to DBLP (authoritative CS bibliography), fetching each entry's
+verbatim `.bib` by hand-verified DBLP key; provenance in `logs/refs_provenance.json`. Final
+`paper/references.bib` = 9 real entries, every cited key provenance-backed (integrity scan: True),
+none hand-written:
+- wei2025taxonomy — Wei et al., *Evaluating and improving LLM-based competitive program generation*,
+  Inf. Softw. Technol. 2026. **CORRECTION**: the prior hand-written stub had the wrong title
+  ("A Taxonomy of Errors and Repair Strategies..."); the real Wei paper is this IST 2026 article
+  (the taxonomy instrument lives inside it).
+- li2022alphacode (AlphaCode, CoRR 2022); dou2024whatswrong (Sci. China Inf. Sci. 2026);
+  tambon2025bugs (EMSE 2025); riddell2024contamination (ACL 2024);
+  coignion2024leetcode (EASE 2024, AI-vs-human Leetcode); crupi2025judge (IEEE TSE 2025, LLM-as-judge
+  for code/summarization — the paper the user named); zheng2023judge (MT-Bench, NeurIPS 2023);
+  liu2023humaneval (HumanEval+, NeurIPS 2023).
+- Coignion + Crupi were initially not matched; a second DBLP pass by author name found both, so the
+  user's offered `paper/references.csv` manual-fill fallback was not needed.
+
+**Depth (2순위).** Paper consolidated to a single `main.tex` + `references.bib` (plan 2-file rule),
+`\documentclass[10pt,conference]`. Added: (a) Discussion section (automated repair/agents, debugging
+tools, education); (b) Related Work expanded with per-work differentiation + inline cites of all 9;
+(c) RQ4 (judge reliability) promoted to a formal Results subsection, with boxed RQ1–RQ4 answers;
+(d) pipeline architecture figure (TikZ, Fig. 1) showing both arms through one pipeline; the RQ1 bar
+chart is now Fig. 2. Table II caption notes negative "Fixed" = bugs newly introduced during repair.
+
+**Rules re-checked.** Korean per-paragraph glosses present (11.1.1); meta-commentary scan = 0 hits
+(11.4); reference-integrity self-scan = all cited keys provenance-backed. Compiles to 5 pages
+(≤10), 0 undefined references/citations. `paper/` remains gitignored (`.gitignore:39`), so the
+paper source is saved locally but untracked — to revisit in Phase I.
