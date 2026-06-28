@@ -36,6 +36,7 @@ class RqAnalysis:
         self.figure_frequencies(rq1_fam["per_cat"], "family", rq1_fam["n_a"], rq1_fam["n_b"])
         sat = self.saturation(df)
         dist = self.distributions(df)
+        self.family_by_difficulty(df, "GE1")
         rq3 = self.rq3(rq3_path) if rq3_path else None
         summary = {"submissions": len(df), "arms": {a: int((df.arm == a).sum()) for a in self.arms},
                    "rq1_family_overall": rq1_fam["overall"], "rq1_family_significant": rq1_fam["n_significant"],
@@ -159,14 +160,40 @@ class RqAnalysis:
             curve.append(len(seen))
         pd.DataFrame({"n_samples": range(1, len(curve) + 1), "distinct_leaves": curve}).to_csv(
             self._tables() / "rq1_saturation.csv", index=False)
-        fig, ax = plt.subplots(figsize=(5, 3.2))
-        ax.plot(range(1, len(curve) + 1), curve)
-        ax.set_xlabel("AI zero-shot samples")
-        ax.set_ylabel("distinct leaves seen")
+        final = curve[-1] if curve else 0
+        fig, ax = plt.subplots(figsize=(5.4, 3.3))
+        ax.plot(range(1, len(curve) + 1), curve, color="#4C72B0", linewidth=1.8)
+        ax.axhline(final, color="#999999", linewidth=0.8, linestyle="--")
+        ax.text(len(curve), final + 0.4, f"plateau at {final}", ha="right", va="bottom", fontsize=10)
+        ax.set_xlabel("AI submissions labeled", fontsize=11)
+        ax.set_ylabel("distinct taxonomy leaves seen", fontsize=11)
+        ax.set_ylim(0, final + 3)
+        ax.tick_params(labelsize=10)
+        ax.grid(axis="y", linewidth=0.4, alpha=0.5)
+        ax.set_axisbelow(True)
+        for s in ("top", "right"):
+            ax.spines[s].set_visible(False)
         fig.tight_layout()
         fig.savefig(self._figures() / "rq1_saturation.pdf")
         plt.close(fig)
         return {"final_distinct": curve[-1] if curve else 0, "still_rising": bool(curve and curve[-1] > (curve[-2] if len(curve) > 1 else 0))}
+
+    def family_by_difficulty(self, df, family):
+        # RQ2 support: rate of a family by arm within each difficulty bin (descriptive).
+        order = ["easy", "medium", "hard", "expert"]
+        d = df.copy()
+        d["hit"] = d.leaves.apply(lambda xs: any(x.split(".")[0] == family for x in xs))
+        rows = []
+        for b in [x for x in order if x in set(d.difficulty_bin)]:
+            sub = d[d.difficulty_bin == b]
+            row = {"difficulty": b}
+            for arm in self.arms:
+                s = sub[sub.arm == arm]
+                row[f"{arm}_pct"] = round(100 * s.hit.mean(), 1) if len(s) else 0.0
+                row[f"{arm}_n"] = int(len(s))
+            rows.append(row)
+        pd.DataFrame(rows).to_csv(self._tables() / f"{family.lower()}_by_difficulty.csv", index=False)
+        return rows
 
     def distributions(self, df):
         # per-arm leaf and family frequency tables
@@ -184,6 +211,11 @@ class RqAnalysis:
                 rows.append(row)
             pd.DataFrame(rows).to_csv(self._tables() / f"dist_{level}_by_arm.csv", index=False)
             out[level] = len(cats)
+        # verdict mix per arm (% of the arm's submissions) -- descriptive, used in Results
+        if "verdict" in df.columns:
+            vd = (df.groupby("arm")["verdict"].value_counts(normalize=True)
+                  .mul(100).round(1).unstack(fill_value=0.0))
+            vd.to_csv(self._tables() / "verdict_by_arm.csv")
         return out
 
     def figure_frequencies(self, per_cat, tag, n_a=None, n_b=None):

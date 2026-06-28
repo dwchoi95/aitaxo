@@ -363,3 +363,42 @@ Rules re-passed: meta-commentary scan = 0 (11.4); Korean per-paragraph glosses (
 reference-integrity scan = 40/40 provenance-backed. Compiles to 9 pages, 0 undefined. The figure-code
 change is numerically inert: `run.py analyze` still regenerates `results/SUMMARY.md` byte-for-byte.
 `paper/` stays gitignored for anonymous submission; switch to tracked at camera-ready (user decision).
+
+## Pre-submission fixes round 2 (post-review) — 2026-06-28
+
+User pre-submission checks; all addressed and verified in the compiled PDF.
+
+1. **Wei et al. bibliography re-verified.** DBLP confirms the published record: *Evaluating and
+   improving LLM-based competitive program generation*, Inf. Softw. Technol., vol. 191, art. 107977,
+   2026, DOI 10.1016/j.infsof.2025.107977 (a finalized volume/article, not in-press). Entry correct.
+
+2. **Figure 3 (saturation) y-axis bug --- ROOT CAUSE was test contamination.** The figure showed a
+   plateau at 2 over 160 samples instead of 23 over 1403. Cause: `tests/analysis/test_rq_analysis.py`
+   instantiated `RqAnalysis(Config())` with the REAL config and called `saturation`/`figure_frequencies`/
+   `distributions` on a 160-row synthetic fixture, **overwriting the real `results/figures` and
+   `results/tables`**. Running `run.py test` after `analyze` clobbered the real saturation figure, and
+   the stale figure got embedded. Fix: the test now sets `a.results = tmp_path` (writes isolated); the
+   real artifacts survive a test run (verified: saturation stays 1403/max-23 before and after tests).
+   Improved the saturation figure styling (fonts, grid, "plateau at 23" annotation) to match the bar
+   chart, normalized the bar chart by arm totals so it matches Table II, and recompiled so the correct
+   figure is embedded.
+
+3. **Body expanded to 10 pages** (references excluded; total 12pp = 10 body + 2 refs). Added genuine
+   content, not filler: a Background section (competitive programming domain + taxonomy provenance); a
+   taxonomy-families table; a verdict-distribution result + table (AI ~3x more compile errors); a
+   per-difficulty GE1 analysis + table (AI GE1 rises 22%->54% with difficulty while human stays flat,
+   script-generated `ge1_by_difficulty.csv`); a judge-prompt-design ablation subsection (schema split
+   0.225->0.431, code injection ->0.558/0.659); a second AI code example (CF 1575D) and a human code
+   example (CF 1598A) contrasting AI design failures with human implementation slips; design-rationale
+   paragraphs (contamination window, statistics, covariate derivation, gold sampling); a deepened
+   Discussion (why-this-profile, benchmark design, limitations) and Threats (model/language/human-baseline);
+   and expanded Related Work. New script outputs (verdict_by_arm.csv, ge1_by_difficulty.csv) are
+   reproducible and SUMMARY.md still regenerates byte-for-byte.
+
+4. **Compile is clean:** 0 LaTeX errors, 0 undefined references/citations, 0 overfull hboxes, verified
+   in the log after every change and by rendering every page to PNG (no float/table overlaps). The tikz
+   `calc` library (added by the user) is required for the pipeline diagram's midpoint coordinate.
+
+Maintained rules re-passed: 40 references all cited and provenance-backed (integrity True);
+meta-commentary scan = 0 (11.4); Korean per-paragraph glosses (11.1.1). `paper/` stays gitignored
+(anonymous submission); track at camera-ready.

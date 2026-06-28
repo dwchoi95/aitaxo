@@ -16,8 +16,9 @@ def _synthetic():
     return pd.DataFrame(rows)
 
 
-def test_rq1_and_rq2_run_on_synthetic():
+def test_rq1_and_rq2_run_on_synthetic(tmp_path):
     a = RqAnalysis(Config())
+    a.results = tmp_path                                # isolate writes; never touch real results/
     df = _synthetic()
     r1 = a.rq1(df, "leaf")
     assert r1["overall"]["p_value"] < 0.05            # human GE4.2 vs AI GE2.1 differ
