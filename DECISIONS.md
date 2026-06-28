@@ -255,3 +255,18 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   leaf-level is exploratory only. Between-arm differences are reported as conservative lower
   bounds (non-differential attenuation). RQ4 reports judge-vs-human gap honestly (leaf F1 0.45 /
   family 0.57 vs human inter-annotator exact 0.71 / kappa 0.62).
+
+## Phase F — judge prompt v3 (inject buggy code) = big gain; FINAL config (2026-06-28)
+- ROOT-CAUSE FIX (user-caught): the buggy submission source was only executed, never shown to
+  the judge. Injecting it as {submission} + adopting the user-authored prompt (role, decision
+  procedure, per-leaf disambiguation, rationale spec) + rubric examples:
+  - leaf: F1 0.449->0.575, exact 0.431->0.558, recall 0.436->0.564 (recovered), avgN 1.00.
+  - family: F1 0.566->0.659, exact 0.650 — approaching human inter-annotator (exact 0.71).
+  - still non-differential: per-arm primary-accuracy human 0.601 vs AI 0.561 (delta 0.04).
+- disambiguation<->TAXONOMY leaf codes/names verified consistent (incl GE6.1 overflow/precision,
+  GE6.2 implicit conversion); disambiguation (boundary rules) + rubric (full defs+examples) kept
+  both (option 2), no contradictions.
+- **FINAL judge = gpt-5.5, prompt v3 (buggy code injected), low effort, m=3.** Opaque sha1
+  item_id keeps it provenance-blind. Supersedes the earlier "revised+low F1 0.449" choice.
+  Phase G primary granularity = family (F1 0.66); leaf reported too (now 0.56); between-arm
+  differences = conservative lower bounds (non-differential).
