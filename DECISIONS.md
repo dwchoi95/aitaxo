@@ -228,3 +228,14 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   3.5h). claude trailed gpt-5.5 on the baseline (F1 0.359 < 0.449). gpt-5.5 medium untested.
 - Open decision (with user): (a) Phase E with gpt-5.5 revised+low + family-level primary;
   (b) one more prompt tweak to soften the AE*-over-GE1.1 rule; (c) test gpt-5.5 medium first.
+
+## Phase F — (0) non-differential-error check PASSED (2026-06-28, free)
+- Split the cached gpt-5.5 revised+low gold predictions by arm (single-leaf gold: AI 164,
+  human 161). Judge primary-accuracy is ~equal across arms (AI 0.451, human 0.466). The major
+  confusions do not differ by arm: GE1.1->AE1.1 (AI 0.18 vs human 0.19, Fisher p=1.0),
+  GE4.1->GE4.2 (0.50 vs 0.38, p=1.0); GE1.1->GE1.2 borderline (0.18 vs 0.00, p=0.058, small
+  human n). Conclusion: measurement error is **non-differential**.
+- **Interpretation (corrected):** non-differential misclassification attenuates between-arm
+  differences toward the null -> observed differences are **conservative lower bounds**; absolute
+  per-leaf frequencies are judge-biased and reported at **family** granularity. (Replaces the
+  earlier "symmetric noise -> comparison valid" wording.)
