@@ -270,3 +270,24 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   item_id keeps it provenance-blind. Supersedes the earlier "revised+low F1 0.449" choice.
   Phase G primary granularity = family (F1 0.66); leaf reported too (now 0.56); between-arm
   differences = conservative lower bounds (non-differential).
+
+## Phase E/G — RESULTS (2026-06-28, judge=gpt-5.5 code-prompt, family primary)
+- Full classification: 2800 final + 270 RQ3, gpt-5.5 (resumed after OpenAI top-up). 14 uncovered.
+- **RQ1 (family, primary):** distributions differ strongly. chi2=413, p~1e-81, Cramer's V=0.37;
+  10/12 families significant (BH-FDR). HEADLINE: **GE1 Algorithm-Understanding = 40.1% of AI bugs
+  vs 10.7% human (Cohen's h=0.71, large)** — AI picks the wrong algorithm (GE1.1) or misreads the
+  problem (GE1.2). Human-leaning: GE4 edge-cases (16 vs 9), GE3 I/O (9.3 vs 3.8), GE6 overflow
+  (4 vs 0.9), GE5 control logic (7.5 vs 3.1), AE2 greedy, AE3 DP, AE6 graph. AE1 math is the
+  largest category for both (~30-36%, slightly AI). Reported as conservative lower bounds.
+- **RQ2 (problem-clustered GEE, leaf~is_ai+difficulty+type):** GE1 AI odds-ratio 6.9 (p~1e-28);
+  GE6 0.22, GE3 0.38, GE4 0.52, GE5 0.39, AE2 0.43, AE6 0.24, AE3 0.51 (all p<0.05). Differences
+  survive difficulty/type controls.
+- **RQ1 leaf (exploratory):** AI-distinctive GE1.2 (17% vs 3.4%, h=0.48), GE1.1 (22.8 vs 7.2,
+  h=0.45), GE2.1 compile errors (7.2 vs 2.6); human-distinctive GE2.2 syntax-misuse, AE3.2 DP
+  transitions, GE3.2 output format, AE1.2 special-math.
+- **RQ3 persistence:** self-reflection fixes simple bugs (I/O 50% fixed) but barely touches GE1
+  algorithm-understanding (only 10% fixed) and AE1 math (20%); repair sometimes INTRODUCES bugs
+  (greedy/syntax grew). AI's signature weakness persists through self-repair.
+- **Saturation:** 23/31 leaves seen, not rising -> sample adequate.
+- Narrative: **AI fails at understanding/choosing the algorithm; humans fail at implementing it;
+  AI's understanding failures resist self-reflection.**
