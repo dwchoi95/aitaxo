@@ -1,3 +1,4 @@
+import hashlib
 import json
 import math
 import re
@@ -9,26 +10,70 @@ from src.judge.submission_judge import SubmissionJudge
 from src.taxonomy.taxonomy import TAXONOMY, VERDICT_CANDIDATES
 
 PROMPT = (
-    "You are labeling the bug in a competitive-programming submission using a FIXED taxonomy.\n"
-    "Identify the PRIMARY bug: the single most-specific leaf that best explains the failure.\n"
-    "List a SECONDARY leaf ONLY if a clearly distinct, independent second bug is also present "
-    "— never a near-synonym or a downstream consequence of the primary bug. Secondary is "
-    "usually empty.\n"
-    'Return STRICT JSON: {{"primary":"GE4.2","secondary":[],"rationale":"..."}}\n\n'
-    "Disambiguation rules:\n"
-    "- GE1.2 (Misunderstanding Requirements): use ONLY when the code solves the WRONG problem "
-    "(misread the statement). Do NOT use it merely because the output is wrong.\n"
-    "- GE1.1 (Incorrect Algorithm): the right problem but a wrong method/formula.\n"
-    "- When the fault is in a specific algorithmic step (math, greedy, DP, divide & conquer, "
-    "recursion/memoization, graph search), prefer the specific AE* leaf over the generic GE1.1.\n"
-    "- If genuinely no leaf fits, set primary to \"UNCOVERED\".\n\n"
-    "Problem: {description}\n"
+    "You are a senior competitive-programming bug taxonomist. "
+    "Label the bug in ONE failed C++ submission using a FIXED taxonomy.\n\n"
+
+    "Your task is to identify the bug mechanism that best explains the FIRST failing test. "
+    "Use the buggy submission as the primary evidence. Use the reference solution only to understand "
+    "the intended algorithm/edge cases; do not label stylistic differences.\n\n"
+
+    "Return STRICT JSON only, with no markdown:\n"
+    '{{"primary":"AE1.1","secondary":[],"rationale":"..."}}\n\n'
+
+    "Labeling rules:\n"
+    "- primary must be exactly one leaf code, or \"UNCOVERED\" if no leaf clearly fits.\n"
+    "- secondary is usually []. Add secondary leaf codes only for clearly distinct, independent bugs. "
+    "Do NOT add downstream consequences, near-synonyms, or broad parent-like labels.\n"
+    "- Prefer the most-specific leaf that explains the failure. If an AE* leaf precisely describes the bug, "
+    "prefer it over generic GE1.1.\n"
+    "- Do not infer labels from verdict alone. Verdict is only a weak hint.\n"
+    "- Do not label the reference solution; label the submitted code.\n"
+    "- If the evidence is ambiguous between a generic and a specific leaf, choose the specific leaf only when "
+    "the submitted code shows that algorithmic pattern clearly.\n\n"
+
+    "Important disambiguation:\n"
+    "- GE1.1 Incorrect Algorithm: solves the right problem with a fundamentally wrong method/model.\n"
+    "- GE1.2 Misunderstanding Requirements: use ONLY when the code is solving a different interpretation of "
+    "the statement, ignoring a required constraint/output/objective, or assuming an input property not stated.\n"
+    "- GE1.3 Inefficient Design: use for TLE caused by asymptotic inefficiency despite aiming at the right logic.\n"
+    "- GE2.1 Compilation Errors: use for actual compile failure.\n"
+    "- GE2.2 Language-specific Syntax Misuse: compiles, but C++ semantics/API/undefined behavior causes the bug.\n"
+    "- GE3.1 Input Format Handling: wrong parsing, wrong number/order of tokens, treating test cases incorrectly.\n"
+    "- GE3.2 Output Format Mismatch: computed content may be right, but printed shape/tokens/precision are wrong.\n"
+    "- GE4.1 Edge/Boundary Handling: special case such as n=1, all equal, empty/min/max, first/last case mishandled.\n"
+    "- GE4.2 Off-by-one/Indexing: wrong bounds, 0/1-index confusion, out-of-range access, wrong adjacent position.\n"
+    "- GE5.1 Faulty Condition: a branch predicate is wrong while the intended structure is otherwise recognizable.\n"
+    "- GE5.2 Logical Operators/Precedence: wrong &&/||/!, grouping, or boolean composition.\n"
+    "- GE6.1 Overflow/Precision: wrong numeric type or precision causes the failure.\n"
+    "- GE6.2 Implicit Conversion: silent C++ conversion/truncation/sign behavior changes the result.\n"
+    "- AE1.* Math: wrong formula, modular arithmetic, parity/gcd/prime/combinatorics/probability derivation.\n"
+    "- AE2.* Greedy: local choice/order/selection strategy is wrong or unjustified.\n"
+    "- AE3.* DP: state, transition, or base initialization is wrong.\n"
+    "- AE4.* Divide-and-conquer: base/merge/recursive split problem.\n"
+    "- AE5.* Recursion/memoization: recursive base/merge/depth/memoization problem.\n"
+    "- AE6.* Graph/search: traversal state, transitions, pruning, BFS/DFS/Dijkstra/visited handling.\n\n"
+
+    "Decision procedure, follow internally:\n"
+    "1. Locate the submitted-code behavior that causes the first failing test.\n"
+    "2. Decide whether it is parsing/format/compile/runtime, boundary/indexing, control condition, datatype, "
+    "or algorithmic reasoning.\n"
+    "3. If algorithmic, choose the specific AE family when applicable; otherwise GE1.1/GE1.2/GE1.3.\n"
+    "4. Add secondary only if another independent root bug would still remain after fixing the primary.\n\n"
+
+    "Item id: {item_id}\n\n"
+    "Problem statement:\n{description}\n\n"
+    "Buggy submission code:\n```cpp\n{submission}\n```\n\n"
     "Submission verdict: {verdict}\n"
-    "First failing test: input={inp} expected={exp} actual={act}\n"
-    "Compiler/runtime messages: {msg}\n"
-    "Reference correct solution (for your judgment only): {oracle}\n"
-    "Candidate leaves (from verdict): {candidates}\n"
-    "Taxonomy with one example per leaf:\n{rubric}\n"
+    "First failing test:\n"
+    "input={inp}\n"
+    "expected={exp}\n"
+    "actual={act}\n"
+    "Compiler/runtime messages:\n{msg}\n\n"
+    "Reference correct solution, for judgment only:\n```cpp\n{oracle}\n```\n\n"
+    "Weak verdict-based candidate hints, not restrictions:\n{candidates}\n\n"
+    "Full taxonomy:\n{rubric}\n\n"
+    "Rationale requirements: one or two concise sentences. Mention the concrete submitted-code mistake, "
+    "not just the symptom."
 )
 UNCOVERED = "UNCOVERED"
 
@@ -83,8 +128,12 @@ class TaxonomyJudge:
                             .read_text(encoding="utf-8").split("\n") if l][0])["code"]
         desc = self._clip((self.problems / pid / "description.txt").read_text(encoding="utf-8"))
         msg = v.get("compiler_stderr") or v.get("runtime_error") or "(none)"
+        # opaque id: hash the submission_id so the arm-revealing prefix (ai:/human:) never
+        # reaches the provenance-blind judge
+        item_id = hashlib.sha1(submission["submission_id"].encode("utf-8")).hexdigest()[:10]
         return PROMPT.format(
-            description=desc, verdict=submission["verdict"],
+            item_id=item_id, description=desc, verdict=submission["verdict"],
+            submission=self._clip(submission["source"]),
             inp=self._clip(ff.get("input", "(n/a)"), 800), exp=self._clip(ff.get("expected", "(n/a)"), 800),
             act=self._clip(ff.get("actual", "(n/a)"), 800), msg=self._clip(msg, 1200),
             oracle=self._clip(oracle), candidates=", ".join(self.tier1_candidates(submission["verdict"])),
@@ -125,7 +174,7 @@ class TaxonomyJudge:
                 "uncovered": uncovered, "needs_review": not leaves and not uncovered}
 
     def _rubric(self):
-        return "\n".join(f"{c} {v[0]}: {v[1]}" for c, v in TAXONOMY.items())
+        return "\n".join(f"{c} {v[0]}: {v[1]} e.g. {v[2]}" for c, v in TAXONOMY.items())
 
     def _clip(self, s, cap=None):
         cap = cap or self.size_cap
