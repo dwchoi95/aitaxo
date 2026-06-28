@@ -291,3 +291,19 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
 - **Saturation:** 23/31 leaves seen, not rising -> sample adequate.
 - Narrative: **AI fails at understanding/choosing the algorithm; humans fail at implementing it;
   AI's understanding failures resist self-reflection.**
+
+## Phase G — pre-paper reliability checks (2026-06-28)
+- [1] GE1.2 per-class on gold: P 0.40 / R 0.50 / F1 0.44 (over-predicted 35 vs 28); GE1.2<->GE1.1
+  confusion -> leaf-level GE1.1/GE1.2 split is EXPLORATORY/cautious; FAMILY GE1 is the inferential
+  unit (confusion stays within family).
+- [2] GE1 family signal VALIDATED against human gold (no judge): AI 46.2% vs human 18.5%,
+  Cohen h=0.61, p=4.7e-8. Judge over-attributes GE1 to AI on non-GE1 items (FP AI 19% vs human 4%,
+  p<0.001) BUT under-calls GE1 for both arms, so the net full-set gap (29pp) ~= gold gap (28pp) ->
+  magnitude unbiased, direction robust. Headline holds; report gold-validated rates alongside.
+- [3] RQ3 side-effects (repair introduces greedy/syntax bugs): NOT significant (AE2 turn0 3->res 8
+  p=0.12; GE2 3->7 p=0.20; n=270 underpowered) -> narrate as "observed, not statistically significant".
+- [4] Stats framing for paper: lead with effect sizes (Cramer's V, Cohen's h, OR); p as "p<0.001".
+  RQ2 problem-clustered GEE is the PRIMARY inference; RQ1 chi2 treats submissions as independent
+  (non-independence inflates p) -> RQ1 used descriptively (distributions + effect sizes).
+- [5] Interpretation caveats: GE6 overflow is a C++-specific leaf (note within-C++ comparison);
+  scope the headline to "gpt-3.5-turbo", not LLMs in general.
