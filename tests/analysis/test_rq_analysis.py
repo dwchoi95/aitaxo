@@ -19,10 +19,14 @@ def _synthetic():
 def test_rq1_and_rq2_run_on_synthetic():
     a = RqAnalysis(Config())
     df = _synthetic()
-    r1 = a.rq1(df)
+    r1 = a.rq1(df, "leaf")
     assert r1["overall"]["p_value"] < 0.05            # human GE4.2 vs AI GE2.1 differ
     assert any(row["leaf"] in ("GE4.2", "GE2.1") for row in r1["rows"])
-    r2 = a.rq2(df, min_positives=10)
+    rfam = a.rq1(a._family_df(df), "family")          # family collapses GE4.2/GE2.1 -> GE4/GE2
+    assert any(row["leaf"] in ("GE4", "GE2", "AE3") for row in rfam["rows"])
+    r2 = a.rq2(df, "leaf", min_positives=10)
     assert r2["n_models"] >= 1
-    a.figure_leaf_frequencies(r1["per_leaf"])
+    a.figure_frequencies(r1["per_cat"], "leaf")
     assert (a.results / "figures" / "rq1_leaf_frequencies.pdf").exists()
+    assert a.saturation(df)["final_distinct"] >= 1
+    assert a.distributions(df)["family"] >= 1

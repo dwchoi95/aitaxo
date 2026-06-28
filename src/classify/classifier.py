@@ -26,7 +26,8 @@ class Classifier:
             results = list(ex.map(lambda s: self.judge.classify(s, model, dry_run), subs))
         if dry_run:
             return self._dry_summary(subs, results, model)
-        out = self.art / "classifications" / f"{self._slug(model)}_{dataset}.jsonl"
+        tag = Path(dataset).stem if str(dataset).endswith(".jsonl") else dataset
+        out = self.art / "classifications" / f"{self._slug(model)}_{tag}.jsonl"
         out.parent.mkdir(parents=True, exist_ok=True)
         with out.open("w", encoding="utf-8") as f:
             for r in results:
@@ -34,6 +35,8 @@ class Classifier:
         return self._summary(results, model, str(out))
 
     def _load(self, dataset):
+        if str(dataset).endswith(".jsonl"):
+            return [json.loads(l) for l in Path(dataset).read_text(encoding="utf-8").split("\n") if l]
         if dataset == "gold":
             man = json.loads((Path(self.config["paths"]["human"]) / "gold_manifest.json")
                              .read_text(encoding="utf-8"))

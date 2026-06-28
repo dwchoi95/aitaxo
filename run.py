@@ -61,8 +61,9 @@ def main():
     cl.add_argument("--dry-run", action="store_true")
     an = sub.add_parser("analyze")
     an.add_argument("--classifications", required=True)
-    an.add_argument("--residual", default=None)
-    an.add_argument("--turn0", default=None)
+    an.add_argument("--rq3", default=None)
+    pe = sub.add_parser("phase-e")
+    pe.add_argument("--limit", type=int, default=None)
     # one add_parser(...) per step is added as each phase's step class is implemented
     args = parser.parse_args()
     config = Config("config.yaml")
@@ -114,8 +115,22 @@ def main():
                                    limit=args.limit, dry_run=args.dry_run)
         print(json.dumps(r, indent=2, ensure_ascii=False))
     elif args.cmd == "analyze":
-        r = RqAnalysis(config).run(args.classifications, args.residual, args.turn0)
+        r = RqAnalysis(config).run(args.classifications, args.rq3)
         print(json.dumps(r, indent=2, default=str))
+    elif args.cmd == "phase-e":
+        cl = Classifier(config)
+        slug = cl._slug(config["judge"]["chosen"])
+        print("[1/3] classifying main dataset (final.jsonl) ...", flush=True)
+        print(json.dumps(cl.run(dataset="final", limit=args.limit)), flush=True)
+        print("[2/3] classifying RQ3 self-reflection set ...", flush=True)
+        rq3_src = str(Path(config["paths"]["artifacts"]) / "dataset" / "rq3_submissions.jsonl")
+        print(json.dumps(cl.run(dataset=rq3_src, limit=args.limit)), flush=True)
+        print("[3/3] analysis (RQ1 family+leaf, RQ2, RQ3, saturation, distributions) ...", flush=True)
+        cdir = Path(config["paths"]["artifacts"]) / "classifications"
+        summary = RqAnalysis(config).run(str(cdir / f"{slug}_final.jsonl"),
+                                         str(cdir / f"{slug}_rq3_submissions.jsonl"))
+        print(json.dumps(summary, indent=2, default=str), flush=True)
+        print("PHASE_E_DONE -- stopped before paper; review results/", flush=True)
 
 
 if __name__ == "__main__":
