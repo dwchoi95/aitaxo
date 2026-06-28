@@ -60,3 +60,6 @@ main.pdf
 # ---- macOS ----
 .DS_Store
 /scratch/
+
+# ---- local state backups (large tarballs) ----
+/backups/

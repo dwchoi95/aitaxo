@@ -1,6 +1,6 @@
 import json
 from collections import Counter
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from src.classify.taxonomy_judge import TaxonomyJudge
@@ -22,17 +22,30 @@ class Classifier:
         if limit:
             subs = subs[:limit]
         model = model or self.chosen or self.slate[0]
-        with ThreadPoolExecutor(max_workers=workers) as ex:
-            results = list(ex.map(lambda s: self.judge.classify(s, model, dry_run), subs))
         if dry_run:
+            results = [self.judge.classify(s, model, True) for s in subs]
             return self._dry_summary(subs, results, model)
+        # resilient: collect as each completes; on a hard error (e.g. quota) stop cleanly and
+        # still write everything finished so far. Cached calls make a later resume free.
+        results, stopped = [], None
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            futs = [ex.submit(self.judge.classify, s, model, False) for s in subs]
+            try:
+                for fut in as_completed(futs):
+                    results.append(fut.result())
+            except Exception as e:
+                stopped = str(e)[:200]
+                for fu in futs:
+                    fu.cancel()
         tag = Path(dataset).stem if str(dataset).endswith(".jsonl") else dataset
         out = self.art / "classifications" / f"{self._slug(model)}_{tag}.jsonl"
         out.parent.mkdir(parents=True, exist_ok=True)
         with out.open("w", encoding="utf-8") as f:
             for r in results:
                 f.write(json.dumps(r, ensure_ascii=False) + "\n")
-        return self._summary(results, model, str(out))
+        summ = self._summary(results, model, str(out))
+        summ.update({"completed": len(results), "total": len(subs), "stopped_early": stopped})
+        return summ
 
     def _load(self, dataset):
         if str(dataset).endswith(".jsonl"):

@@ -46,7 +46,11 @@ class LlmClient:
                 if self._provider(model) == "openai":
                     return self._call_openai(model, messages, params)
                 return self._call_anthropic(model, messages, params)
-            except Exception:
+            except Exception as e:
+                # billing/quota exhaustion will not recover within the backoff window — fail
+                # fast so the caller can stop cleanly and save partial progress
+                if "insufficient_quota" in str(e) or "billing" in str(e).lower():
+                    raise
                 if attempt == retries - 1:
                     raise
                 time.sleep(2 ** attempt)

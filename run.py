@@ -121,16 +121,27 @@ def main():
         cl = Classifier(config)
         slug = cl._slug(config["judge"]["chosen"])
         print("[1/3] classifying main dataset (final.jsonl) ...", flush=True)
-        print(json.dumps(cl.run(dataset="final", limit=args.limit)), flush=True)
+        r1 = cl.run(dataset="final", limit=args.limit)
+        print(json.dumps(r1), flush=True)
         print("[2/3] classifying RQ3 self-reflection set ...", flush=True)
         rq3_src = str(Path(config["paths"]["artifacts"]) / "dataset" / "rq3_submissions.jsonl")
-        print(json.dumps(cl.run(dataset=rq3_src, limit=args.limit)), flush=True)
-        print("[3/3] analysis (RQ1 family+leaf, RQ2, RQ3, saturation, distributions) ...", flush=True)
-        cdir = Path(config["paths"]["artifacts"]) / "classifications"
-        summary = RqAnalysis(config).run(str(cdir / f"{slug}_final.jsonl"),
-                                         str(cdir / f"{slug}_rq3_submissions.jsonl"))
-        print(json.dumps(summary, indent=2, default=str), flush=True)
-        print("PHASE_E_DONE -- stopped before paper; review results/", flush=True)
+        r2 = cl.run(dataset=rq3_src, limit=args.limit)
+        print(json.dumps(r2), flush=True)
+        incomplete = (r1.get("stopped_early") or r2.get("stopped_early")
+                      or r1["completed"] < r1["total"] or r2["completed"] < r2["total"])
+        if incomplete:
+            print(f"PHASE_E_INCOMPLETE -- classification stopped early "
+                  f"(main {r1['completed']}/{r1['total']}, rq3 {r2['completed']}/{r2['total']}; "
+                  f"reason: {r1.get('stopped_early') or r2.get('stopped_early')}). "
+                  "Top up quota and re-run `run.py phase-e` (cached work is reused). Analysis skipped.",
+                  flush=True)
+        else:
+            print("[3/3] analysis (RQ1 family+leaf, RQ2, RQ3, saturation, distributions) ...", flush=True)
+            cdir = Path(config["paths"]["artifacts"]) / "classifications"
+            summary = RqAnalysis(config).run(str(cdir / f"{slug}_final.jsonl"),
+                                             str(cdir / f"{slug}_rq3_submissions.jsonl"))
+            print(json.dumps(summary, indent=2, default=str), flush=True)
+            print("PHASE_E_DONE -- stopped before paper; review results/", flush=True)
 
 
 if __name__ == "__main__":
