@@ -24,6 +24,7 @@ from src.analysis.rq_analysis import RqAnalysis
 from src.classify.classifier import Classifier
 from src.classify.judge_ablation import JudgeAblation
 from src.classify.judge_selector import JudgeSelector
+from src.paper.reference_fetcher import ReferenceFetcher
 from src.generation.ai_generator import AiGenerator
 from src.gold.gold_adjudicator import GoldAdjudicator
 from src.gold.gold_finalizer import GoldFinalizer
@@ -64,6 +65,7 @@ def main():
     an.add_argument("--rq3", default=None)
     pe = sub.add_parser("phase-e")
     pe.add_argument("--limit", type=int, default=None)
+    sub.add_parser("fetch-refs")
     # one add_parser(...) per step is added as each phase's step class is implemented
     args = parser.parse_args()
     config = Config("config.yaml")
@@ -117,6 +119,18 @@ def main():
     elif args.cmd == "analyze":
         r = RqAnalysis(config).run(args.classifications, args.rq3)
         print(json.dumps(r, indent=2, default=str))
+    elif args.cmd == "fetch-refs":
+        works = [  # dblp_key entries are DBLP keys verified by hand-checked title/author/venue
+            {"key": "wei2025taxonomy", "dblp_key": "journals/infsof/WeiLCZQYCJ26"},
+            {"key": "li2022alphacode", "dblp_key": "journals/corr/abs-2203-07814"},
+            {"key": "dou2024whatswrong", "dblp_key": "journals/chinaf/DouJWZWTZCFXZWWGZQH26"},
+            {"key": "tambon2025bugs", "dblp_key": "journals/ese/TambonDNKDA25"},
+            {"key": "riddell2024contamination", "dblp_key": "conf/acl/RiddellNC24"},
+            {"key": "zheng2023judge", "dblp_key": "conf/nips/ZhengC00WZL0LXZ23"},
+            {"key": "liu2023humaneval", "dblp_key": "conf/nips/LiuXW023"},
+        ]
+        r = ReferenceFetcher(config).run(works)
+        print(json.dumps(r, indent=2, ensure_ascii=False))
     elif args.cmd == "phase-e":
         cl = Classifier(config)
         slug = cl._slug(config["judge"]["chosen"])
