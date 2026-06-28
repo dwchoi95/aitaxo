@@ -239,3 +239,19 @@ Append-only log of concrete choices (especially non-FIXED config values), with r
   differences toward the null -> observed differences are **conservative lower bounds**; absolute
   per-leaf frequencies are judge-biased and reported at **family** granularity. (Replaces the
   earlier "symmetric noise -> comparison valid" wording.)
+
+## Phase F — prompt-tune (b) + medium (c) results -> use revised+low (2026-06-28)
+- (b) Tuning the prompt to make GE1.1 the default DID remove the target bias (GE1.1->AE1.1
+  0.19->0.02) but OVERCORRECTED: specific bugs collapsed into GE1.1 (AE1.1->GE1.1 etc.),
+  dropping F1 0.449->0.338, exact 0.431->0.332, recall 0.436->0.328, and widening the per-arm
+  accuracy gap (human 0.298 vs AI 0.409 vs the balanced 0.466/0.451 pre-tune). Rejected;
+  prompt reverted to revised.
+- (c) gpt-5.5 medium effort vs low (100 gold): no gain (F1 0.298 low vs 0.291 medium). More
+  reasoning does not reduce the taxonomy ambiguity. Rejected (medium not worth 2x cost/time).
+- **Chosen judge config = gpt-5.5, revised prompt (primary/secondary), reasoning_effort=low,
+  m=3.** Gold agreement: leaf F1 0.449 / exact 0.431; family F1 0.566; non-differential across
+  arms (per (0)). The GE1.1->AE1.1 bias is accepted (non-differential, Fisher p=1.0).
+- **Phase G analysis decision:** FAMILY is the primary granularity (more reliable, F1 ~0.57);
+  leaf-level is exploratory only. Between-arm differences are reported as conservative lower
+  bounds (non-differential attenuation). RQ4 reports judge-vs-human gap honestly (leaf F1 0.45 /
+  family 0.57 vs human inter-annotator exact 0.71 / kappa 0.62).
