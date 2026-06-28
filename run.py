@@ -126,6 +126,8 @@ def main():
             {"key": "dou2024whatswrong", "dblp_key": "journals/chinaf/DouJWZWTZCFXZWWGZQH26"},
             {"key": "tambon2025bugs", "dblp_key": "journals/ese/TambonDNKDA25"},
             {"key": "riddell2024contamination", "dblp_key": "conf/acl/RiddellNC24"},
+            {"key": "coignion2024leetcode", "dblp_key": "conf/ease/CoignionQR24"},
+            {"key": "crupi2025judge", "dblp_key": "journals/tse/CrupiTVMPB25"},
             {"key": "zheng2023judge", "dblp_key": "conf/nips/ZhengC00WZL0LXZ23"},
             {"key": "liu2023humaneval", "dblp_key": "conf/nips/LiuXW023"},
         ]
