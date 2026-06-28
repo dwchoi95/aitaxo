@@ -338,3 +338,28 @@ chart is now Fig. 2. Table II caption notes negative "Fixed" = bugs newly introd
 (11.4); reference-integrity self-scan = all cited keys provenance-backed. Compiles to 5 pages
 (≤10), 0 undefined references/citations. `paper/` remains gitignored (`.gitignore:39`), so the
 paper source is saved locally but untracked — to revisit in Phase I.
+
+## ICSE-quality paper pass (post-review) — 2026-06-28
+
+User review flagged three submission blockers; all addressed and verified in the compiled PDF.
+
+1. **Float overlap (was submission-blocking).** Page-3 Table I/II + Fig.1 overlapped because the
+   pipeline diagram and the wide tables were single-column floats. Fix: pipeline diagram and the
+   RQ1 bar chart -> `figure*` (2-col span); Table I -> `table*` (2-col); Table II kept single-col.
+   Bar chart regenerated (`figure_frequencies` in rq_analysis.py): readable fonts, ordered by AI
+   share, normalized by arm submission totals so bars match Table I (GE1 40.1/10.7). Added the
+   saturation figure (Fig.3). Verified by rendering every page to PNG: no overlaps; 0 overfull hbox.
+2. **Length 5pp -> 9pp (depth, not filler).** Related Work rewritten into six differentiated
+   subsections; Discussion deepened with APR/self-repair grounding; Method design rationale
+   (contamination window, statistics, gold-annotation protocol, taxonomy-family description);
+   a real GE1 buggy-code example (Codeforces 1575L, longest-run instead of subsequence-DP);
+   RQ2/RQ3 interpretation; F1/F2/F3 findings summary.
+3. **References 9 -> 40.** All verbatim from DBLP (Semantic Scholar still 429), all cited and
+   narrated, all provenance-backed (`logs/refs_provenance.json`), spanning LLM code generation,
+   bug/defect taxonomy, LLM-as-judge, data contamination, competitive programming, and automated
+   program repair. Title-verified each fetched entry; corrected two mismatches via author search.
+
+Rules re-passed: meta-commentary scan = 0 (11.4); Korean per-paragraph glosses (11.1.1);
+reference-integrity scan = 40/40 provenance-backed. Compiles to 9 pages, 0 undefined. The figure-code
+change is numerically inert: `run.py analyze` still regenerates `results/SUMMARY.md` byte-for-byte.
+`paper/` stays gitignored for anonymous submission; switch to tracked at camera-ready (user decision).
