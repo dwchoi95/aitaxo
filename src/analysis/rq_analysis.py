@@ -32,8 +32,8 @@ class RqAnalysis:
         rq1_fam = self.rq1(fam, "family")                  # FAMILY = primary granularity
         rq2_fam = self.rq2(fam, "family")
         rq2_leaf = self.rq2(df, "leaf")
-        self.figure_frequencies(rq1_leaf["per_cat"], "leaf")
-        self.figure_frequencies(rq1_fam["per_cat"], "family")
+        self.figure_frequencies(rq1_leaf["per_cat"], "leaf", rq1_leaf["n_a"], rq1_leaf["n_b"])
+        self.figure_frequencies(rq1_fam["per_cat"], "family", rq1_fam["n_a"], rq1_fam["n_b"])
         sat = self.saturation(df)
         dist = self.distributions(df)
         rq3 = self.rq3(rq3_path) if rq3_path else None
@@ -94,7 +94,7 @@ class RqAnalysis:
         overall = chi2_or_fisher(table) if len(per_cat) > 1 else {"test": "n/a"}
         overall["cramers_v"] = cramers_v(table) if len(per_cat) > 1 else 0.0
         pd.DataFrame(rows).to_csv(self._tables() / f"rq1_{tag}_frequencies.csv", index=False)
-        return {"per_cat": per_cat, "rows": rows, "overall": overall,
+        return {"per_cat": per_cat, "rows": rows, "overall": overall, "n_a": n_a, "n_b": n_b,
                 "n_significant": sum(1 for r in rows if r.get("significant"))}
 
     def rq2(self, df, tag="leaf", min_positives=15):
@@ -186,18 +186,30 @@ class RqAnalysis:
             out[level] = len(cats)
         return out
 
-    def figure_frequencies(self, per_cat, tag):
-        cats = sorted(per_cat)
-        ha = [per_cat[c][0] for c in cats]
-        ai = [per_cat[c][1] for c in cats]
+    def figure_frequencies(self, per_cat, tag, n_a=None, n_b=None):
+        # ICSE-quality grouped bars: order by AI share, percent y-axis, readable fonts.
+        # Normalize by arm submission totals so bars match the per-submission rates in Table I
+        # (a submission may carry several families, so bars need not sum to 100%).
+        ht = n_a or sum(v[0] for v in per_cat.values()) or 1
+        at = n_b or sum(v[1] for v in per_cat.values()) or 1
+        cats = sorted(per_cat, key=lambda c: per_cat[c][1] / at, reverse=True)
+        ha = [100 * per_cat[c][0] / ht for c in cats]
+        ai = [100 * per_cat[c][1] / at for c in cats]
         x = range(len(cats))
-        fig, ax = plt.subplots(figsize=(max(6, len(cats) * 0.4), 4))
-        ax.bar([i - 0.2 for i in x], ha, width=0.4, label="human")
-        ax.bar([i + 0.2 for i in x], ai, width=0.4, label="AI")
+        short = max((len(c) for c in cats), default=0) <= 4
+        fig, ax = plt.subplots(figsize=(7.0, 3.6))
+        ax.bar([i - 0.21 for i in x], ha, width=0.42, label="Human", color="#4C72B0")
+        ax.bar([i + 0.21 for i in x], ai, width=0.42, label="AI (generated)", color="#DD8452")
         ax.set_xticks(list(x))
-        ax.set_xticklabels(cats, rotation=90, fontsize=6)
-        ax.set_ylabel("submissions with category")
-        ax.legend()
+        ax.set_xticklabels(cats, rotation=0 if short else 40, fontsize=10,
+                           ha="center" if short else "right")
+        ax.tick_params(axis="y", labelsize=10)
+        ax.set_ylabel("% of arm's submissions", fontsize=11)
+        ax.grid(axis="y", linewidth=0.4, alpha=0.5)
+        ax.set_axisbelow(True)
+        for s in ("top", "right"):
+            ax.spines[s].set_visible(False)
+        ax.legend(fontsize=10, frameon=False)
         fig.tight_layout()
         fig.savefig(self._figures() / f"rq1_{tag}_frequencies.pdf")
         plt.close(fig)

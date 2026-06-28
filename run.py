@@ -43,6 +43,43 @@ _REF_WORKS = [  # dblp_key entries are DBLP keys verified by hand-checked title/
     {"key": "crupi2025judge", "dblp_key": "journals/tse/CrupiTVMPB25"},
     {"key": "zheng2023judge", "dblp_key": "conf/nips/ZhengC00WZL0LXZ23"},
     {"key": "liu2023humaneval", "dblp_key": "conf/nips/LiuXW023"},
+    # --- LLM code generation ---
+    {"key": "codex2021", "dblp_key": "journals/corr/abs-2107-03374"},
+    {"key": "austin2021mbpp", "dblp_key": "journals/corr/abs-2108-07732"},
+    {"key": "starcoder2023", "dblp_key": "journals/tmlr/LiAZMKMMALCLZZW23"},
+    {"key": "codellama2023", "dblp_key": "journals/corr/abs-2308-12950"},
+    {"key": "codegen2023", "dblp_key": "conf/iclr/NijkampPHTWZSX23"},
+    {"key": "codet2023", "dblp_key": "conf/iclr/ChenZNZLLC23"},
+    {"key": "hendrycks2021apps", "dblp_key": "conf/nips/HendrycksBKMAGB21"},
+    # --- bugs / defects in (LLM) code ---
+    {"key": "pan2024translation", "dblp_key": "conf/icse/PanIKSWMSPSJ24"},
+    {"key": "jesse2023bugs", "dblp_key": "conf/msr/JesseADM23"},
+    {"key": "just2014defects4j", "dblp_key": "conf/issta/JustJE14"},
+    {"key": "dakhel2023copilot", "dblp_key": "journals/jss/DakhelMNKDJ23"},
+    {"key": "liu2024refining", "dblp_key": "journals/tosem/LiuLWTLLL24"},
+    {"key": "yetistiren2023quality", "dblp_key": "journals/corr/abs-2304-10778"},
+    # --- LLM-as-judge ---
+    {"key": "geval2023", "dblp_key": "conf/emnlp/LiuIXWXZ23"},
+    {"key": "wang2024fair", "dblp_key": "conf/acl/WangLCCZLCKLLS24"},
+    {"key": "prometheus2024", "dblp_key": "conf/iclr/KimS0JLLYSKTS24"},
+    {"key": "gu2024judgesurvey", "dblp_key": "journals/corr/abs-2412-05579"},
+    # --- data contamination ---
+    {"key": "livecodebench2024", "dblp_key": "conf/iclr/JainHGLYZWSSS25"},
+    {"key": "golchin2024contamination", "dblp_key": "conf/iclr/GolchinS24"},
+    {"key": "sainz2023contamination", "dblp_key": "conf/emnlp/SainzCGELA23"},
+    # --- competitive programming ---
+    {"key": "usaco2024", "dblp_key": "journals/corr/abs-2404-10952"},
+    {"key": "huang2024competition", "dblp_key": "conf/acl/HuangL0GLLLS0DC24"},
+    {"key": "li2023taco", "dblp_key": "journals/corr/abs-2312-14852"},
+    # --- automated program repair / self-repair ---
+    {"key": "legoues2012genprog", "dblp_key": "journals/tse/GouesNFW12"},
+    {"key": "gazzola2019repair", "dblp_key": "journals/tse/GazzolaMM19"},
+    {"key": "xia2023repair", "dblp_key": "conf/icse/XiaWZ23"},
+    {"key": "jiang2023apr", "dblp_key": "conf/icse/JiangLLT23"},
+    {"key": "fan2023repair", "dblp_key": "conf/icse/FanGMRT23"},
+    {"key": "yang2025apr", "dblp_key": "conf/icse/YangKHMG25"},
+    {"key": "olausson2024selfrepair", "dblp_key": "conf/iclr/OlaussonIW0S24"},
+    {"key": "selfdebug2024", "dblp_key": "conf/iclr/ChenLSZ24"},
 ]
 
 
