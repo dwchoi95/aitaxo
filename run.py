@@ -1,4 +1,5 @@
 import argparse
+import csv
 import json
 import os
 import subprocess
@@ -30,6 +31,91 @@ from src.gold.gold_adjudicator import GoldAdjudicator
 from src.gold.gold_finalizer import GoldFinalizer
 from src.gold.gold_sampler import GoldSampler
 from src.judge.submission_judge import SubmissionJudge
+
+
+_REF_WORKS = [  # dblp_key entries are DBLP keys verified by hand-checked title/author/venue
+    {"key": "wei2025taxonomy", "dblp_key": "journals/infsof/WeiLCZQYCJ26"},
+    {"key": "li2022alphacode", "dblp_key": "journals/corr/abs-2203-07814"},
+    {"key": "dou2024whatswrong", "dblp_key": "journals/chinaf/DouJWZWTZCFXZWWGZQH26"},
+    {"key": "tambon2025bugs", "dblp_key": "journals/ese/TambonDNKDA25"},
+    {"key": "riddell2024contamination", "dblp_key": "conf/acl/RiddellNC24"},
+    {"key": "coignion2024leetcode", "dblp_key": "conf/ease/CoignionQR24"},
+    {"key": "crupi2025judge", "dblp_key": "journals/tse/CrupiTVMPB25"},
+    {"key": "zheng2023judge", "dblp_key": "conf/nips/ZhengC00WZL0LXZ23"},
+    {"key": "liu2023humaneval", "dblp_key": "conf/nips/LiuXW023"},
+]
+
+
+def _csv_has_values(path, *cols):
+    # True once a human has entered at least one label in any of the named columns.
+    if not path.exists():
+        return False
+    for r in csv.DictReader(path.open(encoding="utf-8")):
+        if any((r.get(c) or "").strip() for c in cols):
+            return True
+    return False
+
+
+def cmd_all(config, limit=None):
+    # Single-entry reproduction driver: runs every phase in order. LLM steps are cached
+    # (re-run is free once populated); data steps are idempotent. Stops cleanly at the two
+    # human-labeling gates if the annotation/adjudication CSVs are not yet filled.
+    human = Path(config["paths"]["human"])
+
+    print("== Phase A: problem set + judgeable-subset gate ==", flush=True)
+    ProblemSetBuilder(config).run()
+    root = Path(config["paths"]["data"]) / "problems"
+    r = SubmissionJudge(config).oracle_ac_selftest(root, config["languages"]["primary"], limit=limit)
+    out = Path(config["paths"]["artifacts"]) / "judgeable_problems.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(r, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    print("== Phase B/C: human + AI corpora (AI needs OPENAI_API_KEY; cached) ==", flush=True)
+    HumanCorpusBuilder(config).run(limit=limit)
+    AiGenerator(config).run(limit=limit)
+
+    print("== Phase D: finalize dataset (both-arm intersection) ==", flush=True)
+    DatasetFinalizer(config).run()
+
+    print("== Gold sampling -> human gate 1 ==", flush=True)
+    GoldSampler(config).run()
+    if not _csv_has_values(human / "annotation_annotator1.csv", "labels", "uncovered") or \
+       not _csv_has_values(human / "annotation_annotator2.csv", "labels", "uncovered"):
+        print(f"ALL_STOPPED_GOLD_ANNOTATION -- fill {human}/annotation_annotator[12].csv "
+              "(see the emitted README), then re-run `run.py all`.", flush=True)
+        return
+    r = GoldAdjudicator(config).run()
+    print(json.dumps(r, ensure_ascii=False), flush=True)
+
+    if r.get("disputed", 0) and not _csv_has_values(human / "annotation_adjudication.csv", "final_labels"):
+        print(f"ALL_STOPPED_GOLD_ADJUDICATION -- fill final_labels in "
+              f"{human}/annotation_adjudication.csv, then re-run `run.py all`.", flush=True)
+        return
+    GoldFinalizer(config).run()
+
+    print("== Phase F: judge selection (needs API; cached) ==", flush=True)
+    JudgeSelector(config).run(limit=limit)
+
+    print("== Phase E: classify (final + RQ3) then analyze ==", flush=True)
+    cl = Classifier(config)
+    slug = cl._slug(config["judge"]["chosen"])
+    r1 = cl.run(dataset="final", limit=limit)
+    rq3_src = str(Path(config["paths"]["artifacts"]) / "dataset" / "rq3_submissions.jsonl")
+    r2 = cl.run(dataset=rq3_src, limit=limit)
+    if (r1.get("stopped_early") or r2.get("stopped_early")
+            or r1["completed"] < r1["total"] or r2["completed"] < r2["total"]):
+        print(f"ALL_STOPPED_CLASSIFY -- stopped early "
+              f"(main {r1['completed']}/{r1['total']}, rq3 {r2['completed']}/{r2['total']}). "
+              "Top up quota and re-run `run.py all` (cached work is reused).", flush=True)
+        return
+    cdir = Path(config["paths"]["artifacts"]) / "classifications"
+    RqAnalysis(config).run(str(cdir / f"{slug}_final.jsonl"),
+                           str(cdir / f"{slug}_rq3_submissions.jsonl"))
+
+    print("== References (DBLP verbatim) ==", flush=True)
+    ReferenceFetcher(config).run(_REF_WORKS)
+    print("ALL_DONE -- artifacts + results + references rebuilt; build the paper with "
+          "`cd paper && latexmk -pdf main.tex`.", flush=True)
 
 
 def main():
@@ -66,6 +152,8 @@ def main():
     pe = sub.add_parser("phase-e")
     pe.add_argument("--limit", type=int, default=None)
     sub.add_parser("fetch-refs")
+    al = sub.add_parser("all")
+    al.add_argument("--limit", type=int, default=None)
     # one add_parser(...) per step is added as each phase's step class is implemented
     args = parser.parse_args()
     config = Config("config.yaml")
@@ -120,19 +208,10 @@ def main():
         r = RqAnalysis(config).run(args.classifications, args.rq3)
         print(json.dumps(r, indent=2, default=str))
     elif args.cmd == "fetch-refs":
-        works = [  # dblp_key entries are DBLP keys verified by hand-checked title/author/venue
-            {"key": "wei2025taxonomy", "dblp_key": "journals/infsof/WeiLCZQYCJ26"},
-            {"key": "li2022alphacode", "dblp_key": "journals/corr/abs-2203-07814"},
-            {"key": "dou2024whatswrong", "dblp_key": "journals/chinaf/DouJWZWTZCFXZWWGZQH26"},
-            {"key": "tambon2025bugs", "dblp_key": "journals/ese/TambonDNKDA25"},
-            {"key": "riddell2024contamination", "dblp_key": "conf/acl/RiddellNC24"},
-            {"key": "coignion2024leetcode", "dblp_key": "conf/ease/CoignionQR24"},
-            {"key": "crupi2025judge", "dblp_key": "journals/tse/CrupiTVMPB25"},
-            {"key": "zheng2023judge", "dblp_key": "conf/nips/ZhengC00WZL0LXZ23"},
-            {"key": "liu2023humaneval", "dblp_key": "conf/nips/LiuXW023"},
-        ]
-        r = ReferenceFetcher(config).run(works)
+        r = ReferenceFetcher(config).run(_REF_WORKS)
         print(json.dumps(r, indent=2, ensure_ascii=False))
+    elif args.cmd == "all":
+        cmd_all(config, limit=args.limit)
     elif args.cmd == "phase-e":
         cl = Classifier(config)
         slug = cl._slug(config["judge"]["chosen"])

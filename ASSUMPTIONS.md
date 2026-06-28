@@ -30,3 +30,21 @@ Append-only log of assumptions, limitations, and anything flagged for the human.
   hardened subprocess sandbox (network- and filesystem-isolated via the OS sandbox, with CPU,
   memory, output, and wall-clock limits and process-group teardown) rather than Docker, which
   was unavailable on the host; this does not affect verdicts, only the isolation mechanism."
+
+## Phase H — references source (2026-06-28)
+- **Plan 11.2 mandates Semantic Scholar** for verbatim BibTeX. The keyless Semantic Scholar API
+  rate-limited this host persistently (HTTP 429) from both the fetcher and WebFetch, so it was
+  **unusable**. We instead fetch verbatim `.bib` from **DBLP** (the authoritative CS bibliography)
+  by hand-verified DBLP key — `ReferenceFetcher` now targets DBLP and logs provenance (DBLP key,
+  title, venue, DOI) to `logs/refs_provenance.json`. This preserves the rule's intent (real,
+  verifiable, never hand-written references); only the source differs. All 9 entries in
+  `paper/references.bib` are provenance-backed; none are hand-authored.
+- **Wei et al. correction:** the earlier hand-written stub used a fabricated title; the real paper
+  is *Evaluating and improving LLM-based competitive program generation* (Inf. Softw. Technol.,
+  2026), which contains the GE/AE taxonomy used as our instrument.
+
+## Phase I — reproducibility (2026-06-28)
+- `run.py all` is the single-entry reproduction driver; it honors the LLM cache and stops at the two
+  human-labeling gates. A full cold run costs real API money (~\$180 for classification); a warm
+  cache (`logs/cache`) reproduces at \$0 and deterministically. Sandbox is macOS `sandbox-exec` +
+  rlimits (no Docker — see Phase B); on Linux `src/judge/sandbox_runner.py` must be ported.
