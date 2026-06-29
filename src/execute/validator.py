@@ -1,19 +1,18 @@
 import hashlib
 import json
 import tempfile
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from src.judge.sandbox_runner import SandboxRunner
+from src.execute.sandbox import Sandbox
 
 
-class SubmissionJudge:
+class Validator:
     # Compile + run an untrusted C++ submission against a problem's tests and return a verdict
     # (CE > RE > TLE > WA > AC) with rich signals (first failing test, per-test vector, peak time).
     # Results are cached by (problem_id, hash(source), language) so re-runs are free and deterministic.
     def __init__(self, config):
         self.config = config
-        self.runner = SandboxRunner(config)
+        self.sandbox = Sandbox(config)
         self.cache = Path(config["paths"]["artifacts"]) / "exec_cache"
         self.cap = config["execution"]["first_failing_cap_chars"]
         self.default_tl = config["execution"]["default_time_limit_s"]
@@ -32,45 +31,16 @@ class SubmissionJudge:
         self._write_cache(key, result)
         return result
 
-    # harness-correctness gate: every problem's oracle solution must judge AC, else the problem
-    # is not exactly judgeable (special-judge / interactive / compiler- or runtime-incompatible)
-    # and is excluded with a recorded reason.
-    def oracle_ac_selftest(self, benchmark_root, language="cpp", limit=None, workers=8):
-        dirs = sorted(p.parent for p in Path(benchmark_root).glob("*/meta.json"))
-        if limit:
-            dirs = dirs[:limit]
-
-        def check(d):
-            f = d / "correct.jsonl"
-            lines = [l for l in f.read_text(encoding="utf-8").split("\n") if l] if f.exists() else []
-            if not lines:
-                return (d.name, "no_oracle")
-            return (d.name, self.judge(d, json.loads(lines[0])["source"], language)["verdict"])
-
-        with ThreadPoolExecutor(max_workers=workers) as ex:
-            results = list(ex.map(check, dirs))
-        judged = [(n, v) for n, v in results if v != "no_oracle"]
-        reason = {"CE": "compiler_incompatible", "RE": "runtime_incompatible",
-                  "TLE": "nonexact_or_timeout", "WA": "special_judge_or_nonexact"}
-        judgeable = sorted(n for n, v in judged if v == "AC")
-        excluded = [{"problem_id": n, "verdict": v, "reason": reason.get(v, v)}
-                    for n, v in judged if v != "AC"]
-        return {"problems": len(results), "judged": len(judged), "ac": len(judgeable),
-                "ac_rate_on_judgeable": 100.0 if judgeable else 0.0,
-                "judgeable_count": len(judgeable), "excluded_count": len(excluded),
-                "no_oracle": len(results) - len(judged),
-                "judgeable": judgeable, "excluded": excluded}
-
     def _execute(self, source, tests, tl):
         with tempfile.TemporaryDirectory() as td:
             workdir = Path(td)
-            ok, cerr, binp = self.runner.compile_cpp(source, workdir)
+            ok, cerr, binp = self.sandbox.compile_cpp(source, workdir)
             if not ok:
                 return self._result("CE", compiler_stderr=cerr)
             cmd = [str(binp)]
             per_test, peak = [], 0
             for i, t in enumerate(tests):
-                res = self.runner.run(cmd, t["input"], tl, workdir)
+                res = self.sandbox.run(cmd, t["input"], tl, workdir)
                 peak = max(peak, res["time_ms"])
                 verdict = self._classify(res, t["output"])
                 per_test.append({"idx": i, "pass": verdict == "AC"})

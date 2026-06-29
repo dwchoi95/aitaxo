@@ -1,1 +1,1 @@
-from .benchmark_builder import BenchmarkBuilder
+from .builder import Builder

@@ -1,10 +1,17 @@
 # Single source of truth for parameters. Non-FIXED values are justified in DECISIONS.md.
 
-benchmark:
+build:
   dataset: deepmind/code_contests
   split: test                 # FIXED: test split = published post-2021-09-21 (contamination-clean)
   source_codeforces: 2        # CodeContests `source` enum value for Codeforces (has cf_rating/cf_tags)
   cpp_language: 2             # CodeContests `language` enum value for C++
+  # build-time validation: EVERY C++ submission is judged by our sandbox; submissions whose
+  # sandbox verdict disagrees with the CodeContests label are dropped (a "correct" that is not AC,
+  # an "incorrect" that is AC). Keep a problem only if >= min_correct corrects still judge AC AND
+  # >= min_incorrect incorrects still judge non-AC.
+  min_correct: 1
+  min_incorrect: 10
+  workers: 16
 
 execution:
   # GNU GCC (not Apple clang) for faithful 2021-era competitive C++ (bits/stdc++.h, GCC extensions)
@@ -17,5 +24,5 @@ execution:
   first_failing_cap_chars: 6000 # truncate stored first_failing_test input/expected/actual
 
 paths:
-  benchmark: benchmark
+  data: data
   artifacts: artifacts

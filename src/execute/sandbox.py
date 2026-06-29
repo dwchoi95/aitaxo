@@ -7,7 +7,7 @@ import time
 from pathlib import Path
 
 
-class SandboxRunner:
+class Sandbox:
     # Docker is unavailable on this host (macOS, no daemon/colima); installing a Linux VM is
     # impractical for judging tens of thousands of submissions x hundreds of tests. This is the
     # hardened-subprocess fallback: macOS sandbox-exec denies network + all filesystem writes
