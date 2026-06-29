@@ -5,13 +5,14 @@ build:
   split: test                 # FIXED: test split = published post-2021-09-21 (contamination-clean)
   source_codeforces: 2        # CodeContests `source` enum value for Codeforces (has cf_rating/cf_tags)
   cpp_language: 2             # CodeContests `language` enum value for C++
-  # build-time validation: EVERY C++ submission is judged by our sandbox; submissions whose
-  # sandbox verdict disagrees with the CodeContests label are dropped (a "correct" that is not AC,
-  # an "incorrect" that is AC). Keep a problem only if >= min_correct corrects still judge AC AND
-  # >= min_incorrect incorrects still judge non-AC.
+  # build-time validation. Incorrects are FULLY validated: every incorrect is judged and only the
+  # ones our sandbox confirms non-AC are kept (unexpected-AC ones are dropped). Corrects are judged
+  # only until one judges AC (the judgeability gate) and are then stored unfiltered; if NO correct
+  # judges AC the whole problem is deleted. Keep a problem only if it is judgeable (>= 1 AC correct)
+  # AND yields >= min_incorrect confirmed-non-AC incorrects.
   min_correct: 1
   min_incorrect: 10
-  workers: 16
+  workers: 18
 
 execution:
   # GNU GCC (not Apple clang) for faithful 2021-era competitive C++ (bits/stdc++.h, GCC extensions)

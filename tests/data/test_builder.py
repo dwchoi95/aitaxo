@@ -39,10 +39,10 @@ def test_validation_filter(tmp_path, monkeypatch):
     assert r["kept_problems"] == 1
     assert r["dropped"] == {"too_few_bugs": 1, "not_judgeable": 1}
 
-    # disagreement totals over every judged submission: the 2 WA "correct"s (3C) and the 2
-    # unexpected-AC "incorrect"s (1A) are the label-vs-sandbox mismatches
+    # corrects are judged only until the first AC (1A,2B judge 1 each; 3C judges both WA -> 2
+    # disagreements); incorrects are fully judged (1A's 2 unexpected-AC are the mismatch)
     dis = r["disagreement"]
-    assert dis["correct_judged"] == 5 and dis["correct_disagree"] == 2
+    assert dis["correct_judged"] == 4 and dis["correct_disagree"] == 2
     assert dis["incorrect_judged"] == 17 and dis["incorrect_disagree_unexpected_ac"] == 2
 
     # only the qualifying Codeforces problem is materialized

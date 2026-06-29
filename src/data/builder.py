@@ -67,13 +67,18 @@ class Builder:
         correct = self._by_lang(ex["solutions"]).get(self.cpp, [])
         incorrect = self._by_lang(ex["incorrect_solutions"]).get(self.cpp, [])
 
-        # validate EVERY correct; keep those our sandbox confirms AC (drop label disagreements).
-        # cj/ca/ij/ia = corrects judged / corrects AC / incorrects judged / incorrects AC(unexpected),
-        # carried for every problem (kept or dropped) so run() can total the label disagreements.
-        ac = [s for s in correct if self.validator.judge(d, s)["verdict"] == "AC"]
-        res = {"problem_id": pid, "cj": len(correct), "ca": len(ac), "ij": 0, "ia": 0}
-        # if none judge AC, the problem is not exactly judgeable -> delete it.
-        if len(ac) < self.min_correct:
+        # judge corrects only until one judges AC (the judgeability gate); corrects are NOT filtered.
+        # cj/ca = corrects judged / corrects AC (a lower bound on correct disagreements, since we stop
+        # at the first AC); ij/ia = incorrects judged / incorrects AC (unexpected-AC disagreements).
+        cj, ca = 0, 0
+        for s in correct:
+            cj += 1
+            if self.validator.judge(d, s)["verdict"] == "AC":
+                ca = 1
+                break
+        res = {"problem_id": pid, "cj": cj, "ca": ca, "ij": 0, "ia": 0}
+        # no correct judged AC -> problem is not exactly judgeable -> delete it.
+        if ca < self.min_correct:
             shutil.rmtree(d)
             return {**res, "kept": False, "drop_reason": "not_judgeable"}
 
@@ -84,14 +89,15 @@ class Builder:
             shutil.rmtree(d)
             return {**res, "kept": False, "drop_reason": "too_few_bugs"}
 
-        self._write_jsonl(d / "correct.jsonl", [{"source": s} for s in ac])
+        # corrects are stored unfiltered (kept as-is); incorrects are the confirmed-non-AC subset
+        self._write_jsonl(d / "correct.jsonl", [{"source": s} for s in correct])
         self._write_jsonl(d / "incorrect.jsonl", [{"source": s} for s in bugs])
-        self._write_meta(d, pid, ex, n_correct=len(ac), n_correct_dropped=res["cj"] - res["ca"],
+        self._write_meta(d, pid, ex, n_correct=len(correct),
                          n_incorrect=len(bugs), n_incorrect_dropped=res["ia"])
         return {**res, "kept": True, "drop_reason": None,
                 "manifest": {"problem_id": pid, "cf_rating": ex["cf_rating"],
                              "cf_tags": "|".join(ex["cf_tags"]), "difficulty": ex["difficulty"],
-                             "n_correct": len(ac), "n_correct_dropped": res["cj"] - res["ca"],
+                             "n_correct": len(correct),
                              "n_incorrect": len(bugs), "n_incorrect_dropped": res["ia"]}}
 
     def _load(self):
