@@ -1,0 +1,10 @@
+# Single source of truth for parameters. Non-FIXED values are justified in DECISIONS.md.
+
+benchmark:
+  dataset: deepmind/code_contests
+  split: test                 # FIXED: test split = published post-2021-09-21 (contamination-clean)
+  source_codeforces: 2        # CodeContests `source` enum value for Codeforces (has cf_rating/cf_tags)
+  cpp_language: 2             # CodeContests `language` enum value for C++
+
+paths:
+  benchmark: benchmark
