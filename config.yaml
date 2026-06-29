@@ -6,5 +6,16 @@ benchmark:
   source_codeforces: 2        # CodeContests `source` enum value for Codeforces (has cf_rating/cf_tags)
   cpp_language: 2             # CodeContests `language` enum value for C++
 
+execution:
+  # GNU GCC (not Apple clang) for faithful 2021-era competitive C++ (bits/stdc++.h, GCC extensions)
+  cpp_compiler: /opt/homebrew/bin/g++-16
+  cpp_std: gnu++17
+  time_margin_s: 1.0            # added to each test's time limit before TLE
+  output_cap_bytes: 10000000    # stdout cap + RLIMIT_FSIZE
+  default_time_limit_s: 2.0     # used if a problem has no time_limit
+  default_memory_mb: 256
+  first_failing_cap_chars: 6000 # truncate stored first_failing_test input/expected/actual
+
 paths:
   benchmark: benchmark
+  artifacts: artifacts
