@@ -28,8 +28,8 @@
 
 \begin{document}
 
-\title{HuAIBench: A Sandbox-Verified Benchmark for\\
-Human and AI Code-Failure Taxonomies}
+\title{HuAIBench: A Claim-Calibrated Benchmark for\\
+Human and AI Code Failures}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{\textit{Submitted for review}}}
@@ -38,25 +38,25 @@ Human and AI Code-Failure Taxonomies}
 
 \begin{abstract}
 Benchmarks for code generation usually measure whether programs pass tests; they
-rarely provide calibrated evidence about how human and AI programs fail. We introduce
-\emph{HuAIBench}, a sandbox-verified benchmark and protocol for bug-taxonomy studies
-on competitive-programming failures: 14{,}182 buggy C++ submissions on 107
-post-cutoff CodeContests problems, aligned across human submissions, a cutoff-aligned
-proxy LLM, a modern contrast LLM, and a public-example self-reflection loop.
-HuAIBench pairs shared verdicts with the 32-leaf Wei et al. taxonomy, a 375-bug
-doubly annotated human gold set, audited LLM-judge labels for the full corpus, and a
-120-item stronger-evidence audit with failing tests and reference solutions. Its
-baseline calibration yields a claim ladder: sandbox verdicts support label-free
-outcome claims; validated family labels support coarse triage but not small
-source-level differences; and common-evidence labels do not establish root causes.
-The LLM judge reaches substantial agreement with the gold ($\kappa\approx0.76$) but
-over-applies design by 6--9 points; stronger-evidence relabeling changes 55.0\% of
-audited family labels. The stable benchmark signal is broad math/design
-concentration plus a source-conditional syntax/compile separation, not fine-grained
-human-vs-AI root-cause differences. Public-example self-reflection repairs only
-4.0\% of proxy-model bugs, matching same-budget resampling and fixing no runtime or
-time-limit failures. We release the benchmark data, prompts, cached outputs, labels,
-audit packs, and analysis scripts.
+rarely provide reusable evidence about how human and AI programs fail. We introduce
+\emph{HuAIBench}, a claim-calibrated benchmark for competitive-programming failures:
+14{,}182 sandbox-confirmed buggy C++ submissions on 107 post-cutoff CodeContests
+problems, aligned across human submissions, a cutoff-aligned proxy LLM, a modern
+contrast LLM, and a public-example self-reflection loop. HuAIBench is tiered rather
+than a single label file: it provides exact sandbox verdicts, the 32-leaf Wei et al.
+taxonomy, a 375-bug doubly annotated common-evidence gold set for labeler evaluation,
+audited LLM-judge labels for full-corpus screening, a 120-item stronger-evidence
+audit with failing tests and reference solutions, and reflection trajectories with a
+same-budget resampling baseline. This structure turns the dataset into benchmark
+tasks with explicit evidence levels. Exact verdicts support outcome, difficulty, and
+repair claims; human gold labels support taxonomy-labeler calibration; full-corpus
+LLM labels support coarse screened analyses; and stronger-evidence packs test
+whether diagnostic labels survive root-cause evidence. Baseline results show a
+stable math/design concentration plus a syntax/compile separation, a judge that
+reaches substantial agreement but over-applies design by 6--9 points, and
+public-example self-reflection that repairs only 4.0\% of proxy-model bugs, matching
+resampling and fixing no runtime or time-limit failures. We release the benchmark
+data, prompts, cached outputs, labels, audit packs, and analysis scripts.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -105,7 +105,9 @@ whose training window covers the problems (a descriptive contrast, not a
 cutoff-controlled source); and a self-reflection loop on the cutoff proxy. Every
 submission is judged in a hardened sandbox; two annotators label a 375-bug gold set;
 an LLM judge labels the full corpus; and a 120-item audit adds failing tests and
-reference solutions.
+reference solutions. The current model arms are baseline instantiations, not the
+benchmark's ceiling: future generators or labelers can be run through the same
+problems, sandbox, gold labels, and audit packs.
 
 We evaluate HuAIBench through four questions, ordered from benchmark validation to
 baseline findings: \textbf{RQ1} asks how reliable taxonomy labels are under common
@@ -114,24 +116,27 @@ source-conditioned taxonomy signals remain after calibration; \textbf{RQ3} asks 
 capability, contamination risk, and difficulty shape label-free outcomes; and
 \textbf{RQ4} establishes a public-example self-reflection baseline.
 
-The benchmark's main output is a calibrated claim ladder. A validated LLM judge is
-adequate for coarse family triage but not fine source separation: it reaches
-substantial agreement with the gold while inflating design labels by 6--9 points.
-Common-evidence labels are diagnostic proxies, not root causes: stronger evidence
-changes 55\% of audited family labels. Fine source-family shifts are therefore
-benchmark screens; the defensible taxonomy signal is coarse mathematics/design
-concentration plus a source-conditional syntax/compile separation. Label-free
-dynamics are stronger: the modern contrast is more capable but difficulty-sensitive,
-and public-example feedback repairs only 4\% of proxy-model bugs, matching
-same-budget resampling.
+HuAIBench's main output is a set of calibrated benchmark tasks, not an unconditional
+taxonomy leaderboard. Researchers can evaluate new code generators on the same
+post-cutoff tasks and sandbox; evaluate taxonomy labelers against the 375-bug human
+gold; stress-test diagnostic labels on the 120 stronger-evidence packs; and compare
+repair methods against the released reflection and resampling trajectories. Our
+baseline instantiation shows which uses are supported: exact verdicts are stable;
+family labels support coarse triage; fine source-family shifts are screens; and
+root-cause claims require stronger evidence. The defensible taxonomy signal is coarse
+mathematics/design concentration plus a source-conditional syntax/compile separation.
+Label-free dynamics are stronger: the modern contrast is more capable but
+difficulty-sensitive, and public-example feedback repairs only 4\% of proxy-model
+bugs, matching same-budget resampling.
 
-Contributions: \textbf{(i)} \emph{HuAIBench}, a released human-and-AI
-failed-submission benchmark with 14{,}182 sandbox-confirmed bugs, gold labels,
-automated labels, and audit packs; \textbf{(ii)} a validation protocol combining
-human gold, power analysis, problem-level bootstrap, per-family judge error, bias
-correction, and stronger-evidence relabeling; \textbf{(iii)} evidence that
-common-evidence labels often change under stronger evidence; and \textbf{(iv)}
-label-free and taxonomy-aware self-reflection baselines.
+Contributions: \textbf{(i)} \emph{HuAIBench}, a released tiered benchmark with
+14{,}182 sandbox-confirmed human/AI bugs, gold labels, full-corpus screen labels,
+stronger-evidence audit packs, and repair trajectories; \textbf{(ii)} benchmark
+tasks and baselines for sandbox outcomes, taxonomy-labeler calibration,
+stronger-evidence stress testing, and self-reflection; \textbf{(iii)} a validation
+protocol combining human gold, power analysis, problem-level bootstrap, per-family
+judge error, bias correction, and stronger-evidence relabeling; and \textbf{(iv)}
+baseline findings that define the current supported claim boundary.
 
 \section{Background and Related Work}
 \label{sec:background}
@@ -580,36 +585,36 @@ AE5 & 13 & 7 & GE1 3; GE2 2\\
 
 \begin{table}[t]
 \centering
-\caption{HuAIBench claim-calibration checklist used before interpreting RQ2--RQ4. The steps are
-transferable; thresholds are evidence-level gates for this study, not universal
-significance cutoffs.}
+\caption{HuAIBench benchmark tasks and claim gates. Each task has released evidence,
+a baseline metric in this paper, and a supported claim level.}
 \label{tab:claimcal}
 \scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lll}
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{p{0.20\columnwidth}p{0.30\columnwidth}p{0.25\columnwidth}p{0.18\columnwidth}}
 \toprule
-Claim & Rule & Outcome\\
+Task & Released evidence & Baseline metric & Claim gate\\
 \midrule
-Verdicts/repair & Deterministic & Direct claims\\
-Coarse families & Labeler + audit & Bounded AE1/GE1\\
-Fine shifts & Bootstrap + bias & Screen only\\
-Root causes & Paired evidence & Not inferred\\
+Outcome & sandbox verdicts, tests, cache & pass/verdict by problem & direct\\
+Labeler & 375 human gold labels & $\kappa$, $F_1$, bias & calibration\\
+Corpus screen & 14{,}182 judge labels & bootstrap + bias & coarse triage\\
+Root-cause stress & 120 stronger packs & stability, transitions & diagnostic only\\
+Repair & reflection trajectories & fixed vs.\ resampling & repair baseline\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:claimcal} is the construct boundary for the rest of the paper. A
-full-corpus taxonomy difference is not promoted beyond a screen unless it survives
-problem-level clustering and the arm-specific bias correction in
-Table~\ref{tab:measerr}; root-cause claims are never made from common evidence alone.
-Common-evidence labels can say that a failure looks mathematical, design-like, or
-syntactic under the evidence a scalable study can usually afford. They cannot, by
-themselves, establish the root-cause mechanism of a wrong answer. The 55.0\% should
-not be read as a pure evidence effect: the comparison changes evidence, task target,
-and adjudicated label source at the same time. The stronger-evidence task is also
-harder, with lower annotator agreement than the common-evidence gold (family
-$\kappa=0.69$ vs.\ 0.83), so the number combines evidence gain, taxonomy-boundary
-ambiguity, and root-cause-labeling instability.
+Table~\ref{tab:claimcal} is the construct boundary for using HuAIBench. The benchmark
+has direct ground truth for outcomes and repair trajectories, human ground truth for
+labeler evaluation, a full-corpus automated screen for coarse family profiles, and a
+stronger-evidence stress set for diagnostic-label robustness. A full-corpus taxonomy
+difference is not promoted beyond a screen unless it survives problem-level
+clustering and the arm-specific bias correction in Table~\ref{tab:measerr};
+root-cause claims are never made from common evidence alone. The 55.0\% should not be
+read as a pure evidence effect: the comparison changes evidence, task target, and
+adjudicated label source at the same time. The stronger-evidence task is also harder,
+with lower annotator agreement than the common-evidence gold (family $\kappa=0.69$
+vs.\ 0.83), so the number combines evidence gain, taxonomy-boundary ambiguity, and
+root-cause-labeling instability.
 Nor do we claim the stronger-evidence label is uniquely true: one failing test and one
 reference solution can still leave multiple plausible fixes. The audit's role is to
 stress-test label stability under better evidence, not to certify final root causes.
@@ -929,17 +934,20 @@ nearly absent for hard algorithmic families.}
 \section{Discussion}
 \label{sec:discussion}
 \paragraph{Benchmark claim boundaries}
-HuAIBench's main result is both operational and empirical. Operationally, taxonomy
-benchmarks should state the evidence level of each claim: sandbox verdicts support
-outcome and repair dynamics; validated family labels support triage statements such
-as ``most failures look mathematical/design-like''; and root-cause claims require
-failing-test or reference evidence. Empirically, our full instantiation shows why:
-corrected source deltas have wide gold-sample uncertainty, the judge has family-level
-bias, and stronger-evidence labels change family for 55.0\% of audited wrong
-answers. Pass@$k$ alone misses these failure modes, but taxonomy profiles are useful
-only at the granularity where the instrument is reliable. This is why HuAIBench's
-baseline findings stop at coarse math/design concentration plus a separate
-syntax/compile gap.
+HuAIBench's main result is a usable benchmark suite with explicit claim gates. It
+separates four common downstream uses that are often conflated: measuring outcome
+dynamics, evaluating taxonomy labelers, screening full-corpus failure profiles, and
+testing whether diagnostic labels survive stronger evidence. Sandbox verdicts support
+outcome and repair dynamics directly; the 375-bug gold supports labeler comparison;
+the full-corpus judge labels support only coarse triage; and root-cause claims
+require failing-test or reference evidence. Empirically, our baseline instantiation
+shows why these gates matter: corrected source deltas have wide gold-sample
+uncertainty, the judge has family-level bias, and stronger-evidence labels change
+family for 55.0\% of audited wrong answers. Pass@$k$ alone misses these failure
+modes, but taxonomy profiles are useful at the granularity where the instrument is
+reliable. This is why HuAIBench's baseline findings stop at coarse math/design
+concentration plus a separate syntax/compile gap, while leaving future generators and
+labelers a fixed benchmark substrate.
 
 \section{Threats to Validity}
 \label{sec:threats}
@@ -991,20 +999,24 @@ measurement-limited.
 
 \section{Conclusion}
 \label{sec:conclusion}
-HuAIBench is a benchmark for measuring human and AI code failures, and its central
-lesson is that benchmark labels are useful only when the claim matches the evidence.
-Sandbox verdicts support outcomes; validated family labels support coarse triage;
-and neither common-evidence nor automated labels support fine source-level
-root-cause explanations. The transferable rule is to validate the labeler, control
-problem clustering, audit stronger evidence, and state benchmark results at the
-granularity the instrument can sustain.
+HuAIBench is a benchmark for measuring human and AI code failures with explicit
+evidence tiers. It provides sandbox-grounded outcome tasks, human-gold labeler
+calibration, full-corpus taxonomy screens, stronger-evidence diagnostic stress tests,
+and repair baselines. Its first baselines show stable coarse math/design
+concentration, a syntax/compile separation, and weak public-example self-reflection.
+The transferable rule is to report benchmark results at the granularity the released
+evidence can sustain.
 
 \section{Artifact Availability}
 \label{sec:artifacts}
-HuAIBench artifacts are available at \url{https://anonymous.4open.science/r/aitaxo}: problem
-metadata, prompts, raw generated/reflected programs, judge labels, human gold labels,
-stronger-evidence audit packs, cached verdicts, and analysis scripts. Exact
-proprietary-model regeneration is not required for the reported tables.
+\begingroup\raggedright
+HuAIBench artifacts are available at \url{https://anonymous.4open.science/r/aitaxo}:
+problem metadata and retained/dropped counts; prompt templates; raw
+human/generated/reflected programs; LLM-judge labels and rationales; human gold and
+stronger-evidence audit packs; execution-cache JSON with first failing tests; and
+analysis scripts that regenerate the reported tables from cached outputs. Exact
+proprietary-model regeneration is not required.
+\par\endgroup
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
