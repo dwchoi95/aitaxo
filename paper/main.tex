@@ -601,40 +601,40 @@ AE5 & 13 & 7 & GE1 3; GE2 2\\
 
 \begin{table}[t]
 \centering
-\caption{HuAIBench benchmark tasks and claim gates. Each task has released evidence,
-a baseline metric in this paper, and a supported claim level.}
+\caption{HuAIBench benchmark contract: each released evidence tier has an intended
+use and an explicitly unsupported use.}
 \label{tab:claimcal}
 \scriptsize
 \setlength{\tabcolsep}{2pt}
-\begin{tabular}{p{0.20\columnwidth}p{0.30\columnwidth}p{0.25\columnwidth}p{0.18\columnwidth}}
+\begin{tabular}{p{0.17\columnwidth}p{0.25\columnwidth}p{0.23\columnwidth}p{0.27\columnwidth}}
 \toprule
-Task & Released evidence & Baseline metric & Claim gate\\
+Tier & Released evidence & Intended use & Do not use for\\
 \midrule
-Sandbox outcome & verdicts, tests, cache & pass/verdict by problem & sandbox direct\\
-Triage labeler & 375 human gold labels & $\kappa$, $F_1$, bias & common evidence\\
-Corpus screen & 14{,}182 judge predictions & bootstrap + bias & coarse only\\
-Evidence stress & 120 stronger packs & stability, transitions & diagnostic only\\
-Repair & reflection trajectories & fixed vs.\ resampling & repair baseline\\
+Sandbox & verdicts, tests, cache & outcome/difficulty curves & semantic AC beyond tests\\
+Triage gold & 375 human labels & labeler calibration & root-cause labels\\
+Corpus screen & 14{,}182 predictions & coarse source screens & gold fine taxonomy\\
+Evidence stress & 120 audit packs & label-stability checks & prevalence estimates\\
+Repair & reflection trajectories & repair baselines & general self-repair claims\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:claimcal} is the construct boundary for using HuAIBench. The benchmark
-has direct ground truth for released-test sandbox outcomes and repair trajectories,
-human ground truth for \emph{common-evidence triage labeling} (given statement, code,
-and verdict, predict the label a provenance-blind human assigns), full-corpus baseline
-predictions for coarse family profiles, and a stronger-evidence stress set for
-diagnostic-label robustness. The judge predictions are released as a baseline system
-output, not as benchmark ground truth; the artifact schema stores gold labels,
-baseline predictions, and stronger-evidence audit labels in separate tables. A full-corpus taxonomy
-difference is not promoted beyond a screen unless it survives problem-level
-clustering and the arm-specific bias correction in Table~\ref{tab:measerr};
-root-cause claims are never made from common evidence alone. The 55.0\% should not be
-read as a pure evidence effect: the comparison changes evidence, task target, and
-adjudicated label source at the same time. The stronger-evidence task is also harder,
-with lower annotator agreement than the common-evidence gold (family $\kappa=0.69$
-vs.\ 0.83), so the number combines evidence gain, taxonomy-boundary ambiguity, and
-root-cause-labeling instability.
+Table~\ref{tab:claimcal} is the benchmark contract for HuAIBench. The rightmost
+column is a rule, not a caveat: direct ground truth exists for released-test sandbox
+outcomes and repair trajectories; human ground truth exists only for
+\emph{common-evidence triage labeling} (given statement, code, and verdict, predict
+the label a provenance-blind human assigns); full-corpus taxonomy predictions are
+baseline system outputs for coarse screening; and the 120 stronger-evidence packs are
+a stress set, not a prevalence sample. The artifact schema enforces this separation
+by storing gold labels, baseline predictions, and stronger-evidence audit labels in
+separate tables. A full-corpus taxonomy difference is not promoted beyond a screen
+unless it survives problem-level clustering and the arm-specific bias correction in
+Table~\ref{tab:measerr}; root-cause claims are never made from common evidence alone.
+The 55.0\% should not be read as a pure evidence effect: the comparison changes
+evidence, task target, and adjudicated label source at the same time. The
+stronger-evidence task is also harder, with lower annotator agreement than the
+common-evidence gold (family $\kappa=0.69$ vs.\ 0.83), so the number combines
+evidence gain, taxonomy-boundary ambiguity, and root-cause-labeling instability.
 Nor do we claim the stronger-evidence label is uniquely true: one failing test and one
 reference solution can still leave multiple plausible fixes. The audit's role is to
 stress-test label stability under better evidence, not to certify final root causes.
@@ -992,7 +992,7 @@ the granularity the released evidence can sustain.
 \begingroup\raggedright
 Artifacts: \url{https://anonymous.4open.science/r/aitaxo} (metadata, prompts,
 programs, caches, labels, predictions, audit packs, repair trajectories, and scripts;
-tables rerun from caches without model calls).
+Tables~IV--XIV rerun from caches without model calls).
 \par\endgroup
 
 \bibliographystyle{IEEEtran}
