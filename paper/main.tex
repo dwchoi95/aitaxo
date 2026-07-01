@@ -28,8 +28,8 @@
 
 \begin{document}
 
-\title{HuAIBench: A Calibration Benchmark\\
-for Bounded Code-Failure Claims}
+\title{HuAIBench: A Calibration Substrate\\
+for Human and AI Code-Failure Claims}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{\textit{Submitted for review}}}
@@ -39,15 +39,15 @@ for Bounded Code-Failure Claims}
 \begin{abstract}
 Benchmarks for code generation usually measure whether programs pass tests; they
 rarely calibrate what can be inferred about failed programs. We introduce
-\emph{HuAIBench}, a static calibration benchmark for code-failure triage and evidence
-stability: 14{,}182 released-sandbox non-AC C++ submissions on 107 post-2021
+\emph{HuAIBench}, a static calibration substrate for code-failure triage and
+evidence stability: 14{,}182 released-sandbox non-AC C++ submissions on 107 post-2021
 CodeContests problems, aligned across human submissions, a historical proxy LLM, a
 modern contrast LLM, and a public-example self-reflection loop. HuAIBench supports
 four claim-gated uses: exact sandbox outcome/difficulty analysis, observed-leaf
 common-evidence triage-labeler calibration (statement, code, verdict),
 stronger-evidence root-cause labeler evaluation (failing test, actual/expected output,
 reference solution), and repair/regeneration benchmarking on fixed cached failures.
-There is no aggregate leaderboard score; each tier has its own supported use and
+HuAIBench is not a single broad taxonomy leaderboard; each tier has its own supported use and
 failure mode. It keeps evidence tiers separate: exact sandbox verdicts; the Wei et
 al. taxonomy as a common vocabulary; a 375-bug, doubly annotated common-evidence
 triage gold set covering 17/32 observed leaves; LLM-judge full-corpus predictions
@@ -968,8 +968,8 @@ studies score on the 375 common-evidence gold items; root-cause-labeler studies 
 on the 120 stronger-evidence adjudicated packs; full-corpus labels are screens; and
 repair studies compare fixed cached failures against reflection/resampling. New
 generator arms append cached submissions with model date/cutoff, contamination
-status, sandbox outcomes, and the same calibration/scope checks. None defines a
-human-vs-AI root-cause distribution.
+status, sandbox outcomes, oracle-risk metadata, cache hashes, and the same low-risk
+sensitivity checks. None defines a human-vs-AI root-cause distribution.
 If a taxonomy leaderboard is used, it must be split by evidence tier: micro-$F_1$/$\kappa$
 on the 375 triage labels for common-evidence labelers, and exact-family/leaf or
 micro-$F_1$ on the 120 adjudicated labels for stronger-evidence root-cause labelers.
@@ -1026,7 +1026,7 @@ measurement-limited.
 
 \section{Conclusion}
 \label{sec:conclusion}
-HuAIBench is a static calibration suite for code failures: released-sandbox outcomes,
+HuAIBench is a static calibration substrate for code failures: released-sandbox outcomes,
 human-gold triage labeling, stronger-evidence root-cause labeling, baseline taxonomy
 screens, and repair baselines. Its first baselines support only coarse math/design
 concentration, syntax/compile separation, and weak public-example self-reflection;
