@@ -55,8 +55,9 @@ support outcome, difficulty, and repair claims; human gold labels support
 taxonomy-labeler calibration; full-corpus LLM predictions support only exploratory
 coarse screens; and stronger-evidence packs stress-test diagnostic-label stability.
 The taxonomy task is triage under fixed evidence, not root-cause recovery. Baselines
-show the boundary: stronger evidence changes 55.0\% of audited primary families, the
-judge over-applies design by 6--9 points, the only robust taxonomy signal is a coarse
+show the boundary: a stronger-evidence relabeling audit changes 55.0\% of primary
+families under a different protocol, the judge over-applies design by 6--9 points,
+the only robust taxonomy signal is a coarse
 math/design bucket plus syntax/compile separation, and public-example self-reflection
 repairs only 4.0\% of proxy bugs, matching resampling. We release the benchmark
 data, prompts, cached outputs, human labels, baseline predictions, audit packs, and
@@ -945,8 +946,8 @@ therefore screens, not confirmed differences.
 occasional weak-test pass-through, which can mislabel a buggy program as correct;
 this affects all sources symmetrically. We mitigate special-judge and
 multiple-output risk by requiring at least one stored correct C++ solution to pass
-the sandbox comparator, dropping 7 otherwise, and discard unexpected-AC stored
-incorrects. Verdicts come from a deterministic, cached sandbox and are not subject to
+the sandbox comparator, dropping 7 otherwise, and quarantining sandbox-inconclusive
+stored incorrects. Verdicts come from a deterministic, cached sandbox and are not subject to
 taxonomy-labeling error. The modern model's contamination is uncontrolled by design,
 so its results are a contrast. Contamination can also change the conditional
 diagnostic-label profile by removing memorized or easy-to-recall AC solutions from
@@ -977,10 +978,10 @@ measurement-limited.
 
 \section{Conclusion}
 \label{sec:conclusion}
-HuAIBench measures code failures through explicit evidence tiers: sandbox outcomes,
-human-gold labeler calibration, full-corpus baseline taxonomy screens,
+HuAIBench is a static archive and calibration suite for code failures: sandbox
+outcomes, human-gold labeler calibration, full-corpus baseline taxonomy screens,
 stronger-evidence diagnostic stress tests, and repair baselines. Its first baselines
-show stable coarse math/design concentration, a syntax/compile separation, and weak
+show coarse math/design concentration, a syntax/compile separation, and weak
 public-example self-reflection. The transferable rule is to report results only at
 the granularity the released evidence can sustain.
 
@@ -988,8 +989,8 @@ the granularity the released evidence can sustain.
 \label{sec:artifacts}
 \begingroup\raggedright
 Artifacts: \url{https://anonymous.4open.science/r/aitaxo} (metadata, prompts,
-programs, verdict/test caches, labels, predictions, audit packs, repair trajectories,
-and scripts).
+programs, caches, labels, predictions, audit packs, repair trajectories, and scripts;
+tables rerun from caches without model calls).
 \par\endgroup
 
 \bibliographystyle{IEEEtran}
