@@ -134,7 +134,9 @@ contaminated reference is more capable but difficulty-sensitive, and
 public-example feedback repairs only 4\% of proxy-model bugs, matching same-budget
 resampling with no runtime or time-limit fixes.
 
-Contributions: \textbf{(i)} a released case-study artifact for
+Beyond applying standard re-testing, agreement, and audit controls, we measure how
+far taxonomy claims still move under those controls and turn that movement into
+explicit claim boundaries. Contributions: \textbf{(i)} a released case-study artifact for
 failed-submission measurement (14{,}182 bugs, 107 identical problems, 375
 doubly-annotated gold items); \textbf{(ii)} a transferable claim-calibration
 checklist---human gold, power analysis, problem-level bootstrap, per-family judge
@@ -295,9 +297,17 @@ stored human accepted solution, and the maximum token 5-gram Jaccard similarity 
 verbatim or near-verbatim replay of the accepted solutions available in our corpus.
 Throughout, we therefore call this arm the \emph{cutoff proxy}, not a certified
 contamination-free model. Every cutoff-aligned taxonomy claim rests on this proxy; we
-make none on the modern model. We keep a problem only if it is judgeable ($\geq\!1$ correct
-human solution confirmed AC and $\geq\!10$ incorrect ones confirmed non-AC), leaving
-\textbf{107 problems} (ratings 800--3500). The set is deliberately hard-skewed---25 problems rated $\le$1199, 12 at
+make none on the modern model. We start from 165 Codeforces test-split problems and
+keep a problem only if it is judgeable ($\geq\!1$ correct human C++ solution
+confirmed AC and $\geq\!10$ incorrect C++ solutions confirmed non-AC). The filter
+discards 44 problems with no private tests, 7 whose stored correct C++ solutions did
+not pass our sandbox comparator, and 7 with too few confirmed human bugs, leaving
+\textbf{107 problems} (ratings 800--3500). This gate is also our guard against
+special-judge or multiple-output mismatches: we do not run Codeforces custom
+checkers, so problems for which known-correct code cannot be accepted under our
+token/float comparator are excluded. For retained problems, stored incorrect
+solutions that unexpectedly pass our tests are discarded rather than counted as bugs
+(3{,}690 of 12{,}356 judged incorrect C++ submissions). The set is deliberately hard-skewed---25 problems rated $\le$1199, 12 at
 1200--1599, 13 at 1600--1999, 22 at 2000--2399, and 35 rated 2400+---so RQ3's
 difficulty analysis spans the full competitive range rather than only easy tasks.
 Each C++ submission is compiled with GNU \texttt{g++} (\texttt{gnu++17})
@@ -417,7 +427,9 @@ RQ1. We therefore keep the common-evidence protocol for the full corpus, and add
 separate first-failing-test audit to measure how much stronger evidence changes labels.
 
 \subsection{Labeling and analysis}
-Labeling is multi-label into the 32 leaves~\cite{wei2026evaluating}. We size the
+Labeling is multi-label into the 32 leaves~\cite{wei2026evaluating}. The released
+annotation packets include the fixed codebook with every family/leaf definition; no
+model- or source-derived label hints appear in the packets. We size the
 gold by Cochran's formula with finite-population
 correction~\cite{cochran1977sampling,krejcie1970determining}: 95\% confidence,
 $\pm5\%$ margin on 14{,}182 items gives $n\!\approx\!375$. We allocate it
@@ -447,23 +459,14 @@ the model--human difference over sampled problems. We report percentile 95\% int
 from 2{,}000 replicates. This estimates an equal-problem conditional bug-profile
 difference, rather than letting high-volume problems dominate the estimate.
 
-Three design choices in this protocol are worth making explicit, because they
-determine what the calibration can support. First, the gold is \emph{arm-balanced}
-rather than proportional: drawing 125 bugs from each source---not 375 in proportion
-to the 8{,}648/2{,}076/1{,}465 corpus split---trades population-level precision for
-equal power to characterize each source's profile. Second, \emph{verdict stratification with rare-verdict floors}
-guarantees that compile, runtime, and time-limit failures appear in the gold despite
-being a few percent of the corpus, so the rare-but-diagnostic families (syntax GE5,
-and the structural failures central to RQ4) are estimable at all. Third, labeling is
-\emph{provenance-blind by construction}: the annotator and judge packages contain the
-statement, the code, and the sandbox verdict, with the author identity stripped and
-the within-problem order shuffled, so neither a human nor the judge can infer ``this
-looks like AI code'' and label to a stereotype---the protocol measures the bug, not
-a guess about its origin. Statistically, we treat the judge as an instrument whose
-error we bound against the human ceiling (RQ1) rather than as ground truth, and we
-report effect sizes alongside $p$-values throughout because, at $n{=}125$ per arm and
-with within-problem clustering, significance and magnitude carry different and
-complementary information.
+Three choices determine what the calibration can support. The gold is
+\emph{arm-balanced} (125 bugs per source) rather than proportional, trading
+population precision for equal source power. Verdict stratification with
+rare-verdict floors keeps compile, runtime, and time-limit failures estimable. All
+packages are \emph{provenance-blind}: statement, code, and verdict only, with author
+identity stripped and within-problem order shuffled. Statistically, we treat the
+judge as an instrument whose error we bound against the human ceiling (RQ1), not as
+ground truth.
 
 Finally, after the main analysis, two annotators independently re-labeled a
 stratified 120-item wrong-answer audit set (40 per zero-shot source) with stronger
@@ -472,7 +475,8 @@ expected/actual output, and one accepted reference implementation. If a program
 failed a public sample first, that public sample is the first failing test; otherwise
 the evidence is private-test based (95 public, 25 private overall: 18/40 public for
 human, 40/40 for proxy, 37/40 for modern). The $n{=}120$ audit estimates the overall
-family-change rate with about $\pm$9 percentage points of binomial precision; it is
+family-change rate with about $\pm$9 percentage points of binomial precision; Wilson
+95\% intervals are reported with the audit counts in RQ1. It is
 not designed for per-family prevalence. The annotators adjudicated all disagreements,
 with a third tie-breaker for three items. This audit does not relabel the full
 corpus; it estimates how far common-evidence diagnostic labels move when the same
@@ -500,9 +504,11 @@ judge's model family.
 Table~\ref{tab:measerr} makes this error structure explicit rather than relying on
 aggregate $\kappa$: GE1 has high recall but lower precision, AE1 has the opposite
 shape, and additive arm-specific bias correction leaves the focused family shifts
-small or direction-unstable. The combined AE1+GE1 region remains large under
-correction (human 68.8\%, proxy 64.6\%, modern 73.7\%), supporting coarse
-concentration but not an ordered source comparison.
+small or direction-unstable. The corrected-delta intervals often include zero; even
+the combined AE1+GE1 proxy--human contrast is $-4.2$ points with a 95\% bootstrap CI
+of $[-10.2,+1.8]$. The combined AE1+GE1 region remains large under correction
+(human 68.8\%, proxy 64.6\%, modern 73.7\%), supporting coarse concentration but not
+an ordered source comparison.
 
 \begin{table}[t]
 \centering
@@ -534,25 +540,29 @@ labels changed for 65.0\% of human submissions and 50.0\% of both AI arms.
 \caption{First-failing-test/reference-solution relabeling audit on 120 zero-shot WA
 submissions (40 per source). The top block is inter-annotator agreement within the
 stronger-evidence task; ``changed'' rows compare the adjudicated stronger-evidence
-label with the original common-evidence label.}
+label with the original common-evidence label. Wilson intervals are for descriptive
+binomial proportions, not independent causal effects.}
 \label{tab:rootaudit}
-\begin{tabular}{lrr}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{lrrr}
 \toprule
-Metric & Count & Value\\
+Metric & Count & Value & 95\% CI\\
 \midrule
-Leaf exact agreement & 84/120 & 70.0\%\\
-Family exact agreement & 85/120 & 70.8\%\\
-Primary-family $\kappa$ & -- & 0.69\\
-Binary family $\kappa$ & -- & 0.71\\
-Adjudicated disagreements & 36/120 & 30.0\%\\
+Leaf exact agreement & 84/120 & 70.0\% & --\\
+Family exact agreement & 85/120 & 70.8\% & --\\
+Primary-family $\kappa$ & -- & 0.69 & --\\
+Binary family $\kappa$ & -- & 0.71 & --\\
+Adjudicated disagreements & 36/120 & 30.0\% & --\\
 \midrule
-Leaf changed & 70/120 & 58.3\%\\
-Family changed & 66/120 & 55.0\%\\
+Leaf changed & 70/120 & 58.3\% & [49.4,66.8]\\
+Family changed & 66/120 & 55.0\% & [46.1,63.6]\\
 \midrule
-Math/design before & 44/120 & 36.7\%\\
-Math/design after & 58/120 & 48.3\%\\
-Into math/design & 25/120 & 20.8\%\\
-Out of math/design & 11/120 & 9.2\%\\
+Math/design before & 44/120 & 36.7\% & [28.6,45.6]\\
+Math/design after & 58/120 & 48.3\% & [39.6,57.2]\\
+Bucket stable & 84/120 & 70.0\% & [61.3,77.5]\\
+Into math/design & 25/120 & 20.8\% & [14.5,28.9]\\
+Out of math/design & 11/120 & 9.2\% & [5.2,15.7]\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -607,9 +617,11 @@ Table~\ref{tab:measerr}; root-cause claims are never made from common evidence a
 Common-evidence labels can say that a failure looks mathematical, design-like, or
 syntactic under the evidence a scalable study can usually afford. They cannot, by
 themselves, establish the root-cause mechanism of a wrong answer. The 55.0\% should
-not be read as a pure evidence effect: the stronger-evidence task is itself harder,
-with lower annotator agreement than the common-evidence gold (family $\kappa=0.69$
-vs.\ 0.83), so the number combines evidence gain and root-cause-labeling instability.
+not be read as a pure evidence effect: the comparison changes evidence, task target,
+and adjudicated label source at the same time. The stronger-evidence task is also
+harder, with lower annotator agreement than the common-evidence gold (family
+$\kappa=0.69$ vs.\ 0.83), so the number combines evidence gain, taxonomy-boundary
+ambiguity, and root-cause-labeling instability.
 Nor do we claim the stronger-evidence label is uniquely true: one failing test and one
 reference solution can still leave multiple plausible fixes. The audit's role is to
 stress-test label stability under better evidence, not to certify final root causes.
@@ -620,12 +632,13 @@ checks whether our coarsest claim survives stronger evidence. Its sample was
 deliberately stratified rather than population-representative, so it cannot estimate
 the full-corpus prevalence of math/design bugs; it only checks whether stronger
 evidence obviously erodes that bucket.
-Membership in \{mathematics, design\} is stable for 84/120 items (70.0\%), and the
-crossings are net inward: 25 items move into the bucket and 11 move out. Family-set
-changes are not a single-arm artifact (65.0\% human, 50.0\% proxy, 50.0\% modern) or
-a hard-problem artifact (65.2/50.7/57.7\% for easy/medium/hard), but they are more
-common when the first failing evidence is private rather than public (72.0\% vs.
-50.5\%). We therefore
+Membership in \{mathematics, design\} is stable for 84/120 items (70.0\%,
+[61.3,77.5]), and the crossings are net inward: 25 items move into the bucket and
+11 move out. Family-set changes are not a single-arm artifact (65.0\% human,
+50.0\% proxy, 50.0\% modern) or a hard-problem artifact (65.2/50.7/57.7\% for
+easy/medium/hard), but they are descriptively more common when the first failing
+evidence is private rather than public (72.0\% [52.4,85.7] vs.\ 50.5\%
+[40.6,60.4]). We therefore
 treat fine shifts as exploratory screens and reserve strong claims for bounded
 coarse patterns and label-free verdict dynamics.
 
@@ -776,18 +789,11 @@ some hard problems is consistent with partial contamination, but the overall dec
 argues against pure memorization. The human rate is flat (42--59\%), a survivorship
 artifact: harder problems attract stronger solvers.
 
-The contrast between the two models is the point of the contamination design. The
-proxy model, whose cutoff predates every problem, never rises
-above 8\% acceptance and is flat across difficulty---the behavior expected of a
-2023-class model attempting unseen contest tasks from the statement alone. The modern model, whose training window covers the
-problems, scores far higher and declines overall, though not monotonically, with
-difficulty; this profile is hard to reconcile with pure lookup. Two readings
-are consistent with the data---real capability gains since the proxy model, and
-partial memorization of the easier, more-discussed problems---and we do not claim to
-separate them, only to show that an aggregate pass rate would conflate them whereas a
-difficulty-resolved one begins to pull them apart. The proxy model remains a
-cutoff-aligned proxy anchor for distributional claims; the modern model is the
-contrast that makes the anchor's value legible.
+The contrast between the two models is the contamination design. The proxy looks
+like a 2023-class model attempting unseen tasks from the statement; the modern arm
+may mix real capability gains and partial memorization of easier, more-discussed
+problems. We do not separate those readings. The proxy remains the cutoff-aligned
+anchor; the modern arm is only a descriptive contrast.
 
 The verdict mix is exact and label-free (Table~\ref{tab:verdict}). All sources are
 wrong-answer dominated (90--95\%), but AI fails to \emph{compile} more often than
@@ -858,10 +864,7 @@ reflection count lies inside that uncertainty range.
 Table~\ref{tab:resample}
 therefore changes the interpretation of RQ4: public-example reflection is not an
 efficient repair strategy over simple resampling; it is a diagnostic probe for which
-bugs survive weak feedback. A post-hoc edit audit of the 83 fixed trajectories agrees:
-7 fixes are compile-error repairs, 16 leave the original program at least 95\%
-character-identical, 47 occur on $\le$900-rated problems, and three problems account
-for 46 fixes. Figure~\ref{fig:sankey} tracks every bug's verdict across
+bugs survive weak feedback. Figure~\ref{fig:sankey} tracks every bug's verdict across
 the three rounds: the accepted band grows $0\rightarrow53\rightarrow73\rightarrow83$,
 so most repairs land in the first round and the third adds only ten, while the
 wrong-answer mass ($\approx$1{,}850) is essentially static. The rate is sharply
@@ -938,21 +941,19 @@ nearly absent for hard algorithmic families.}
 \section{Discussion}
 \label{sec:discussion}
 \paragraph{A claim ladder for this class of studies}
-The main result is operational: taxonomy studies should state the evidence level of
-each claim. Sandbox verdicts support outcome and repair dynamics directly. Validated
-family labels support triage statements such as ``most failures look
-mathematical/design-like.'' Small source-level shifts require a human gold set,
-labeler-bias analysis, and problem-level clustering control; in our data they remain
-screens, not explanations. Root-cause claims require failing-test or reference
-evidence. We do not validate this ladder universally; we offer it as a transferable
-checklist and show one full instantiation. It explains why this case study stops at a
-coarse math/design concentration plus a separate syntax/compile gap.
-
-\paragraph{Public-example retry is not a safety net}
-In our weak-feedback setting, reflection never repairs structural failures and barely
-shifts the diagnostic-label profile. Pipelines that rely on retrying after public examples need
-stronger external signals---adversarial tests, complexity analysis, or human
-review---for the strategic failures that dominate this corpus.
+The main result is operational and empirical. The operational part is a claim ladder:
+taxonomy studies should state the evidence level of each claim. Sandbox verdicts
+support outcome and repair dynamics directly. Validated family labels support triage
+statements such as ``most failures look mathematical/design-like.'' Small
+source-level shifts require a human gold set, labeler-bias analysis, and
+problem-level clustering control; in our data they remain screens, not explanations.
+The empirical part is that these controls still leave large residual movement:
+corrected source deltas have wide gold-sample uncertainty, and stronger-evidence
+labels change family for 55.0\% of audited wrong answers. Root-cause claims therefore
+require failing-test or reference evidence. We do not validate this ladder
+universally; we offer it as a transferable checklist and show one full instantiation.
+It explains why this case study stops at a coarse math/design concentration plus a
+separate syntax/compile gap.
 
 \paragraph{Evaluation and measurement}
 Pass@$k$ is not enough once the remaining failures are algorithmic and small tests
@@ -985,8 +986,11 @@ confirmed differences.
 \textbf{Internal validity.} Excluding generated tests for tractability admits
 occasional weak-test pass-through, which can mislabel a buggy program as correct;
 this affects all sources symmetrically and so should not bias the source-profile
-checks. Verdicts and acceptance come from a deterministic, cached sandbox and are
-not subject to labeling error. The modern model's contamination is uncontrolled by
+checks. We mitigate special-judge and multiple-output risk by requiring at least one
+stored correct C++ solution to pass the sandbox comparator, dropping 7 otherwise; we
+also discard unexpected-AC stored incorrects rather than treating them as bugs.
+Verdicts and acceptance come from a deterministic, cached sandbox and are not subject
+to taxonomy-labeling error. The modern model's contamination is uncontrolled by
 design, so its results are a contrast, not a cutoff-controlled measurement. Contamination can
 also change the \emph{conditional} diagnostic-label profile: if memorized or easy-to-recall
 solutions become AC, they leave the non-AC pool whose labels we analyze. This
@@ -1006,11 +1010,13 @@ profile plus measurement-limited fine shifts.
 \textbf{Conclusion validity.} Bugs cluster within problems and labels are
 multi-label, so we bootstrap over the 107 problems rather than treat 14{,}182 bugs as
 independent. Some intervals exclude zero, but effect sizes are small and estimated
-with the same judge whose family-level bias is 6--9 points. The 125-bug-per-arm gold
-is also underpowered for small shifts ($V\!\lesssim\!0.26$). The stronger-evidence
-audit adds only a coarse check: math/design membership is stable for 70.0\% of the
-audit and moves inward more often than outward (25 vs.\ 11). Thus the dominant
-coarse region is stable under our checks, while fine source-level differences remain
+with the same judge whose family-level bias is 6--9 points; corrected-delta CIs in
+Table~\ref{tab:measerr} therefore control our interpretation more than raw
+significance does. The 125-bug-per-arm gold is also underpowered for small shifts
+($V\!\lesssim\!0.26$). The stronger-evidence audit adds only a coarse check:
+math/design membership is stable for 70.0\% of the audit ([61.3,77.5]) and moves
+inward more often than outward (25 vs.\ 11). Thus the dominant coarse region is
+stable under our checks, while fine source-level differences remain
 measurement-limited.
 
 \section{Conclusion}
