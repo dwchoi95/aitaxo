@@ -28,7 +28,7 @@
 
 \begin{document}
 
-\title{HuAIBench: A Tiered Benchmark\\
+\title{HuAIBench: A Calibration Benchmark\\
 for Bounded Code-Failure Claims}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
@@ -39,7 +39,7 @@ for Bounded Code-Failure Claims}
 \begin{abstract}
 Benchmarks for code generation usually measure whether programs pass tests; they
 rarely calibrate what can be inferred about failed programs. We introduce
-\emph{HuAIBench}, a static, tiered benchmark for code-failure triage and evidence
+\emph{HuAIBench}, a static calibration benchmark for code-failure triage and evidence
 stability: 14{,}182 released-sandbox non-AC C++ submissions on 107 post-2021
 CodeContests problems, aligned across human submissions, a historical proxy LLM, a
 modern contrast LLM, and a public-example self-reflection loop. HuAIBench supports
@@ -113,9 +113,9 @@ repair baselines, not a contamination-proof future-model leaderboard.
 
 We evaluate HuAIBench through four questions, ordered from benchmark validation to
 baseline findings: \textbf{RQ1} asks how reliable taxonomy labels and baseline
-predictions are under common evidence, automated labeling, and stronger failure evidence; \textbf{RQ2} asks which
-source-conditioned taxonomy screens remain after calibration; \textbf{RQ3} asks how
-capability, contamination risk, and difficulty shape label-free outcomes; and
+predictions are under common evidence, automated labeling, and stronger failure evidence; \textbf{RQ2} asks how far
+full-corpus baseline screens can be trusted; \textbf{RQ3} asks how released-sandbox
+outcomes vary by arm and difficulty without causal decomposition; and
 \textbf{RQ4} establishes a public-example self-reflection baseline.
 
 HuAIBench's main output is a calibrated benchmark contract, not one leaderboard or
@@ -653,7 +653,8 @@ The 55.0\% should not be read as a pure evidence effect: the comparison changes
 evidence, task target, and adjudicated label source at the same time. The
 stronger-evidence task is also harder, with lower annotator agreement than the
 common-evidence gold (family $\kappa=0.69$ vs.\ 0.83), so the number combines
-evidence gain, taxonomy-boundary ambiguity, and root-cause-labeling instability.
+evidence gain, taxonomy-boundary ambiguity, and root-cause-labeling instability; it
+does not mean the original common-evidence label was simply wrong.
 Nor do we claim the stronger-evidence label is uniquely true: one failing test and one
 reference solution can still leave multiple plausible fixes. The audit's role is to
 stress-test label stability under better evidence, not to certify final root causes.
@@ -679,7 +680,7 @@ evidence is private rather than public (72.0\% [52.4,85.7] vs.\ 50.5\%
 treat fine shifts as exploratory screens and reserve strong claims for bounded
 coarse patterns and label-free verdict dynamics.
 
-\subsection{RQ2: What survives full-corpus screening?}
+\subsection{RQ2: How far can baseline screens go?}
 \label{sec:rq2}
 RQ2 is a negative calibration check: it asks what remains after a user applies the
 released baseline predictor under the claim gates, not whether humans and LLMs have
@@ -813,7 +814,7 @@ AE5 & Dynamic programming & 8 & 6 & 8\\
 \end{tabular}
 \end{table}
 
-\subsection{RQ3: Capability, contamination, and difficulty outcomes}
+\subsection{RQ3: What do label-free outcome baselines show?}
 \label{sec:rq3}
 Table~\ref{tab:corpus} reports three success metrics, but they answer different
 questions: the human number is a curated correct:incorrect ratio, whereas the AI
@@ -956,6 +957,9 @@ studies compare fixed cached failures against reflection/resampling. New generat
 arms append cached submissions with model date/cutoff, contamination status, sandbox
 outcomes, and the same calibration/scope checks. None defines a human-vs-AI
 root-cause distribution.
+If a taxonomy leaderboard is used, its score is micro-$F_1$/$\kappa$ on the 375
+gold labels plus per-family bias; \texttt{full.csv} is a baseline output file, not a
+hidden test key.
 This ordering is the central result: verdicts support outcome claims directly; the
 375-bug gold supports common-evidence evaluation only for observed leaves; full-corpus judge
 predictions support only coarse triage; and root-cause claims require failing-test or
