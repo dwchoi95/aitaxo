@@ -39,25 +39,24 @@ Code-Failure Triage}
 \begin{abstract}
 Benchmarks for code generation usually measure whether programs pass tests; they
 rarely calibrate what can be inferred about failed programs. We introduce
-\emph{HuAIBench}, a static benchmark for common-evidence code-failure triage and
-evidence stability: 14{,}182 sandbox-confirmed non-AC C++ submissions on 107
-post-2021 CodeContests problems, aligned across human submissions, a cutoff proxy
-LLM, a modern contrast LLM, and a public-example self-reflection loop. The primary
-benchmark task is deliberately narrow: given a problem statement, program, and
-sandbox verdict, evaluate whether a labeler reproduces provenance-blind human
-triage labels for the taxonomy leaves observed in the gold set. HuAIBench is
-therefore not a root-cause benchmark, not a complete 32-leaf taxonomy leaderboard,
-and not a contamination-proof future-model leaderboard. It keeps evidence tiers
-separate: exact sandbox verdicts; the Wei et al. taxonomy as a common vocabulary; a
-375-bug, doubly annotated common-evidence gold set covering 17/32 observed leaves;
-LLM-judge full-corpus predictions released as baseline screens rather than truth; a
-120-item stronger-evidence stress set with failing tests and reference solutions;
-and reflection trajectories with a same-budget resampling baseline. Baselines define
-the supported boundary: an intentionally non-causal stronger-evidence stress test
-changes 55.0\% of primary families, the judge over-applies design by 6--9 points,
-the robust taxonomy signal is only a coarse math/design bucket plus syntax/compile
-separation, and public-example self-reflection repairs 4.0\% of proxy bugs,
-matching resampling.
+\emph{HuAIBench}, a static, tiered benchmark for code-failure triage and evidence
+stability: 14{,}182 sandbox-confirmed non-AC C++ submissions on 107 post-2021
+CodeContests problems, aligned across human submissions, a cutoff proxy LLM, a
+modern contrast LLM, and a public-example self-reflection loop. HuAIBench supports
+three claim-gated tasks: exact sandbox outcome/difficulty analysis, observed-leaf
+common-evidence labeler calibration (statement, code, verdict), and repair/regeneration
+benchmarking on fixed cached failures. It keeps evidence tiers separate: exact
+sandbox verdicts; the Wei et al. taxonomy as a common vocabulary; a 375-bug, doubly
+annotated common-evidence gold set covering 17/32 observed leaves; LLM-judge
+full-corpus predictions released as baseline screens rather than truth; a 120-item
+stronger-evidence stress set with failing tests and reference solutions; and
+reflection trajectories with a same-budget resampling baseline. HuAIBench is not a
+root-cause benchmark, not a complete 32-leaf taxonomy leaderboard, and not a
+contamination-proof future-model leaderboard. Baselines define the supported
+boundary: an intentionally non-causal stronger-evidence stress test changes 55.0\%
+of primary families, the judge over-applies design by 6--9 points, the robust
+taxonomy signal is only a coarse math/design bucket plus syntax/compile separation,
+and public-example self-reflection repairs 4.0\% of proxy bugs, matching resampling.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -118,27 +117,26 @@ capability, contamination risk, and difficulty shape label-free outcomes; and
 \textbf{RQ4} establishes a public-example self-reflection baseline.
 
 HuAIBench's main output is a calibrated benchmark contract, not an unconditional
-taxonomy or model leaderboard. Its primary task is observed-leaf
-\emph{common-evidence} labeler calibration: given statement, code, and verdict,
-match provenance-blind human triage labels over the leaves that appear in the gold
-set. This task does not require accepting the proxy arm as perfectly uncontaminated.
-Compared with CodeContests plus a small taxonomy sample, HuAIBench's reusable unit is
-the aligned evidence bundle: same-sandbox human/generated failures, cached
-prompts/outputs, human gold, audit packs, and repair/resampling traces. Researchers
-can evaluate common-evidence taxonomy labelers against the 375-bug human gold,
-stress-test diagnostic labels on the 120 stronger-evidence packs, compare repair
-methods against reflection/resampling trajectories, and study cached generator
-failures while reporting contamination status. Common-evidence triage is useful for
-scalable decisions---whether a labeler can screen a large failure corpus, which
-buckets need human audit or new tests, and which failures enter repair queues---but
-not for certifying final root causes. Our baseline instantiation shows which uses are
-supported: exact verdicts are stable sandbox outcomes; human gold labels support
-observed-leaf triage-labeler calibration; full-corpus predictions are baseline
-screens; and root-cause claims require stronger evidence. The defensible taxonomy
-signal is coarse mathematics/design concentration plus a source-conditional
-syntax/compile separation. Label-free dynamics are stronger: the modern contrast is
-more capable but difficulty-sensitive, and public-example feedback repairs only 4\%
-of proxy-model bugs, matching same-budget resampling.
+taxonomy or model leaderboard. Compared with CodeContests plus a small taxonomy
+sample, its reusable unit is the aligned evidence bundle: same-sandbox
+human/generated failures, cached prompts/outputs, human gold, audit packs, and
+repair/resampling traces. Researchers can replay exact verdict outcomes, evaluate
+common-evidence taxonomy labelers against the 375-bug human gold, stress-test
+diagnostic labels on the 120 stronger-evidence packs, compare repair methods against
+reflection/resampling trajectories, and study cached generator failures while
+reporting contamination status. The labeler-calibration task covers observed leaves
+rather than all 32 leaves and does not require accepting the proxy arm as perfectly
+uncontaminated. Common-evidence triage is useful for scalable decisions---whether a
+labeler can screen a large failure corpus, which buckets need human audit or new
+tests, and which failures enter repair queues---but not for certifying final root
+causes. Our baseline instantiation shows which uses are supported: exact verdicts
+are stable sandbox outcomes; human gold labels support observed-leaf triage-labeler
+calibration; full-corpus predictions are baseline screens; and root-cause claims
+require stronger evidence. The defensible taxonomy signal is coarse
+mathematics/design concentration plus a source-conditional syntax/compile
+separation. Label-free dynamics are stronger: the modern contrast is more capable
+but difficulty-sensitive, and public-example feedback repairs only 4\% of proxy-model
+bugs, matching same-budget resampling.
 
 Contributions: \textbf{(i)} \emph{HuAIBench}, a released tiered measurement benchmark with
 14{,}182 sandbox-confirmed non-AC programs and exact verdicts, 375 human-gold
@@ -943,20 +941,18 @@ nearly absent for hard algorithmic families.}
 
 \section{Discussion}
 \label{sec:discussion}
-\paragraph{Primary benchmark use}
-HuAIBench's primary benchmark task is \emph{observed-leaf common-evidence labeler
-calibration}. A future taxonomy labeler should predict the 375 gold items from the
-same evidence (statement, code, verdict), beat the majority and verdict-only
-baselines, report per-family bias, and disclose which observed leaves it covers.
-This supports scalable screening decisions---which buckets need audit/tests and
-which cached bugs can enter repair studies---not certification of final causes or
-coverage of leaves absent from the gold. New judges follow the same contract; their
-full-corpus labels remain screens until corrected. New generator arms are appended
-with cached submissions, model date/cutoff, contamination status, sandbox outcomes,
-and the same calibration/scope checks; this is the update path as public tasks become
-more exposed. Companion tasks are \emph{repair benchmarking} on fixed failures
-against the reflection/resampling baseline and \emph{cached-arm analysis} for coarse
-regions. Neither companion task defines a human-vs-AI root-cause distribution.
+\paragraph{Benchmark use}
+HuAIBench should be used as a tiered benchmark, not as a single truth table. For
+outcome studies, users replay the sandbox and report released-test verdicts. For
+taxonomy studies, a future labeler should predict the 375 gold items from the same
+evidence (statement, code, verdict), beat the majority and verdict-only baselines,
+report per-family bias, and disclose which observed leaves it covers; full-corpus
+labels remain screens until corrected. For repair studies, methods run on fixed
+cached failures and compare against reflection/resampling, not semantic repair beyond
+tests. New generator arms are appended with cached submissions, model date/cutoff,
+contamination status, sandbox outcomes, and the same calibration/scope checks; this
+is the update path as public tasks become more exposed. None of these tasks defines a
+human-vs-AI root-cause distribution.
 This ordering is the central result: verdicts support outcome claims directly; the
 375-bug gold supports common-evidence evaluation only for observed leaves; full-corpus judge
 predictions support only coarse triage; and root-cause claims require failing-test or
