@@ -29,7 +29,7 @@
 \begin{document}
 
 \title{HuAIBench: A Tiered Benchmark for\\
-Code-Failure Measurement}
+Code-Failure Outcomes and Labeler Calibration}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{\textit{Submitted for review}}}
@@ -38,25 +38,27 @@ Code-Failure Measurement}
 
 \begin{abstract}
 Benchmarks for code generation usually measure whether programs pass tests; they
-rarely provide reusable evidence about how human and AI programs fail. We introduce
+rarely provide reusable evidence about how human and generated submissions fail. We introduce
 \emph{HuAIBench}, a tiered benchmark for competitive-programming code failures:
-14{,}182 sandbox-confirmed buggy C++ submissions on 107 post-cutoff CodeContests
+14{,}182 sandbox-confirmed non-AC C++ submissions on 107 post-cutoff CodeContests
 problems, aligned across human submissions, a cutoff-aligned proxy LLM, a modern
 contrast LLM, and a public-example self-reflection loop. HuAIBench is tiered rather
-than a single label file: it provides exact sandbox verdicts, the 32-leaf Wei et al.
-taxonomy, a 375-bug doubly annotated common-evidence gold set for labeler evaluation,
-LLM-judge baseline predictions for full-corpus screening, a 120-item stronger-evidence
+than a labeled corpus: it provides exact sandbox verdicts, the 32-leaf Wei et al.
+taxonomy as a common vocabulary, a 375-bug doubly annotated common-evidence gold set
+for labeler evaluation, LLM-judge baseline predictions released as system outputs
+rather than benchmark truth, a 120-item stronger-evidence
 audit with failing tests and reference solutions, and reflection trajectories with a
 same-budget resampling baseline. This structure turns the dataset into benchmark
 tasks with explicit evidence levels. Exact verdicts support outcome, difficulty, and
 repair claims; human gold labels support taxonomy-labeler calibration; full-corpus
-LLM predictions support coarse screened analyses; and stronger-evidence packs test
-whether diagnostic labels survive root-cause evidence. Baseline results show a
+LLM predictions support only exploratory coarse screens; and stronger-evidence packs
+stress-test diagnostic-label stability. Baseline results show a
 stable math/design concentration plus a syntax/compile separation, a judge that
 reaches substantial agreement but over-applies design by 6--9 points, and
 public-example self-reflection that repairs only 4.0\% of proxy-model bugs, matching
 resampling and fixing no runtime or time-limit failures. We release the benchmark
-data, prompts, cached outputs, labels, audit packs, and analysis scripts.
+data, prompts, cached outputs, human labels, baseline predictions, audit packs, and
+analysis scripts.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -75,8 +77,8 @@ models solve such problems, via pass@$k$ on benchmarks like HumanEval, MBPP, and
 APPS~\cite{chen2021codex,austin2021mbpp,hendrycks2021apps,liu2023evalplus}. Far
 less is known about \emph{how} models fail, and even less about which failure claims
 are justified by the evidence available at scale. This is a benchmark gap: the field
-has many pass-rate benchmarks, but few artifacts that align human and AI failures on
-the same tasks, under the same sandbox, with calibrated taxonomy labels.
+has many pass-rate benchmarks, but few artifacts that align human and generated failures on
+the same tasks, under the same sandbox, with calibrated taxonomy evidence.
 
 The gap matters because taxonomies are already used as measurement instruments.
 If a taxonomy identifies stable failure regions, it can guide review, testing, and
@@ -112,7 +114,7 @@ problems, sandbox, gold labels, and audit packs.
 We evaluate HuAIBench through four questions, ordered from benchmark validation to
 baseline findings: \textbf{RQ1} asks how reliable taxonomy labels and baseline
 predictions are under common evidence, automated labeling, and stronger failure evidence; \textbf{RQ2} asks which
-source-conditioned taxonomy signals remain after calibration; \textbf{RQ3} asks how
+source-conditioned taxonomy screens remain after calibration; \textbf{RQ3} asks how
 capability, contamination risk, and difficulty shape label-free outcomes; and
 \textbf{RQ4} establishes a public-example self-reflection baseline.
 
@@ -122,18 +124,19 @@ post-cutoff tasks and sandbox; evaluate taxonomy labelers against the 375-bug hu
 gold; stress-test diagnostic labels on the 120 stronger-evidence packs; and compare
 repair methods against the released reflection and resampling trajectories. Our
 baseline instantiation shows which uses are supported: exact verdicts are stable;
-family labels support coarse triage; fine source-family shifts are screens; and
-root-cause claims require stronger evidence. The defensible taxonomy signal is coarse
+human gold labels support labeler calibration; full-corpus predictions are baseline
+screens; and root-cause claims require stronger evidence. The defensible taxonomy signal is coarse
 mathematics/design concentration plus a source-conditional syntax/compile separation.
 Label-free dynamics are stronger: the modern contrast is more capable but
 difficulty-sensitive, and public-example feedback repairs only 4\% of proxy-model
 bugs, matching same-budget resampling.
 
 Contributions: \textbf{(i)} \emph{HuAIBench}, a released tiered benchmark with
-14{,}182 sandbox-confirmed human/AI bugs, gold labels, full-corpus screen predictions,
-stronger-evidence audit packs, and repair trajectories; \textbf{(ii)} benchmark
+14{,}182 sandbox-confirmed non-AC programs and exact verdicts, 375 human-gold
+taxonomy labels, 14{,}182 full-corpus LLM baseline predictions, stronger-evidence
+audit packs, and repair trajectories; \textbf{(ii)} benchmark
 tasks and baselines for sandbox outcomes, taxonomy-labeler calibration,
-stronger-evidence stress testing, and self-reflection; \textbf{(iii)} a validation
+diagnostic-stability stress testing, and self-reflection; \textbf{(iii)} a validation
 protocol combining human gold, power analysis, problem-level bootstrap, per-family
 judge error, bias correction, and stronger-evidence relabeling; and \textbf{(iv)}
 baseline findings that define the current supported claim boundary.
@@ -182,12 +185,12 @@ rather than a general bug taxonomy. Closest to us, Wei et al.~\cite{wei2026evalu
 recently proposed the taxonomy we adopt and hand-labeled 75 incorrect programs from a
 single model with strong inter-annotator agreement ($\kappa=0.86$), using \emph{no}
 automated labeler and providing \emph{no} human baseline. HuAIBench reuses their taxonomy
-verbatim but differs in kind as much as scale: it labels \textbf{14{,}182} bugs (a
-$\sim$190$\times$ larger corpus) from \emph{four} sources---including \emph{human}
-submissions to the \emph{same} problems---under explicit cutoff alignment and
-contamination caveats, with
-an LLM judge whose reliability we validate against a 375-bug doubly-annotated human
-gold. The human baseline lets the benchmark calibrate source effects on identical problems, and
+verbatim but differs in kind as much as scale: it releases \textbf{14{,}182}
+sandbox-confirmed non-AC submissions from \emph{four} sources---including
+\emph{human} submissions to the \emph{same} problems---under explicit cutoff alignment
+and contamination caveats, with full-corpus LLM predictions treated as a baseline
+system output whose reliability is validated against a 375-bug doubly-annotated human
+gold. The human baseline lets the benchmark calibrate source-conditioned screens on identical problems, and
 the scale forces measurement questions---statistical power, within-problem
 clustering, and labeler granularity---that a 75-program, single-model, AI-only study
 never has to confront.
@@ -268,7 +271,7 @@ and root-cause claims the evidence can support.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.90\textwidth]{figs/overview_2.png}
-\caption{Overview of HuAIBench: filtered human/AI submissions are rejudged in one
+\caption{Overview of HuAIBench: filtered human/generated submissions are rejudged in one
 sandbox, labeled with the Wei et al. taxonomy through human gold and LLM-judge
 baseline predictions, audited with stronger evidence, and interpreted through claim
 calibration.}
@@ -418,7 +421,8 @@ acknowledge its cost: inferring \emph{which} algorithmic family is at fault for 
 wrong answer from code alone is genuinely hard, and that irreducible diagnostic noise
 is itself a plausible contributor to the fine-grained instability we document in
 RQ1. We therefore keep the common-evidence protocol for the full corpus, and add a
-separate first-failing-test audit to measure how much stronger evidence changes labels.
+separate first-failing-test audit to stress-test whether diagnostic labels remain
+stable under stronger evidence.
 
 \subsection{Labeling and analysis}
 Labeling is multi-label into the 32 leaves~\cite{wei2026evaluating}. The released
@@ -435,8 +439,8 @@ not label downstream symptoms. Primary-family tables use the first leaf after th
 rule. \textbf{Two annotators} labeled all 375 items provenance-blind (problem
 statement and buggy code only); a third adjudicated; we report their
 inter-annotator agreement. The \textbf{LLM judge}
-(\texttt{gpt-5.4}) labels all 14{,}182 bugs from the same evidence (statement, code,
-	verdict) with self-consistency over three samples. For verdict-based questions
+(\texttt{gpt-5.4}) produces baseline predictions for all 14{,}182 bugs from the same
+evidence (statement, code, verdict) with self-consistency over three samples. For verdict-based questions
 (acceptance, difficulty, repair) we use the exact full corpus; for
 taxonomy-distribution questions we use the human gold and validate the judge
 against it (RQ1). We report a descriptive $\chi^2$/Cram\'er's $V$ on family
@@ -468,13 +472,14 @@ evidence: the same statement and code plus the first failing test's input,
 expected/actual output, and one accepted reference implementation. If a program
 failed a public sample first, that public sample is the first failing test; otherwise
 the evidence is private-test based (95 public, 25 private overall: 18/40 public for
-human, 40/40 for proxy, 37/40 for modern). The $n{=}120$ audit estimates the overall
+human, 40/40 for proxy, 37/40 for modern). The $n{=}120$ audit summarizes the overall
 family-change rate with about $\pm$9 percentage points of binomial precision; Wilson
 95\% intervals are reported with the audit counts in RQ1. It is
 not designed for per-family prevalence. The annotators adjudicated all disagreements,
 with a third tie-breaker for three items. This audit does not relabel the full
-corpus; it estimates how far common-evidence diagnostic labels move when the same
-taxonomy is applied with stronger evidence.
+corpus and is not an isolated evidence-effect experiment; it stress-tests how unstable
+common-evidence diagnostic labels can be when the same taxonomy is applied with
+stronger evidence and a root-cause target.
 
 \section{Results}
 \label{sec:results}
@@ -527,7 +532,8 @@ accepted reference implementation. They again reached substantial agreement
 adjudicated all 36 disagreements. Against the original common-evidence labels, the
 adjudicated stronger-evidence labels changed 70/120 leaves (58.3\%) and 66/120 families
 (55.0\%; Table~\ref{tab:rootaudit}). The rate is not confined to one source: family
-labels changed for 65.0\% of human submissions and 50.0\% of both AI arms.
+labels changed for 65.0\% of human submissions and 50.0\% of both AI arms. We use
+this as a diagnostic-stability warning, not as a causal estimate of evidence alone.
 
 \begin{table}[t]
 \centering
@@ -637,11 +643,13 @@ evidence is private rather than public (72.0\% [52.4,85.7] vs.\ 50.5\%
 treat fine shifts as exploratory screens and reserve strong claims for bounded
 coarse patterns and label-free verdict dynamics.
 
-\subsection{RQ2: What calibrated source signals remain?}
+\subsection{RQ2: What calibrated source screens remain?}
 \label{sec:rq2}
-RQ2 applies the calibration in Table~\ref{tab:claimcal}: we treat family
-distributions as screens unless a signal is larger than known labeler bias and
-survives the stronger-evidence audit. On the human gold (Table~\ref{tab:family}) all three sources
+RQ2 is a benchmark sanity check: it asks what a user would see when applying the
+released baseline predictor under the claim gates, not whether humans and LLMs have
+intrinsic failure distributions. We treat family distributions as screens unless a
+signal is larger than known labeler bias and consistent with the audit's coarse
+stability check. On the human gold (Table~\ref{tab:family}) all three sources
 are dominated by the same two families---mathematics (AE1, $\approx$33\%) and design
 (GE1, 20--32\%)---and their high-level general-vs-algorithmic split is similar
 without being diagnostic. A \emph{weak} directional tendency is visible: design (GE1)
@@ -689,8 +697,8 @@ treat the fine shifts as measurement-limited rather than explanatory.
 
 \begin{table*}[t]
 \centering
-\caption{Full judge-labeled corpus. Percent columns are corpus shares of bugs with a
-family present. $\Delta$ columns are equal-problem model--human differences with
+\caption{Full-corpus baseline judge predictions. Percent columns are corpus shares of
+bugs with a family present. $\Delta$ columns are equal-problem model--human differences with
 problem-bootstrap 95\% CIs (2{,}000 replicates). Judge-label uncertainty is handled
 separately by the bias sensitivity in Table~\ref{tab:measerr}; under
 Table~\ref{tab:claimcal}, these rows remain screens.}
@@ -1013,11 +1021,8 @@ evidence can sustain.
 \label{sec:artifacts}
 \begingroup\raggedright
 HuAIBench artifacts are available at \url{https://anonymous.4open.science/r/aitaxo}:
-problem metadata and retained/dropped counts; prompt templates; raw
-human/generated/reflected programs; LLM-judge baseline predictions and rationales; human gold and
-stronger-evidence audit packs; execution-cache JSON with first failing tests; and
-analysis scripts that regenerate the reported tables from cached outputs. Exact
-proprietary-model regeneration is not required.
+metadata, prompts, raw programs, verdict/test caches, human gold labels, LLM baseline
+predictions, audit packs, reflection trajectories, and table-regeneration scripts.
 \par\endgroup
 
 \bibliographystyle{IEEEtran}
