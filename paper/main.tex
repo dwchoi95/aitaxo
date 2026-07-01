@@ -28,8 +28,8 @@
 
 \begin{document}
 
-\title{HuAIBench: A Claim-Gated Benchmark\\
-for Calibrated Human-AI Code-Failure Screening}
+\title{HuAIBench: A Claim-Gated Screening Substrate\\
+for Human-AI Code Failures}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{\textit{Submitted for review}}}
@@ -39,7 +39,7 @@ for Calibrated Human-AI Code-Failure Screening}
 \begin{abstract}
 Code-generation benchmarks usually measure whether programs pass tests; they rarely
 calibrate what can be screened or scored about failed programs. We introduce
-\emph{HuAIBench}, a claim-gated benchmark artifact for calibrated screening of
+\emph{HuAIBench}, a claim-gated screening substrate for calibrated analysis of
 released-sandbox human and AI code failures:
 14{,}182 released-sandbox non-AC C++ submissions on 107 post-2021 CodeContests
 problems, aligned across human submissions, a date-reduced proxy LLM, a modern
@@ -51,9 +51,9 @@ solutions, and repair/resampling trajectories; the 14{,}182 LLM-judge labels are
 baseline screen predictions, not an answer key. Its central contribution is a task
 contract: T0 outcome replay and T4 fixed-failure repair are primary tracks, T1/T2
 calibrate labelers, and T3 is a screen. The released baselines show why this
-separation matters. Common-evidence labels are reliable enough for triage but
-weak root-cause proxies (55.0\% of primary families change in the stronger-evidence
-track); the LLM judge is useful as a screen but over-applies design by 6--9 points;
+separation matters. Common-evidence labels are reliable enough for triage but weak
+substitutes for root-cause labels (primary families differ in 55.0\% of the
+target/evidence-contrast audit); the LLM judge is useful as a screen but over-applies design by 6--9 points;
 the full-corpus signal that survives calibration is coarse math/design concentration
 plus syntax/compile separation; and public-example self-reflection repairs 4.0\% of
 proxy bugs, matching same-budget resampling. HuAIBench is therefore not an all-leaf
@@ -518,7 +518,7 @@ expected/actual output, and one accepted reference implementation. If a program
 failed a public sample first, that public sample is the first failing test; otherwise
 the evidence is private-test based (95 public, 25 private overall: 18/40 public for
 human, 40/40 for proxy, 37/40 for modern). The $n{=}120$ audit summarizes the overall
-family-change rate with about $\pm$9 percentage points of binomial precision; Wilson
+family-difference rate with about $\pm$9 percentage points of binomial precision; Wilson
 95\% intervals are reported with the audit counts in RQ1. It is
 not designed for per-family prevalence. The track spans 62 problems (22 easy, 25
 medium, 15 hard; at most five items per problem) and its 120 items are 45/49/26
@@ -596,10 +596,10 @@ In its 120 items, annotators relabeled wrong-answer submissions with the first f
 test, actual/expected output, and an accepted reference implementation. They again reached substantial agreement
 (primary-family $\kappa=0.69$; binary multi-label family $\kappa=0.71$), then
 adjudicated all 36 disagreements. Against the original common-evidence labels, the
-adjudicated stronger-evidence labels changed 70/120 leaves (58.3\%) and 66/120 families
+adjudicated stronger-evidence labels differed from triage on 70/120 leaves (58.3\%) and 66/120 families
 (55.0\%; Table~\ref{tab:rootaudit}); equivalently, the common-evidence label is only
 a 50/120 leaf-exact and 54/120 family-exact baseline for the root-cause task. The rate is not confined to one source: family
-labels changed for 65.0\% of human submissions and 50.0\% of both AI arms. We use
+labels differed for 65.0\% of human submissions and 50.0\% of both AI arms. We use
 this as both a released root-cause seed task and a diagnostic-stability warning, not
 as a causal estimate of evidence alone.
 
@@ -607,7 +607,7 @@ as a causal estimate of evidence alone.
 \centering
 \caption{Stronger-evidence root-cause scorecard on 120 zero-shot WA submissions (40
 per source). The top block is inter-annotator agreement within the scoreable
-root-cause task; ``changed'' rows compare the adjudicated root-cause label with the
+root-cause task; ``diff.'' rows compare the adjudicated root-cause label with the
 original common-evidence label. Wilson intervals are for descriptive binomial
 proportions, not independent causal effects.}
 \label{tab:rootaudit}
@@ -623,8 +623,8 @@ Primary-family $\kappa$ & -- & 0.69 & --\\
 Binary family $\kappa$ & -- & 0.71 & --\\
 Adjudicated disagreements & 36/120 & 30.0\% & --\\
 \midrule
-Leaf changed & 70/120 & 58.3\% & [49.4,66.8]\\
-Family changed & 66/120 & 55.0\% & [46.1,63.6]\\
+Leaf diff. & 70/120 & 58.3\% & [49.4,66.8]\\
+Family diff. & 66/120 & 55.0\% & [46.1,63.6]\\
 \midrule
 Math/design before & 44/120 & 36.7\% & [28.6,45.6]\\
 Math/design after & 58/120 & 48.3\% & [39.6,57.2]\\
@@ -684,7 +684,7 @@ For a concrete released example, item \texttt{0a213dce08} (problem 1619B) is a W
 human submission whose full-corpus screen records GE1.3+AE1.1, while the
 stronger-evidence packet exposes a counting-formula error for 1; the adjudicated
 audit label becomes AE1.1. The benchmark stores both labels and rationales so users
-can see what changed rather than treat either tier as hidden truth.
+can inspect both tiers rather than treat either one as hidden truth.
 The transition summary (Table~\ref{tab:audittrans}) shows where this instability
 concentrates: boundary, data-type, and I/O diagnoses are often reinterpreted as
 design, condition, or mathematics, while AE1 and AE2 are more stable. The audit also
@@ -694,7 +694,7 @@ the full-corpus prevalence of math/design bugs; it only checks whether stronger
 evidence obviously erodes that bucket.
 Membership in \{mathematics, design\} is stable for 84/120 items (70.0\%,
 [61.3,77.5]), and the crossings are net inward: 25 items move into the bucket and
-11 move out. Family-set changes are not a single-arm artifact (65.0\% human,
+11 move out. Family-set differences are not a single-arm artifact (65.0\% human,
 50.0\% proxy, 50.0\% modern) or a hard-problem artifact (65.2/50.7/57.7\% for
 easy/medium/hard), but they are descriptively more common when the first failing
 evidence is private rather than public (72.0\% [52.4,85.7] vs.\ 50.5\%
@@ -1006,8 +1006,9 @@ output file, not a hidden test key.
 correct:incorrect ratio, so we compare only within-source difficulty trends.
 Taxonomy labels are subjective; we use two provenance-blind annotators,
 adjudication, and $\kappa=0.80$ as the reliability ceiling. Common-evidence labels
-are diagnostic hypotheses, not demonstrated root causes: the 120-item audit changes
-55.0\% of primary families relative to triage labels. We therefore fix a ``prefer
+are diagnostic hypotheses, not demonstrated root causes: in the 120-item audit,
+55.0\% of primary families differ from triage labels under a different target and
+evidence tier. We therefore fix a ``prefer
 the most specific leaf'' rule and avoid fine causal claims. The judge
 (\texttt{gpt-5.4}) and modern model (\texttt{gpt-5.4-nano}) also share a model
 family, so modern-arm taxonomy shifts remain screens.
@@ -1051,11 +1052,13 @@ evidence tier that can sustain it.
 \input{../analysis/artifact_audit_summary.tex}
 \begingroup\raggedright\scriptsize
 Artifacts: \url{https://anonymous.4open.science/r/aitaxo}. The bundled
-\texttt{analysis/artifact\_audit.py} verifies \ArtifactManifestFiles{} hashed files
-with \ArtifactManifestMismatches{} mismatches and recomputes the paper's count
-anchors: \ArtifactProblems{} problems, \ArtifactFullRows{} non-AC rows,
-\ArtifactGoldRows{} gold-label rows per annotator, and \ArtifactRootRows{}
-root-cause rows; \texttt{analysis/} regenerates Tables~IV--XIV without model calls.
+\texttt{analysis/artifact\_audit.py} verifies \ArtifactManifestFiles{} hashes
+(\ArtifactManifestMismatches{} mismatches) and recomputes anchors:
+\ArtifactProblems{} problems, \ArtifactFullRows{} non-AC rows, \ArtifactGoldRows{}
+gold rows, and \ArtifactRootRows{} root-cause rows. Prompts, schemas, codebooks, and
+T1/T2/T4 inputs are in \texttt{src/prompts/}, \texttt{data/classifications/},
+\texttt{analysis/root\_cause\_human\_audit/}, and \texttt{data/problems/};
+\texttt{analysis/} regenerates Tables~IV--XIV without model calls.
 \par\endgroup
 
 \bibliographystyle{IEEEtran}
