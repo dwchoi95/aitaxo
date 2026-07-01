@@ -28,8 +28,8 @@
 
 \begin{document}
 
-\title{HuAIBench: A Calibration Suite for\\
-Code-Failure Labeling}
+\title{HuAIBench: Calibrating\\
+Code-Failure Triage}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{\textit{Submitted for review}}}
@@ -40,19 +40,19 @@ Code-Failure Labeling}
 Benchmarks for code generation usually measure whether programs pass tests; they
 rarely calibrate what can be inferred about failed programs. We introduce
 \emph{HuAIBench}, a static calibration suite for competitive-programming
-code-failure labeling: 14{,}182 sandbox-confirmed non-AC C++ submissions on 107
+code-failure triage and evidence stability: 14{,}182 sandbox-confirmed non-AC C++ submissions on 107
 proxy-cutoff-aligned CodeContests problems, aligned across human submissions, a
 cutoff-aligned proxy LLM, a modern contrast LLM, and a public-example
 self-reflection loop. HuAIBench provides exact sandbox verdicts; the Wei et al.
 taxonomy as a common vocabulary; a 375-bug, doubly annotated common-evidence gold
-set covering observed frequent families for labeler evaluation; LLM-judge
+set covering the observed 17/32 leaves for labeler evaluation; LLM-judge
 full-corpus predictions released as baseline screens rather than truth; a 120-item
 stronger-evidence audit with failing tests and reference solutions; and reflection
 trajectories with a same-budget resampling baseline. The primary task is to evaluate
 labelers that operate on evidence available at scale---problem statement, code, and
 verdict---before users commit to expensive failing-test or reference-solution
 analysis. Exact verdicts support outcome, difficulty, and repair claims; human gold
-labels support observed-family triage-labeler calibration; full-corpus predictions
+labels support observed-leaf triage-labeler calibration; full-corpus predictions
 support only exploratory coarse screens; and stronger-evidence packs stress-test
 diagnostic-label stability. Baselines show the boundary: a stronger-evidence
 relabeling audit changes 55.0\% of primary families under a different protocol, the
@@ -122,7 +122,8 @@ capability, contamination risk, and difficulty shape label-free outcomes; and
 \textbf{RQ4} establishes a public-example self-reflection baseline.
 
 HuAIBench's main output is a set of calibrated benchmark tasks, not an unconditional
-taxonomy or model leaderboard. Researchers can evaluate common-evidence taxonomy
+taxonomy or model leaderboard; its gold task covers observed leaves rather than all
+32 taxonomy leaves. Researchers can evaluate common-evidence taxonomy
 labelers against the 375-bug human gold, stress-test diagnostic labels on the
 120 stronger-evidence packs, compare repair methods against reflection/resampling
 trajectories, and study cached generator failures while reporting contamination
@@ -130,7 +131,7 @@ status. Common-evidence triage is useful for scalable decisions---whether a labe
 is reliable enough to screen a large failure corpus, which buckets need human audit
 or new tests, and which failures enter repair queues---but not for certifying final
 root causes. Our baseline instantiation shows which uses are supported: exact
-verdicts are stable sandbox outcomes; human gold labels support observed-family
+verdicts are stable sandbox outcomes; human gold labels support observed-leaf
 triage-labeler calibration; full-corpus predictions are baseline screens; and
 root-cause claims require stronger evidence. The defensible taxonomy signal is coarse
 mathematics/design concentration plus a source-conditional syntax/compile separation.
@@ -622,7 +623,7 @@ use and an explicitly unsupported use.}
 Tier & Released evidence & Intended use & Do not use for\\
 \midrule
 Sandbox & verdicts, tests, cache & outcome/difficulty curves & semantic AC beyond tests\\
-Triage gold & 375 human labels & labeler calibration & root-cause labels\\
+Triage gold & 375 human labels & observed-leaf labeler calibration & root-cause labels\\
 Corpus screen & 14{,}182 predictions & coarse source screens & gold fine taxonomy\\
 Evidence stress & 120 audit packs & label-stability checks & prevalence estimates\\
 Repair & reflection trajectories & repair baselines & general self-repair claims\\
@@ -941,7 +942,7 @@ nearly absent for hard algorithmic families.}
 \section{Discussion}
 \label{sec:discussion}
 \paragraph{Primary benchmark use}
-HuAIBench's primary use is \emph{labeler calibration}: a future taxonomy labeler should
+HuAIBench's primary use is \emph{observed-leaf labeler calibration}: a future taxonomy labeler should
 report agreement with the 375-item common-evidence gold, beat the majority and
 verdict-only baselines, and disclose which observed leaves it covers. This supports
 scalable screening decisions---which buckets need audit/tests and which cached bugs
@@ -956,7 +957,7 @@ baseline, not semantic repair beyond the tests. Its third use is \emph{cached-ar
 analysis}: full-corpus judge predictions can screen for coarse regions, but they do
 not define a human-vs-AI failure distribution.
 This ordering is the central result: verdicts support outcome claims directly; the
-375-bug gold supports common-evidence labeler evaluation; full-corpus judge
+375-bug gold supports common-evidence evaluation only for observed leaves; full-corpus judge
 predictions support only coarse triage; and root-cause claims require failing-test or
 reference evidence.
 
@@ -1021,13 +1022,13 @@ the granularity the released evidence can sustain.
 \begingroup\raggedright
 Artifacts: \url{https://anonymous.4open.science/r/aitaxo} (metadata, prompts,
 programs, caches, labels, predictions, audit packs, repair trajectories, and scripts;
-Tables~IV--XIV rerun from caches without model calls).
-Reproduction map: \texttt{data/manifest.csv} (per-problem kept/dropped and oracle-risk counts) and \texttt{data/problems/*/} hold
-problem metadata, tests, programs, and cached verdict inputs; \texttt{data/classifications/*.csv}
-holds the full-corpus judge predictions and 375-item human gold; \texttt{analysis/root\_cause\_human\_audit/}
-holds the 120-item audit packets and adjudicated labels; \texttt{analysis/run\_analysis.py},
-\texttt{analysis/measurement\_error\_sensitivity.py}, \texttt{analysis/scope\_checks.py}, and
-\texttt{paper/make\_reflection\_taxonomy.py} regenerate the reported tables and figures from caches.
+Tables~IV--XIV rerun from caches without model calls). Checklist: prompts are in
+\texttt{src/prompts/}; the audit codebook, taxonomy CSV, and item packets are in
+\texttt{analysis/root\_cause\_human\_audit/}; \texttt{data/manifest.csv} lists
+per-problem kept/dropped and oracle-risk counts; \texttt{data/problems/*/} stores
+tests/programs/cached verdict inputs; \texttt{data/classifications/*.csv} stores
+full-corpus predictions and 375-item human gold; and the \texttt{analysis/} scripts
+plus \texttt{paper/make\_reflection\_taxonomy.py} regenerate tables and figures.
 \par\endgroup
 
 \bibliographystyle{IEEEtran}
