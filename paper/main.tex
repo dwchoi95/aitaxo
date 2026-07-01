@@ -993,6 +993,12 @@ the granularity the released evidence can sustain.
 Artifacts: \url{https://anonymous.4open.science/r/aitaxo} (metadata, prompts,
 programs, caches, labels, predictions, audit packs, repair trajectories, and scripts;
 Tables~IV--XIV rerun from caches without model calls).
+Reproduction map: \texttt{data/manifest.csv} and \texttt{data/problems/*/} hold
+problem metadata, tests, programs, and cached verdict inputs; \texttt{data/classifications/*.csv}
+holds the full-corpus judge predictions and 375-item human gold; \texttt{analysis/root\_cause\_human\_audit/}
+holds the 120-item audit packets and adjudicated labels; \texttt{analysis/run\_analysis.py},
+\texttt{analysis/measurement\_error\_sensitivity.py}, \texttt{analysis/scope\_checks.py}, and
+\texttt{paper/make\_reflection\_taxonomy.py} regenerate the reported tables and figures from caches.
 \par\endgroup
 
 \bibliographystyle{IEEEtran}
