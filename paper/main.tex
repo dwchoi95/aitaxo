@@ -646,6 +646,11 @@ evidence gain, taxonomy-boundary ambiguity, and root-cause-labeling instability.
 Nor do we claim the stronger-evidence label is uniquely true: one failing test and one
 reference solution can still leave multiple plausible fixes. The audit's role is to
 stress-test label stability under better evidence, not to certify final root causes.
+For a concrete released example, item \texttt{0a213dce08} (problem 1619B) is a WA
+human submission whose full-corpus screen records GE1.3+AE1.1, while the
+stronger-evidence packet exposes a counting-formula error for 1; the adjudicated
+audit label becomes AE1.1. The benchmark stores both labels and rationales so users
+can see what changed rather than treat either tier as hidden truth.
 The transition summary (Table~\ref{tab:audittrans}) shows where this instability
 concentrates: boundary, data-type, and I/O diagnoses are often reinterpreted as
 design, condition, or mathematics, while AE1 and AE2 are more stable. The audit also
