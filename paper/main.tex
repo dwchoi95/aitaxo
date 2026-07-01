@@ -28,8 +28,8 @@
 
 \begin{document}
 
-\title{HuAIBench: Calibrating Claims\\
-About Human and AI Code Failures}
+\title{HuAIBench: An Evidence-Tiered Calibration Benchmark\\
+for Human and AI Code Failures}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{\textit{Submitted for review}}}
@@ -43,9 +43,10 @@ calibrate what can be scored about failed programs. We introduce
 14{,}182 released-sandbox non-AC C++ submissions on 107 post-2021 CodeContests
 problems, aligned across human submissions, a date-reduced proxy LLM, a modern
 contrast LLM, and a public-example self-reflection loop. HuAIBench packages exact
-verdict caches, a 375-bug doubly annotated common-evidence triage gold set, 14{,}182
-LLM-judge baseline screen predictions, a 120-item stronger-evidence root-cause seed
-track with failing tests and reference solutions, and repair/resampling trajectories. Its
+verdict caches and oracle-risk metadata, a 375-bug doubly annotated common-evidence
+triage gold set (17 observed leaves), 14{,}182 LLM-judge baseline screen
+predictions, a 120-item stronger-evidence root-cause seed track (14 leaves) with
+failing tests and reference solutions, and repair/resampling trajectories. Its
 central contribution is a task contract: sandbox outcomes, common-evidence taxonomy
 triage, stronger-evidence root-cause labeling, full-corpus screening, and cached
 repair each have different evidence and scoring rules. The first baselines show why
@@ -55,8 +56,9 @@ track); the LLM judge is useful as a screen but over-applies design by 6--9 poin
 the full-corpus signal that survives calibration is coarse math/design concentration
 plus syntax/compile separation; and public-example self-reflection repairs 4.0\% of
 proxy bugs, matching same-budget resampling. HuAIBench is therefore a calibration
-benchmark: it specifies which failure-analysis claims are scoreable from common
-evidence, which require stronger evidence, and which remain exploratory screens.
+benchmark, not an all-leaf taxonomy answer key: it specifies which failure-analysis
+claims are scoreable from common evidence, which require stronger evidence, and
+which remain exploratory screens.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -107,7 +109,10 @@ future-model leaderboard.
 
 HuAIBench's contribution is an evidence-tiered benchmark contract: it turns
 plausible code-failure diagnoses into scoreable tasks with known evidence
-requirements. We evaluate that contract through four questions:
+requirements. The artifact is deliberately a calibration substrate plus seed
+root-cause track, not a full-corpus human taxonomy answer key, all-leaf root-cause
+prevalence benchmark, or future-model capability leaderboard. We evaluate that
+contract through four questions:
 \textbf{RQ1} Which taxonomy-labeling claims are supported under common versus
 stronger evidence? \textbf{RQ2} Which corpus-level failure signals survive
 calibration at scale? \textbf{RQ3} What exact outcome and difficulty baselines does
@@ -333,7 +338,10 @@ submissions). In the retained manifest, the 80 problems with at most 50\% pass-t
 contain 7{,}713/8{,}648 (89.2\%) kept human bugs; the 27 higher-risk problems are
 flagged and isolated in sensitivity checks. Per-problem counts are released as
 oracle-risk metadata; they bound the outcome task to ``verdict under the released
-sandbox tests,'' not semantic correctness in the abstract. The set is deliberately hard-skewed---25 problems rated $\le$1199, 12 at
+sandbox tests,'' not semantic correctness in the abstract. We recommend reporting the
+full retained corpus together with the $\le$50\% pass-through sensitivity subset
+whenever a claim could be read as semantic correctness rather than released-test
+behavior. The set is deliberately hard-skewed---25 problems rated $\le$1199, 12 at
 1200--1599, 13 at 1600--1999, 22 at 2000--2399, and 35 rated 2400+---so RQ3's
 difficulty analysis spans the full competitive range rather than only easy tasks.
 Each C++ submission is compiled with GNU \texttt{g++} (\texttt{gnu++17})
@@ -1043,7 +1051,6 @@ in \texttt{data/manifest.csv} and \texttt{data/problems/*/}; gold labels and
 Tables~IV--XIV without model calls.
 \par\endgroup
 
-\balance
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
