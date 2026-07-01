@@ -43,20 +43,22 @@ rarely calibrate what can be inferred about failed programs. We introduce
 stability: 14{,}182 released-sandbox non-AC C++ submissions on 107 post-2021
 CodeContests problems, aligned across human submissions, a historical proxy LLM, a
 modern contrast LLM, and a public-example self-reflection loop. HuAIBench supports
-three claim-gated tasks: exact sandbox outcome/difficulty analysis, observed-leaf
-common-evidence labeler calibration (statement, code, verdict), and repair/regeneration
-benchmarking on fixed cached failures. There is no aggregate leaderboard score; each
-tier has its own supported use and failure mode. It keeps evidence tiers separate: exact
-sandbox verdicts; the Wei et al. taxonomy as a common vocabulary; a 375-bug, doubly
-annotated common-evidence gold set covering 17/32 observed leaves; LLM-judge
-full-corpus predictions released as baseline screens rather than truth; a 120-item
-stronger-evidence stress set with failing tests and reference solutions; and
-reflection trajectories with a same-budget resampling baseline. HuAIBench is not a
-root-cause benchmark, not a complete 32-leaf taxonomy leaderboard, and not a
-contamination-proof future-model leaderboard. The main empirical result is a
-negative calibration boundary: an intentionally non-causal stronger-evidence stress
-test changes 55.0\% of primary families, the judge over-applies design by 6--9
-points, full-corpus taxonomy screens collapse to a coarse math/design bucket plus
+four claim-gated uses: exact sandbox outcome/difficulty analysis, observed-leaf
+common-evidence triage-labeler calibration (statement, code, verdict),
+stronger-evidence root-cause labeler evaluation (failing test, actual/expected output,
+reference solution), and repair/regeneration benchmarking on fixed cached failures.
+There is no aggregate leaderboard score; each tier has its own supported use and
+failure mode. It keeps evidence tiers separate: exact sandbox verdicts; the Wei et
+al. taxonomy as a common vocabulary; a 375-bug, doubly annotated common-evidence
+triage gold set covering 17/32 observed leaves; LLM-judge full-corpus predictions
+released as baseline screens rather than truth; a 120-item adjudicated root-cause
+gold track with stronger evidence; and reflection trajectories with a same-budget
+resampling baseline. HuAIBench is not a complete 32-leaf taxonomy leaderboard, a
+full-corpus root-cause prevalence benchmark, or a contamination-proof future-model
+leaderboard. The main empirical result is a calibration boundary: common-evidence
+labels are useful for triage but weak root-cause proxies (55.0\% of primary families
+change in the stronger-evidence track), the judge over-applies design by 6--9 points,
+full-corpus taxonomy screens collapse to a coarse math/design bucket plus
 syntax/compile separation, and public-example self-reflection repairs 4.0\% of proxy
 bugs, matching resampling.
 \end{abstract}
@@ -123,17 +125,17 @@ one empirical distribution claim. Compared with CodeContests plus a small taxono
 sample, its reusable unit is the aligned evidence bundle: same-sandbox
 human/generated failures, cached prompts/outputs, human gold, audit packs, and
 repair/resampling traces. Researchers can replay exact verdict outcomes, evaluate
-common-evidence taxonomy labelers against the 375-bug human gold, stress-test
-diagnostic labels on the 120 stronger-evidence packs, compare repair methods against
-reflection/resampling trajectories, and study cached generator failures while
-reporting contamination status. The primary scoreable taxonomy task is the 375-item
-observed-leaf labeler calibration; the 14{,}182 LLM-judge predictions are a released
-baseline screen, never an answer key. Common-evidence triage is useful for scalable
-decisions---which buckets need human audit, new tests, or repair---but not for
-certifying final root causes. Our baseline instantiation shows which uses are
-supported: exact verdicts are stable sandbox outcomes; human gold labels support
-observed-leaf triage-labeler calibration; full-corpus predictions are baseline
-screens; and root-cause claims require stronger evidence. The defensible taxonomy signal is coarse
+common-evidence triage labelers against the 375-bug human gold, evaluate
+stronger-evidence root-cause labelers against the 120 adjudicated packs, compare
+repair methods against reflection/resampling trajectories, and study cached generator
+failures while reporting contamination status. The taxonomy benchmark is deliberately
+two-tiered: the 375-item observed-leaf task scores scalable triage, while the
+120-item stronger-evidence task is the only scoreable root-cause track and is not a
+prevalence sample. The 14{,}182 LLM-judge predictions are a released baseline screen,
+never an answer key. Our baseline instantiation shows which uses are supported:
+exact verdicts are stable sandbox outcomes; human gold labels support triage and
+root-cause labeler evaluation at different evidence tiers; and full-corpus predictions
+are baseline screens. The defensible taxonomy signal is coarse
 mathematics/design concentration plus a source-conditional syntax/compile
 separation. Label-free dynamics are stronger: the modern contrast is more capable
 but difficulty-sensitive, and public-example feedback repairs only 4\% of proxy-model
@@ -141,10 +143,10 @@ bugs, matching same-budget resampling.
 
 Contributions: \textbf{(i)} \emph{HuAIBench}, a released tiered measurement benchmark with
 14{,}182 released-sandbox non-AC programs and exact verdicts, 375 human-gold
-taxonomy labels, 14{,}182 full-corpus LLM baseline predictions, stronger-evidence
-audit packs, and repair trajectories; \textbf{(ii)} separate benchmark
+triage labels, 120 adjudicated root-cause labels with stronger evidence, 14{,}182
+full-corpus LLM baseline predictions, and repair trajectories; \textbf{(ii)} separate benchmark
 tasks and baselines for sandbox outcomes, observed-leaf triage-labeler calibration,
-diagnostic-stability stress testing, and repair/resampling; \textbf{(iii)} a validation
+stronger-evidence root-cause labeler evaluation, and repair/resampling; \textbf{(iii)} a validation
 protocol combining human gold, power analysis, problem-level bootstrap, per-family
 judge error, bias correction, and stronger-evidence relabeling; and \textbf{(iv)}
 negative calibration findings that define the current supported claim boundary.
@@ -482,9 +484,9 @@ identity stripped and within-problem order shuffled. Statistically, we treat the
 judge as an instrument whose error we bound against the human ceiling (RQ1), not as
 ground truth.
 
-Finally, after the main analysis, two annotators independently re-labeled a
-stratified 120-item wrong-answer audit set (40 per zero-shot source) with stronger
-evidence: the same statement and code plus the first failing test's input,
+Finally, HuAIBench includes a scoreable stronger-evidence root-cause track: two
+annotators independently re-labeled a stratified 120-item wrong-answer audit set (40
+per zero-shot source) with stronger evidence: the same statement and code plus the first failing test's input,
 expected/actual output, and one accepted reference implementation. If a program
 failed a public sample first, that public sample is the first failing test; otherwise
 the evidence is private-test based (95 public, 25 private overall: 18/40 public for
@@ -492,10 +494,12 @@ human, 40/40 for proxy, 37/40 for modern). The $n{=}120$ audit summarizes the ov
 family-change rate with about $\pm$9 percentage points of binomial precision; Wilson
 95\% intervals are reported with the audit counts in RQ1. It is
 not designed for per-family prevalence. The annotators adjudicated all disagreements,
-with a third tie-breaker for three items. This audit does not relabel the full
-corpus and is not an isolated evidence-effect experiment; it stress-tests how unstable
-common-evidence diagnostic labels can be when the same taxonomy is applied with
-stronger evidence and a root-cause target.
+with a third tie-breaker for three items. The released root-cause score is exact
+leaf/family match or micro-$F_1$ against the adjudicated labels; the human-human
+agreement in RQ1 gives the ceiling. This track does not relabel the full corpus and
+is not an isolated evidence-effect experiment; it is the benchmark's root-cause seed
+task and stress-tests how unstable common-evidence diagnostic labels can be when the
+same taxonomy is applied with stronger evidence and a root-cause target.
 
 \section{Results}
 \label{sec:results}
@@ -553,23 +557,25 @@ judge vs.\ human2 & 0.77 & 0.81 & 0.77\\
 \end{tabular}
 \end{table}
 
-The stronger test is evidence stability. In the 120-item audit, annotators relabeled
-wrong-answer submissions with the first failing test, actual/expected output, and an
-accepted reference implementation. They again reached substantial agreement
+The stronger-evidence root-cause track is the benchmark's second taxonomy answer key.
+In its 120 items, annotators relabeled wrong-answer submissions with the first failing
+test, actual/expected output, and an accepted reference implementation. They again reached substantial agreement
 (primary-family $\kappa=0.69$; binary multi-label family $\kappa=0.71$), then
 adjudicated all 36 disagreements. Against the original common-evidence labels, the
 adjudicated stronger-evidence labels changed 70/120 leaves (58.3\%) and 66/120 families
-(55.0\%; Table~\ref{tab:rootaudit}). The rate is not confined to one source: family
+(55.0\%; Table~\ref{tab:rootaudit}); equivalently, the common-evidence label is only
+a 50/120 leaf-exact and 54/120 family-exact baseline for the root-cause task. The rate is not confined to one source: family
 labels changed for 65.0\% of human submissions and 50.0\% of both AI arms. We use
-this as a diagnostic-stability warning, not as a causal estimate of evidence alone.
+this as both a released root-cause labeler benchmark and a diagnostic-stability
+warning, not as a causal estimate of evidence alone.
 
 \begin{table}[t]
 \centering
-\caption{First-failing-test/reference-solution relabeling audit on 120 zero-shot WA
-submissions (40 per source). The top block is inter-annotator agreement within the
-stronger-evidence task; ``changed'' rows compare the adjudicated stronger-evidence
-label with the original common-evidence label. Wilson intervals are for descriptive
-binomial proportions, not independent causal effects.}
+\caption{Stronger-evidence root-cause scorecard on 120 zero-shot WA submissions (40
+per source). The top block is inter-annotator agreement within the scoreable
+root-cause task; ``changed'' rows compare the adjudicated root-cause label with the
+original common-evidence label. Wilson intervals are for descriptive binomial
+proportions, not independent causal effects.}
 \label{tab:rootaudit}
 \scriptsize
 \setlength{\tabcolsep}{2pt}
@@ -632,7 +638,7 @@ Tier & Released evidence & Intended use & Do not use for\\
 Sandbox & verdicts, tests, cache & outcome/difficulty curves & semantic AC beyond tests\\
 Triage gold & 375 human labels & observed-leaf common-evidence labeler calibration & all-leaf/root-cause labels\\
 Corpus screen & 14{,}182 baseline predictions & coarse source screens & answer-key labels\\
-Evidence stress & 120 audit packs & label-stability checks & prevalence estimates\\
+Root-cause gold & 120 audit packs + adjudicated labels & stronger-evidence root-cause labeler evaluation & prevalence estimates\\
 Repair & reflection trajectories & repair baselines & general self-repair claims\\
 \bottomrule
 \end{tabular}
@@ -642,9 +648,10 @@ Table~\ref{tab:claimcal} is the benchmark contract for HuAIBench. The rightmost
 column is a rule, not a caveat: direct ground truth exists for released-test sandbox
 outcomes and repair trajectories; human ground truth exists only for
 \emph{common-evidence triage labeling} (given statement, code, and verdict, predict
-the label a provenance-blind human assigns); full-corpus taxonomy predictions are
-baseline system outputs for coarse screening; and the 120 stronger-evidence packs are
-a stress set, not a prevalence sample. The artifact schema enforces this separation:
+the label a provenance-blind human assigns); human root-cause ground truth exists for
+the 120 stronger-evidence packs; and full-corpus taxonomy predictions are baseline
+system outputs for coarse screening. The 120-item root-cause track is scoreable but
+not a prevalence sample. The artifact schema enforces this separation:
 \texttt{gold\_human*.csv} are taxonomy answer keys, while \texttt{full.csv}
 contains baseline predictions only. A full-corpus taxonomy difference is not promoted beyond a screen
 unless it survives problem-level clustering and the arm-specific bias correction in
@@ -656,8 +663,9 @@ common-evidence gold (family $\kappa=0.69$ vs.\ 0.83), so the number combines
 evidence gain, taxonomy-boundary ambiguity, and root-cause-labeling instability; it
 does not mean the original common-evidence label was simply wrong.
 Nor do we claim the stronger-evidence label is uniquely true: one failing test and one
-reference solution can still leave multiple plausible fixes. The audit's role is to
-stress-test label stability under better evidence, not to certify final root causes.
+reference solution can still leave multiple plausible fixes. The track's role is to
+provide a stronger-evidence adjudicated answer key and to stress-test label stability,
+not to estimate full-corpus root-cause prevalence.
 For a concrete released example, item \texttt{0a213dce08} (problem 1619B) is a WA
 human submission whose full-corpus screen records GE1.3+AE1.1, while the
 stronger-evidence packet exposes a counting-formula error for 1; the adjudicated
@@ -896,8 +904,8 @@ on visible inputs, not hidden-test evidence. It repairs \textbf{4.0\%} of proxy 
 shows most fixes arrive in round 1 ($0\rightarrow53\rightarrow73\rightarrow83$ AC),
 while wrong answers remain near 1{,}850. Compile errors reach 5.5\% repair and wrong
 answers 4.1\%, but \textbf{runtime (0/55) and time-limit (0/27) errors are never
-repaired}. Using family-level validated judge labels, Fig.~\ref{fig:taxorepair} shows
-repairs concentrated in easy syntax/design cases; boundary, math, greedy, and DP
+repaired}. Family-level validated judge labels show the same narrow pattern:
+repairs concentrate in easy syntax/design cases, while boundary, math, greedy, and DP
 failures mostly persist, leaving the diagnostic-label profile almost unchanged.
 
 \begin{table}[t]
@@ -936,34 +944,25 @@ runtime/time-limit failures never resolve.}
 \label{fig:sankey}
 \end{figure}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=0.90\textwidth]{figs/reflection_taxonomy_heatmap.pdf}
-\caption{Taxonomy-aware repair rate of self-reflection, using the original bug's
-AI-judge primary family label after family-level validation against the 375-item
-human gold. Rows show families with at least 100 initial proxy-model bugs (two
-singleton families omitted). Repairs concentrate in easy syntax/design cases and are
-nearly absent for hard algorithmic families.}
-\label{fig:taxorepair}
-\end{figure*}
-
 \section{Discussion}
 \label{sec:discussion}
 \paragraph{Benchmark use}
 HuAIBench should be used as a tiered benchmark, not as a single truth table or
-single primary score. Outcome studies replay released-test verdicts; taxonomy studies
-score labelers on the 375 gold items and treat full-corpus labels as screens; repair
-studies compare fixed cached failures against reflection/resampling. New generator
-arms append cached submissions with model date/cutoff, contamination status, sandbox
-outcomes, and the same calibration/scope checks. None defines a human-vs-AI
-root-cause distribution.
-If a taxonomy leaderboard is used, its score is micro-$F_1$/$\kappa$ on the 375
-gold labels plus per-family bias; \texttt{full.csv} is a baseline output file, not a
-hidden test key.
+single primary score. Outcome studies replay released-test verdicts; triage-labeler
+studies score on the 375 common-evidence gold items; root-cause-labeler studies score
+on the 120 stronger-evidence adjudicated packs; full-corpus labels are screens; and
+repair studies compare fixed cached failures against reflection/resampling. New
+generator arms append cached submissions with model date/cutoff, contamination
+status, sandbox outcomes, and the same calibration/scope checks. None defines a
+human-vs-AI root-cause distribution.
+If a taxonomy leaderboard is used, it must be split by evidence tier: micro-$F_1$/$\kappa$
+on the 375 triage labels for common-evidence labelers, and exact-family/leaf or
+micro-$F_1$ on the 120 adjudicated labels for stronger-evidence root-cause labelers.
+\texttt{full.csv} is a baseline output file, not a hidden test key.
 This ordering is the central result: verdicts support outcome claims directly; the
 375-bug gold supports common-evidence evaluation only for observed leaves; full-corpus judge
-predictions support only coarse triage; and root-cause claims require failing-test or
-reference evidence.
+predictions support only coarse triage; and root-cause claims are scoreable only on
+the failing-test/reference-evidence track.
 
 \section{Threats to Validity}
 \label{sec:threats}
@@ -972,7 +971,8 @@ correct:incorrect ratio, so we compare only within-source difficulty trends.
 Taxonomy labeling is subjective; we use two provenance-blind annotators,
 adjudication, and report inter-annotator $\kappa=0.80$ as the reliability ceiling.
 Common-evidence labels are diagnostic hypotheses, not demonstrated root causes: the
-120-item audit changes 55.0\% of family labels. RQ1 also shows sensitivity to
+120-item root-cause track changes 55.0\% of family labels relative to common-evidence
+triage labels. RQ1 also shows sensitivity to
 taxonomy granularity, so we fix a ``prefer the most specific leaf'' rule and avoid
 fine causal claims. The judge (\texttt{gpt-5.4}) and modern model
 (\texttt{gpt-5.4-nano}) share a model family, and the judge's excess design labels
@@ -1007,18 +1007,18 @@ independent. Some intervals exclude zero, but effect sizes are small and estimat
 with the same judge whose family-level bias is 6--9 points; corrected-delta CIs in
 Table~\ref{tab:measerr} control our interpretation more than raw significance does.
 The 125-bug-per-arm gold is underpowered for small shifts ($V\!\lesssim\!0.26$).
-The stronger-evidence audit adds a coarse check: math/design membership is stable
-for 70.0\% of the audit ([61.3,77.5]) and moves inward more often than outward (25
-vs.\ 11). The dominant coarse region is stable; fine source differences remain
+The stronger-evidence root-cause track adds a coarse check: math/design membership is
+stable for 70.0\% of the audit ([61.3,77.5]) and moves inward more often than outward
+(25 vs.\ 11). The dominant coarse region is stable; fine source differences remain
 measurement-limited.
 
 \section{Conclusion}
 \label{sec:conclusion}
 HuAIBench is a static calibration suite for code failures: released-sandbox outcomes,
-human-gold labeler calibration, baseline taxonomy screens, stronger-evidence stress
-tests, and repair baselines. Its first baselines support only coarse math/design
+human-gold triage labeling, stronger-evidence root-cause labeling, baseline taxonomy
+screens, and repair baselines. Its first baselines support only coarse math/design
 concentration, syntax/compile separation, and weak public-example self-reflection;
-the transferable rule is to report only the granularity the evidence can sustain.
+the transferable rule is to score each claim on the evidence tier that can sustain it.
 
 \section{Artifact Availability}
 \label{sec:artifacts}
@@ -1027,12 +1027,13 @@ Artifacts: \url{https://anonymous.4open.science/r/aitaxo} (metadata, prompts,
 programs, caches, labels, predictions, audit packs, repair trajectories, and scripts;
 Tables~IV--XIV rerun from caches without model calls). Checklist: \texttt{src/prompts/}
 stores prompts; \texttt{analysis/root\_cause\_human\_audit/} stores the codebook,
-taxonomy, and audit packs; \texttt{data/manifest.csv} and \texttt{data/problems/*/}
+taxonomy, adjudicated labels, and audit packs; \texttt{data/manifest.csv} and \texttt{data/problems/*/}
 store oracle-risk counts, tests, programs, and verdict caches; \texttt{data/classifications/}
 separates \texttt{gold\_human*.csv} answer keys from \texttt{full.csv} baseline
 predictions; and \texttt{analysis/} scripts regenerate tables/figures.
 \par\endgroup
 
+\clearpage
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
