@@ -39,28 +39,25 @@ Code-Failure Triage}
 \begin{abstract}
 Benchmarks for code generation usually measure whether programs pass tests; they
 rarely calibrate what can be inferred about failed programs. We introduce
-\emph{HuAIBench}, a static calibration suite for competitive-programming
-code-failure triage and evidence stability: 14{,}182 sandbox-confirmed non-AC C++ submissions on 107
-proxy-cutoff-aligned CodeContests problems, aligned across human submissions, a
-cutoff-aligned proxy LLM, a modern contrast LLM, and a public-example
-self-reflection loop. HuAIBench provides exact sandbox verdicts; the Wei et al.
-taxonomy as a common vocabulary; a 375-bug, doubly annotated common-evidence gold
-set covering the observed 17/32 leaves for labeler evaluation; LLM-judge
-full-corpus predictions released as baseline screens rather than truth; a 120-item
-stronger-evidence audit with failing tests and reference solutions; and reflection
-trajectories with a same-budget resampling baseline. The primary task is to evaluate
-labelers that operate on evidence available at scale---problem statement, code, and
-verdict---before users commit to expensive failing-test or reference-solution
-analysis. Exact verdicts support outcome, difficulty, and repair claims; human gold
-labels support observed-leaf triage-labeler calibration; full-corpus predictions
-support only exploratory coarse screens; and stronger-evidence packs stress-test
-diagnostic-label stability. Baselines show the boundary: an intentionally non-causal
-stronger-evidence stress test changes 55.0\% of primary families, the judge
-over-applies design by 6--9 points, the robust taxonomy signal is only a coarse
-math/design bucket plus syntax/compile separation, and public-example self-reflection
-repairs 4.0\% of proxy bugs, matching resampling. The released schema
-keeps human-gold labels, judge predictions, stronger-evidence labels, and repair
-trajectories in separate evidence tiers with scripts that rerun tables from caches.
+\emph{HuAIBench}, a static benchmark for common-evidence code-failure triage and
+evidence stability: 14{,}182 sandbox-confirmed non-AC C++ submissions on 107
+post-2021 CodeContests problems, aligned across human submissions, a cutoff proxy
+LLM, a modern contrast LLM, and a public-example self-reflection loop. The primary
+benchmark task is deliberately narrow: given a problem statement, program, and
+sandbox verdict, evaluate whether a labeler reproduces provenance-blind human
+triage labels for the taxonomy leaves observed in the gold set. HuAIBench is
+therefore not a root-cause benchmark, not a complete 32-leaf taxonomy leaderboard,
+and not a contamination-proof future-model leaderboard. It keeps evidence tiers
+separate: exact sandbox verdicts; the Wei et al. taxonomy as a common vocabulary; a
+375-bug, doubly annotated common-evidence gold set covering 17/32 observed leaves;
+LLM-judge full-corpus predictions released as baseline screens rather than truth; a
+120-item stronger-evidence stress set with failing tests and reference solutions;
+and reflection trajectories with a same-budget resampling baseline. Baselines define
+the supported boundary: an intentionally non-causal stronger-evidence stress test
+changes 55.0\% of primary families, the judge over-applies design by 6--9 points,
+the robust taxonomy signal is only a coarse math/design bucket plus syntax/compile
+separation, and public-example self-reflection repairs 4.0\% of proxy bugs,
+matching resampling.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -100,19 +97,18 @@ labels, but also the evidence needed to bound those labels' reliability.
 
 We introduce \emph{HuAIBench} to address this measurement gap. It adopts the recent bug taxonomy of Wei et
 al.~\cite{wei2026evaluating}---six general-error and six algorithm-specific
-families, 32 leaves (Table~\ref{tab:taxonomy})---and bounds proxy-arm contamination risk by using
-the test split of CodeContests~\cite{li2022alphacode}: 107 public Codeforces problems
-first published after the September-2021 cutoff of
-\texttt{gpt-3.5-turbo}~\cite{openai2023gpt4}. We use four sources as a stress test
-for the instrument: human submissions; a cutoff-aligned proxy model; a modern model
-whose training window covers the problems (a descriptive contrast, not a
-cutoff-controlled source); and a self-reflection loop on the cutoff proxy. Every
-submission is judged in a hardened sandbox; two annotators label a 375-bug gold set;
-an LLM judge produces full-corpus baseline predictions; and a 120-item audit adds failing tests and
-reference solutions. The current model arms are baseline instantiations. HuAIBench
-is not a contamination-proof leaderboard for future public models; it is a static
-measurement substrate for cached failures, labeler calibration, diagnostic-stability
-checks, and repair baselines.
+families, 32 leaves (Table~\ref{tab:taxonomy})---and reduces proxy-arm exposure risk
+by using the test split of CodeContests~\cite{li2022alphacode}: 107 public
+Codeforces problems first published after the September-2021 cutoff of
+\texttt{gpt-3.5-turbo}~\cite{openai2023gpt4}. This cutoff alignment is not a
+certificate of no exposure, so model arms are baseline instantiations rather than
+leaderboard entries: human submissions; a cutoff proxy model; a modern model whose
+training window covers the problems; and a self-reflection loop on the cutoff proxy.
+Every submission is judged in a hardened sandbox; two annotators label a 375-bug
+gold set; an LLM judge produces full-corpus baseline predictions; and a 120-item
+audit adds failing tests and reference solutions. HuAIBench is a static measurement
+substrate for cached failures, labeler calibration, diagnostic-stability checks, and
+repair baselines, not a contamination-proof future-model leaderboard.
 
 We evaluate HuAIBench through four questions, ordered from benchmark validation to
 baseline findings: \textbf{RQ1} asks how reliable taxonomy labels and baseline
@@ -121,26 +117,28 @@ source-conditioned taxonomy screens remain after calibration; \textbf{RQ3} asks 
 capability, contamination risk, and difficulty shape label-free outcomes; and
 \textbf{RQ4} establishes a public-example self-reflection baseline.
 
-HuAIBench's main output is a set of calibrated benchmark tasks, not an unconditional
-taxonomy or model leaderboard; its gold task covers observed leaves rather than all
-32 taxonomy leaves, and this labeler-calibration task does not depend on accepting
-the proxy arm as a perfectly uncontaminated model. Compared with CodeContests plus a small taxonomy sample, its
-reusable unit is the aligned evidence bundle: same-sandbox human/generated failures,
-cached prompts/outputs, human gold, audit packs, and repair/resampling traces. Researchers can evaluate common-evidence taxonomy
-labelers against the 375-bug human gold, stress-test diagnostic labels on the
-120 stronger-evidence packs, compare repair methods against reflection/resampling
-trajectories, and study cached generator failures while reporting contamination
-status. Common-evidence triage is useful for scalable decisions---whether a labeler
-is reliable enough to screen a large failure corpus, which buckets need human audit
-or new tests, and which failures enter repair queues---but not for certifying final
-root causes. Our baseline instantiation shows which uses are supported: exact
-verdicts are stable sandbox outcomes; human gold labels support observed-leaf
-triage-labeler calibration; full-corpus predictions are baseline screens; and
-root-cause claims require stronger evidence. The defensible taxonomy signal is coarse
-mathematics/design concentration plus a source-conditional syntax/compile separation.
-Label-free dynamics are stronger: the modern contrast is more capable but
-difficulty-sensitive, and public-example feedback repairs only 4\% of proxy-model
-bugs, matching same-budget resampling.
+HuAIBench's main output is a calibrated benchmark contract, not an unconditional
+taxonomy or model leaderboard. Its primary task is observed-leaf
+\emph{common-evidence} labeler calibration: given statement, code, and verdict,
+match provenance-blind human triage labels over the leaves that appear in the gold
+set. This task does not require accepting the proxy arm as perfectly uncontaminated.
+Compared with CodeContests plus a small taxonomy sample, HuAIBench's reusable unit is
+the aligned evidence bundle: same-sandbox human/generated failures, cached
+prompts/outputs, human gold, audit packs, and repair/resampling traces. Researchers
+can evaluate common-evidence taxonomy labelers against the 375-bug human gold,
+stress-test diagnostic labels on the 120 stronger-evidence packs, compare repair
+methods against reflection/resampling trajectories, and study cached generator
+failures while reporting contamination status. Common-evidence triage is useful for
+scalable decisions---whether a labeler can screen a large failure corpus, which
+buckets need human audit or new tests, and which failures enter repair queues---but
+not for certifying final root causes. Our baseline instantiation shows which uses are
+supported: exact verdicts are stable sandbox outcomes; human gold labels support
+observed-leaf triage-labeler calibration; full-corpus predictions are baseline
+screens; and root-cause claims require stronger evidence. The defensible taxonomy
+signal is coarse mathematics/design concentration plus a source-conditional
+syntax/compile separation. Label-free dynamics are stronger: the modern contrast is
+more capable but difficulty-sensitive, and public-example feedback repairs only 4\%
+of proxy-model bugs, matching same-budget resampling.
 
 Contributions: \textbf{(i)} \emph{HuAIBench}, a released tiered measurement benchmark with
 14{,}182 sandbox-confirmed non-AC programs and exact verdicts, 375 human-gold
@@ -179,11 +177,10 @@ pre-training corpora and inflate benchmark scores; a growing line of work measur
 and mitigates this~\cite{sainz2023contamination,golchin2024timetravel,riddell2024quantifying,magar2022memorization}.
 LiveCodeBench~\cite{jain2024livecodebench} adopts rolling, recent problems and
 reports strong models near zero on the hardest unseen tasks, and Wei et
-al.~\cite{wei2026evaluating} run an explicit contamination audit. We take the same
-stance structurally: HuAIBench's CodeContests test split post-dates the
-\texttt{gpt-3.5-turbo} cutoff used for its proxy arm, and it adds a modern model as a
-deliberately contamination-uncontrolled contrast rather than a cutoff-controlled
-measurement.
+al.~\cite{wei2026evaluating} run an explicit contamination audit. HuAIBench uses the
+CodeContests test split because it post-dates the \texttt{gpt-3.5-turbo} cutoff, but
+we treat that as exposure reduction, not proof of no contamination; the modern model
+is included only as a deliberately contamination-uncontrolled contrast.
 
 \subsection{Bug taxonomies and empirical bug studies}
 Defect classification has a long lineage---Orthogonal Defect
@@ -303,11 +300,12 @@ from the statement rather than recalling seen tasks. We also run a lightweight
 code-similarity audit against the stored human accepted solutions for each problem:
 none of the proxy model's 64 accepted outputs is whitespace-normalized identical to a
 stored human accepted solution, and the maximum token 5-gram Jaccard similarity is
-0.47 (median 0.20). This does not prove absence of training exposure, but it rules out
-verbatim or near-verbatim replay of the accepted solutions available in our corpus.
-Throughout, we therefore call this arm the \emph{cutoff proxy}, not a certified
-contamination-free model. Every cutoff-aligned taxonomy claim rests on this proxy; we
-make none on the modern model. We start from 165 Codeforces test-split problems and
+0.47 (median 0.20). These checks do not rule out partial exposure to statements,
+editorials, or solution ideas, so we call this arm the \emph{cutoff proxy}, not a
+certified contamination-free model. The benchmark's primary labeler-calibration task
+is arm-agnostic; only the proxy generator baselines carry cutoff-aligned
+interpretation, and no modern-arm result is treated as cutoff-controlled. We start
+from 165 Codeforces test-split problems and
 keep a problem only if it is judgeable ($\geq\!1$ correct human C++ solution
 confirmed AC and $\geq\!10$ incorrect C++ solutions confirmed non-AC). The filter
 discards 44 problems with no private tests, 7 whose stored correct C++ solutions did
@@ -508,10 +506,11 @@ and $0.83$ at family level---matching the high agreement reported for this taxon
 by Wei et al.~\cite{wei2026evaluating}. The \texttt{gpt-5.4} judge reaches
 substantial agreement with both annotators (family $\kappa=0.77/0.81$,
 micro-$F_1\approx0.77$; Table~\ref{tab:kappa}), so it is usable for coarse
-full-corpus screening. Coverage is a separate boundary: across the two human gold
-label sets, only 17/32 taxonomy leaves and 9/12 families appear at least once
-(AE3, AE4, and AE6 are absent). Thus HuAIBench supports aggregate labeler
-calibration and observed-family screens, not per-leaf leaderboards over all 32 leaves.
+full-corpus screening. Coverage is part of the benchmark contract, not a hidden
+limitation: across the two human gold label sets, only 17/32 taxonomy leaves and
+9/12 families appear at least once (AE3, AE4, and AE6 are absent). Thus HuAIBench
+supports observed-leaf labeler calibration and observed-family screens, not per-leaf
+leaderboards over all 32 leaves.
 The same gold rejects shallow labelers: a majority-prior labeler that always predicts
 AE1.1 reaches only micro-$F_1=0.32$ against the two humans, and a verdict-only
 heuristic (CE/RE$\to$GE5.1, TLE$\to$GE1.3, WA$\to$AE1.1) reaches 0.48; the judge's
@@ -626,7 +625,7 @@ use and an explicitly unsupported use.}
 Tier & Released evidence & Intended use & Do not use for\\
 \midrule
 Sandbox & verdicts, tests, cache & outcome/difficulty curves & semantic AC beyond tests\\
-Triage gold & 375 human labels & observed-leaf labeler calibration & root-cause labels\\
+Triage gold & 375 human labels & observed-leaf common-evidence labeler calibration & all-leaf/root-cause labels\\
 Corpus screen & 14{,}182 predictions & coarse source screens & gold fine taxonomy\\
 Evidence stress & 120 audit packs & label-stability checks & prevalence estimates\\
 Repair & reflection trajectories & repair baselines & general self-repair claims\\
@@ -945,20 +944,19 @@ nearly absent for hard algorithmic families.}
 \section{Discussion}
 \label{sec:discussion}
 \paragraph{Primary benchmark use}
-HuAIBench's primary use is \emph{observed-leaf labeler calibration}: a future taxonomy labeler should
-report agreement with the 375-item common-evidence gold, beat the majority and
-verdict-only baselines, and disclose which observed leaves it covers. This supports
-scalable screening decisions---which buckets need audit/tests and which cached bugs
-can enter repair studies---not certification of final causes. New judges follow the
-same contract: predict the 375 gold items, report agreement and per-family bias, and
-treat full-corpus labels as screens until corrected. New generator arms are appended
+HuAIBench's primary benchmark task is \emph{observed-leaf common-evidence labeler
+calibration}. A future taxonomy labeler should predict the 375 gold items from the
+same evidence (statement, code, verdict), beat the majority and verdict-only
+baselines, report per-family bias, and disclose which observed leaves it covers.
+This supports scalable screening decisions---which buckets need audit/tests and
+which cached bugs can enter repair studies---not certification of final causes or
+coverage of leaves absent from the gold. New judges follow the same contract; their
+full-corpus labels remain screens until corrected. New generator arms are appended
 with cached submissions, model date/cutoff, contamination status, sandbox outcomes,
 and the same calibration/scope checks; this is the update path as public tasks become
-more exposed. HuAIBench's second use is \emph{repair benchmarking} on fixed failures:
-methods should report released-sandbox fix rates against the reflection/resampling
-baseline, not semantic repair beyond the tests. Its third use is \emph{cached-arm
-analysis}: full-corpus judge predictions can screen for coarse regions, but they do
-not define a human-vs-AI failure distribution.
+more exposed. Companion tasks are \emph{repair benchmarking} on fixed failures
+against the reflection/resampling baseline and \emph{cached-arm analysis} for coarse
+regions. Neither companion task defines a human-vs-AI root-cause distribution.
 This ordering is the central result: verdicts support outcome claims directly; the
 375-bug gold supports common-evidence evaluation only for observed leaves; full-corpus judge
 predictions support only coarse triage; and root-cause claims require failing-test or
