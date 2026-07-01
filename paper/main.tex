@@ -943,16 +943,15 @@ grow across human/proxy/modern ($6\%/8\%/10\%$); modern-arm taxonomy shifts are
 therefore screens, not confirmed differences.
 
 \textbf{Internal validity.} Excluding generated tests for tractability admits
-occasional weak-test pass-through, which can mislabel a buggy program as correct;
-this affects all sources symmetrically. We mitigate special-judge and
-multiple-output risk by requiring at least one stored correct C++ solution to pass
-the sandbox comparator, dropping 7 otherwise, and quarantining sandbox-inconclusive
-stored incorrects. Verdicts come from a deterministic, cached sandbox and are not subject to
-taxonomy-labeling error. The modern model's contamination is uncontrolled by design,
-so its results are a contrast. Contamination can also change the conditional
-diagnostic-label profile by removing memorized or easy-to-recall AC solutions from
-the non-AC pool; this is another reason the proxy model anchors cutoff-aligned
-claims.
+weak-test pass-through, so outcomes mean released-sandbox verdicts. We mitigate
+special-judge and multiple-output risk by requiring a stored correct C++ solution to
+pass the comparator, dropping 7 otherwise, and quarantining sandbox-inconclusive
+stored incorrects. Removing the 27 retained problems with $>$50\% pass-through
+preserves the qualitative results: proxy AC stays at the floor (1.7\%), modern AC
+falls from 54.3\% to 7.8\% across difficulty, reflection remains weak
+(44/1{,}573=2.8\%), and zero-shot bugs remain WA-dominated with AE1/GE1 the largest
+screen (70.2--76.4\%). The modern model's contamination is uncontrolled by design,
+so its results are a contrast; the proxy anchors cutoff-aligned claims.
 
 \textbf{External validity.} We study C++ Codeforces problems, one PaR-style prompt
 at temperature 1.0, and two models. Because the tasks are public, HuAIBench is not a
