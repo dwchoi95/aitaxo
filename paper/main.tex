@@ -501,7 +501,11 @@ and $0.83$ at family level---matching the high agreement reported for this taxon
 by Wei et al.~\cite{wei2026evaluating}. The \texttt{gpt-5.4} judge reaches
 substantial agreement with both annotators (family $\kappa=0.77/0.81$,
 micro-$F_1\approx0.77$; Table~\ref{tab:kappa}), so it is usable for coarse
-full-corpus screening. It is not neutral enough for fine distributional claims. On
+full-corpus screening. Coverage is a separate boundary: across the two human gold
+label sets, only 17/32 taxonomy leaves and 9/12 families appear at least once
+(AE3, AE4, and AE6 are absent). Thus HuAIBench supports aggregate labeler
+calibration and observed-family screens, not per-leaf leaderboards over all 32 leaves.
+The judge is not neutral enough for fine distributional claims. On
 the same 375 gold items the judge assigns the broad design family to 26/34/41\% of
 human/proxy/modern bugs, while the human annotators assign 20/28/32\%: a 6--9 point
 inflation that is arm-dependent and largest on the modern arm, which shares the
