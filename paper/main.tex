@@ -123,7 +123,9 @@ capability, contamination risk, and difficulty shape label-free outcomes; and
 
 HuAIBench's main output is a set of calibrated benchmark tasks, not an unconditional
 taxonomy or model leaderboard; its gold task covers observed leaves rather than all
-32 taxonomy leaves. Researchers can evaluate common-evidence taxonomy
+32 taxonomy leaves. Compared with CodeContests plus a small taxonomy sample, its
+reusable unit is the aligned evidence bundle: same-sandbox human/generated failures,
+cached prompts/outputs, human gold, audit packs, and repair/resampling traces. Researchers can evaluate common-evidence taxonomy
 labelers against the 375-bug human gold, stress-test diagnostic labels on the
 120 stronger-evidence packs, compare repair methods against reflection/resampling
 trajectories, and study cached generator failures while reporting contamination
@@ -449,9 +451,9 @@ appear, and cap four items per problem. Annotators used the fixed taxonomy with 
 same decision rules in both gold and audit packs: prefer the most specific leaf that
 explains the demonstrated failure, multi-label only for independent causes, and do
 not label downstream symptoms. Primary-family tables use the first leaf after this
-rule. \textbf{Two annotators} labeled all 375 items provenance-blind (problem
-statement and buggy code only); a third adjudicated; we report their
-inter-annotator agreement. The \textbf{LLM judge}
+rule. \textbf{Two annotators} labeled all 375 items provenance-blind (statement, code,
+and sandbox verdict; no failing test, reference solution, or source identity); a
+third adjudicated; we report their inter-annotator agreement. The \textbf{LLM judge}
 (\texttt{gpt-5.4}) produces baseline predictions for all 14{,}182 bugs from the same
 evidence (statement, code, verdict) with self-consistency over three samples. For verdict-based questions
 (acceptance, difficulty, repair) we use the exact full corpus; for
@@ -1019,7 +1021,7 @@ the granularity the released evidence can sustain.
 
 \section{Artifact Availability}
 \label{sec:artifacts}
-\begingroup\raggedright
+\begingroup\raggedright\scriptsize
 Artifacts: \url{https://anonymous.4open.science/r/aitaxo} (metadata, prompts,
 programs, caches, labels, predictions, audit packs, repair trajectories, and scripts;
 Tables~IV--XIV rerun from caches without model calls). Checklist: prompts are in
