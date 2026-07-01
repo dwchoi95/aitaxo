@@ -28,8 +28,8 @@
 
 \begin{document}
 
-\title{HuAIBench: A Tiered Benchmark for\\
-Code-Failure Outcomes and Labeler Calibration}
+\title{HuAIBench: A Calibration Benchmark for\\
+Code-Failure Outcomes and Taxonomy Triage}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{\textit{Submitted for review}}}
@@ -38,8 +38,8 @@ Code-Failure Outcomes and Labeler Calibration}
 
 \begin{abstract}
 Benchmarks for code generation usually measure whether programs pass tests; they
-rarely provide reusable evidence about how human and generated submissions fail. We introduce
-\emph{HuAIBench}, a tiered benchmark for competitive-programming code failures:
+rarely calibrate evidence about how human and generated submissions fail. We introduce
+\emph{HuAIBench}, a static calibration benchmark for competitive-programming code failures:
 14{,}182 sandbox-confirmed non-AC C++ submissions on 107 proxy-cutoff-aligned CodeContests
 problems, aligned across human submissions, a cutoff-aligned proxy LLM, a modern
 contrast LLM, and a public-example self-reflection loop. HuAIBench is tiered rather
@@ -59,9 +59,9 @@ show the boundary: a stronger-evidence relabeling audit changes 55.0\% of primar
 families under a different protocol, the judge over-applies design by 6--9 points,
 the only robust taxonomy signal is a coarse
 math/design bucket plus syntax/compile separation, and public-example self-reflection
-repairs only 4.0\% of proxy bugs, matching resampling. We release the benchmark
-data, prompts, cached outputs, human labels, baseline predictions, audit packs, and
-analysis scripts.
+repairs only 4.0\% of proxy bugs, matching resampling. The released schema keeps
+human-gold labels, judge baseline predictions, stronger-evidence audit labels, and
+repair trajectories in separate evidence tiers with scripts that rerun tables from caches.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -197,7 +197,9 @@ system output whose reliability is validated against a 375-bug doubly-annotated 
 gold. The human baseline lets the benchmark calibrate source-conditioned screens on identical problems, and
 the scale forces measurement questions---statistical power, within-problem
 clustering, and labeler granularity---that a 75-program, single-model, AI-only study
-never has to confront.
+never has to confront. Thus HuAIBench's novelty is a released calibration substrate
+and claim-gating protocol, not a new taxonomy or an unrestricted failure-distribution
+claim.
 
 \subsection{Automated repair and self-correction}
 Automated program repair has matured from search- and learning-based
@@ -623,7 +625,8 @@ human ground truth for \emph{common-evidence triage labeling} (given statement, 
 and verdict, predict the label a provenance-blind human assigns), full-corpus baseline
 predictions for coarse family profiles, and a stronger-evidence stress set for
 diagnostic-label robustness. The judge predictions are released as a baseline system
-output, not as benchmark ground truth. A full-corpus taxonomy
+output, not as benchmark ground truth; the artifact schema stores gold labels,
+baseline predictions, and stronger-evidence audit labels in separate tables. A full-corpus taxonomy
 difference is not promoted beyond a screen unless it survives problem-level
 clustering and the arm-specific bias correction in Table~\ref{tab:measerr};
 root-cause claims are never made from common evidence alone. The 55.0\% should not be
