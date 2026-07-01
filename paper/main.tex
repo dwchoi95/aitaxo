@@ -104,14 +104,14 @@ families, 32 leaves (Table~\ref{tab:taxonomy})---and reduces proxy-arm exposure 
 by using the test split of CodeContests~\cite{li2022alphacode}: 107 public
 Codeforces problems first published after the September-2021 cutoff of
 \texttt{gpt-3.5-turbo}~\cite{openai2023gpt4}. This date alignment is not a
-certificate of no exposure, so model arms are baseline instantiations rather than
+certificate of no exposure, so model arms are cached baseline instantiations rather than
 leaderboard entries: human submissions; a historical proxy model; a modern model whose
 training window covers the problems; and a self-reflection loop on the proxy.
 Every submission is judged in a hardened sandbox; two annotators label a 375-bug
 gold set; an LLM judge produces full-corpus baseline predictions; and a 120-item
 audit adds failing tests and reference solutions. HuAIBench is a static measurement
 substrate for cached failures, labeler calibration, diagnostic-stability checks, and
-repair baselines, not a contamination-proof future-model leaderboard.
+repair baselines, not a contamination-proof or controlled-unseen future-model leaderboard.
 
 We evaluate HuAIBench through four questions, ordered from benchmark validation to
 baseline findings: \textbf{RQ1} asks how reliable taxonomy labels and baseline
@@ -305,8 +305,9 @@ stored human accepted solution, and the maximum token 5-gram Jaccard similarity 
 editorials, or solution ideas. We use \emph{cutoff proxy} only as shorthand for a
 weak historical model with reduced date-based exposure, not as evidence of certified
 unseen solving. The benchmark's primary labeler-calibration task is arm-agnostic;
-only the proxy generator baselines carry reduced-exposure interpretation, and no
-modern-arm result is treated as cutoff-controlled. We start
+the proxy generator baselines carry only a date-reduced exposure interpretation, not
+a controlled-unseen interpretation, and no modern-arm result is treated as
+cutoff-controlled. We start
 from 165 Codeforces test-split problems and
 keep a problem only if it is judgeable ($\geq\!1$ correct human C++ solution judged
 AC and $\geq\!10$ incorrect C++ solutions judged non-AC). The filter
@@ -736,7 +737,7 @@ source-conditional separation.
 A natural worry is that the comparison reverses under the judge: design runs
 20/28/32 (human/proxy/modern) under the human annotators but 51/45/52 under the judge
 on the full corpus, the proxy model dropping to last. Holding the \emph{sample} fixed
-dispels this (Fig.~\ref{fig:labdep}). On the same 375 gold items the judge gives
+dispels this. On the same 375 gold items the judge gives
 26/34/41---it \emph{inflates} design by $\sim$6--9 points (a real granularity bias,
 quantified in RQ1) but \emph{preserves} the human$<$proxy$<$modern ordering. The
 reversal appears only when the judge moves from the stratified gold to the natural
@@ -772,19 +773,6 @@ AE5 DP & 8.5 & 10.1 & 8.7 & $+1.3[+0.4,+2.4]$ & $-0.9[-2.9,+0.7]$\\
 \bottomrule
 \end{tabular}
 \end{table*}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{figs/labeler_dependence.pdf}
-\caption{Deconfounding the apparent design (GE1) reversal. \textbf{(a)} Holding the
-\emph{sample} fixed (the same 375 gold items), the LLM judge inflates the design
-family ($\sim$+6--9 points) but \emph{preserves} the human$<$proxy$<$modern
-ordering---its granularity bias is a level shift, not a reversal. \textbf{(b)}
-Holding the \emph{labeler} fixed (judge), moving from the stratified gold to the full
-corpus changes the ordering (proxy drops to last): the ``reversal'' is a sample
-effect. Neither route yields a robustly ordered difference.}
-\label{fig:labdep}
-\end{figure}
 
 The one structural regularity worth stating is what is \emph{shared}: across both
 the gold and the full corpus, and across all three sources, the mass concentrates in
@@ -843,20 +831,24 @@ argues against pure memorization. The human rate is flat (42--59\%), a survivors
 artifact: harder problems attract stronger solvers.
 
 The contrast between the two models is the exposure design. The proxy is a weak
-historical model under a reduced-exposure setup; the modern arm may mix real
-capability gains and partial memorization of easier, more-discussed problems. We do
-not separate those readings. The proxy remains the historical reduced-exposure
-anchor; the modern arm is only a descriptive contrast.
+historical model under a date-reduced, not controlled-unseen, setup; the modern arm
+may mix real capability gains and partial memorization of easier, more-discussed
+problems. We do not separate those readings. The proxy remains the historical
+date-reduced exposure anchor; the modern arm is only a descriptive contrast.
 
 We also surface the sandbox-risk sensitivity here, because outcome baselines are only
-as strong as the released tests. Removing the 27 retained problems whose stored
-incorrect submissions pass through our comparator more than half the time preserves
-the qualitative RQ3/RQ4 results: proxy AC remains at the floor (1.7\%), modern AC
-still falls sharply with difficulty (54.3\% to 7.8\%), reflection repairs only
-44/1{,}573 bugs (2.8\%), and zero-shot bugs remain WA-dominated with AE1/GE1 the
-largest screen (70.2--76.4\%). Thus high-risk problems are flagged in the artifact
-and should be used for sensitivity analyses, but they do not drive the reported
-directional outcome baselines.
+as strong as the released tests. Pass-through risk is skewed: 34 retained problems
+have $\le$10\% pass-through (3{,}800 kept human bugs), 53 have $\le$25\% (5{,}489),
+80 have $\le$50\% (7{,}713), and the remaining 27 high-risk problems contain 935
+kept human bugs. The qualitative results persist at these cutoffs. On the strict
+$\le$10\% subset, zero-shot bugs remain 95.0\% WA and 73.5\% AE1/GE1; on the
+$\le$50\% subset, removing the 27 high-risk problems leaves proxy AC at the floor
+(1.7\%), modern AC falling with difficulty (54.3\% to 7.8\%), reflection at
+44/1{,}573 repairs (2.8\%), and AE1/GE1 still the largest screen (70.2--76.4\%).
+For the root-cause track, the $\le$50\% subset covers 92/120 items and keeps the
+main stability result (53/92 family-set changes; 63/92 math/design stable). Thus
+high-risk problems are flagged and should be used for sensitivity analyses, but they
+do not drive the reported directional baselines.
 
 The verdict mix is exact and label-free (Table~\ref{tab:verdict}). All sources are
 wrong-answer dominated (90--95\%), but AI fails to \emph{compile} more often than
