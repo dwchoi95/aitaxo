@@ -40,8 +40,8 @@ for Bounded Code-Failure Claims}
 Benchmarks for code generation usually measure whether programs pass tests; they
 rarely calibrate what can be inferred about failed programs. We introduce
 \emph{HuAIBench}, a static, tiered benchmark for code-failure triage and evidence
-stability: 14{,}182 sandbox-confirmed non-AC C++ submissions on 107 post-2021
-CodeContests problems, aligned across human submissions, a cutoff proxy LLM, a
+stability: 14{,}182 released-sandbox non-AC C++ submissions on 107 post-2021
+CodeContests problems, aligned across human submissions, a historical proxy LLM, a
 modern contrast LLM, and a public-example self-reflection loop. HuAIBench supports
 three claim-gated tasks: exact sandbox outcome/difficulty analysis, observed-leaf
 common-evidence labeler calibration (statement, code, verdict), and repair/regeneration
@@ -101,10 +101,10 @@ al.~\cite{wei2026evaluating}---six general-error and six algorithm-specific
 families, 32 leaves (Table~\ref{tab:taxonomy})---and reduces proxy-arm exposure risk
 by using the test split of CodeContests~\cite{li2022alphacode}: 107 public
 Codeforces problems first published after the September-2021 cutoff of
-\texttt{gpt-3.5-turbo}~\cite{openai2023gpt4}. This cutoff alignment is not a
+\texttt{gpt-3.5-turbo}~\cite{openai2023gpt4}. This date alignment is not a
 certificate of no exposure, so model arms are baseline instantiations rather than
-leaderboard entries: human submissions; a cutoff proxy model; a modern model whose
-training window covers the problems; and a self-reflection loop on the cutoff proxy.
+leaderboard entries: human submissions; a historical proxy model; a modern model whose
+training window covers the problems; and a self-reflection loop on the proxy.
 Every submission is judged in a hardened sandbox; two annotators label a 375-bug
 gold set; an LLM judge produces full-corpus baseline predictions; and a 120-item
 audit adds failing tests and reference solutions. HuAIBench is a static measurement
@@ -141,7 +141,7 @@ but difficulty-sensitive, and public-example feedback repairs only 4\% of proxy-
 bugs, matching same-budget resampling.
 
 Contributions: \textbf{(i)} \emph{HuAIBench}, a released tiered measurement benchmark with
-14{,}182 sandbox-confirmed non-AC programs and exact verdicts, 375 human-gold
+14{,}182 released-sandbox non-AC programs and exact verdicts, 375 human-gold
 taxonomy labels, 14{,}182 full-corpus LLM baseline predictions, stronger-evidence
 audit packs, and repair trajectories; \textbf{(ii)} separate benchmark
 tasks and baselines for sandbox outcomes, observed-leaf triage-labeler calibration,
@@ -194,9 +194,9 @@ recently proposed the taxonomy we adopt and hand-labeled 75 incorrect programs f
 single model with strong inter-annotator agreement ($\kappa=0.86$), using \emph{no}
 automated labeler and providing \emph{no} human baseline. HuAIBench reuses their taxonomy
 verbatim but differs in kind as much as scale: it releases \textbf{14{,}182}
-sandbox-confirmed non-AC submissions from \emph{four} sources---including
-\emph{human} submissions to the \emph{same} problems---under explicit cutoff alignment
-and contamination caveats, with full-corpus LLM predictions treated as a baseline
+released-sandbox non-AC submissions from \emph{four} sources---including
+\emph{human} submissions to the \emph{same} problems---under date-based exposure
+caveats, with full-corpus LLM predictions treated as a baseline
 system output whose reliability is validated against a 375-bug doubly-annotated human
 gold. The human baseline lets the benchmark calibrate source-conditioned screens on identical problems, and
 the scale forces measurement questions---statistical power, within-problem
@@ -301,15 +301,16 @@ code-similarity audit against the stored human accepted solutions for each probl
 none of the proxy model's 64 accepted outputs is whitespace-normalized identical to a
 stored human accepted solution, and the maximum token 5-gram Jaccard similarity is
 0.47 (median 0.20). These checks do not rule out partial exposure to statements,
-editorials, or solution ideas, so we call this arm the \emph{cutoff proxy}, not a
-certified contamination-free model. The benchmark's primary labeler-calibration task
-is arm-agnostic; only the proxy generator baselines carry cutoff-aligned
-interpretation, and no modern-arm result is treated as cutoff-controlled. We start
+editorials, or solution ideas. We use \emph{cutoff proxy} only as shorthand for a
+weak historical model with reduced date-based exposure, not as evidence of certified
+unseen solving. The benchmark's primary labeler-calibration task is arm-agnostic;
+only the proxy generator baselines carry reduced-exposure interpretation, and no
+modern-arm result is treated as cutoff-controlled. We start
 from 165 Codeforces test-split problems and
-keep a problem only if it is judgeable ($\geq\!1$ correct human C++ solution
-confirmed AC and $\geq\!10$ incorrect C++ solutions confirmed non-AC). The filter
+keep a problem only if it is judgeable ($\geq\!1$ correct human C++ solution judged
+AC and $\geq\!10$ incorrect C++ solutions judged non-AC). The filter
 discards 44 problems with no private tests, 7 whose stored correct C++ solutions did
-not pass our sandbox comparator, and 7 with too few confirmed human bugs, leaving
+not pass our sandbox comparator, and 7 with too few judged human bugs, leaving
 \textbf{107 problems} (ratings 800--3500). This gate is also our guard against
 special-judge or multiple-output mismatches: we do not run Codeforces custom
 checkers, so problems for which known-correct code cannot be accepted under our
@@ -352,7 +353,7 @@ CE  & Compile Error: source fails to build with \texttt{g++}\\
 
 \textbf{Human} solutions come labeled in CodeContests; we re-judge all and keep
 only label-consistent ones, yielding \textbf{8{,}648 human bugs} (and 9{,}925
-confirmed-correct). \textbf{AI} solutions are generated zero-shot from a PaR-style
+sandbox-AC corrects). \textbf{AI} solutions are generated zero-shot from a PaR-style
 prompt~\cite{wei2026evaluating} (task framing plus the verbatim statement, which
 carries the I/O format and examples) at temperature 1.0 with a \emph{fixed} budget
 of 20 samples per problem (no early stop): \texttt{gpt-3.5-turbo-0125} (proxy) gives
@@ -361,12 +362,12 @@ of 20 samples per problem (no early stop): \texttt{gpt-3.5-turbo-0125} (proxy) g
 cutoff-controlled source: its training window covers these problems, so it cannot
 isolate reasoning from memorization. It is included for a different purpose---to
 stress-test labeler and sample effects on a present-day arm---and
-\texttt{gpt-3.5-turbo-0125} alone carries the cutoff-aligned claims. Every
-cutoff-aligned taxonomy result in this paper rests on this proxy model; the modern
-model is descriptive context, read always against that caveat. \textbf{Self-reflection} applies up to three Self-Refine
+\texttt{gpt-3.5-turbo-0125} alone carries reduced-exposure generator baselines. Any
+taxonomy screen conditioned on this model is read against its weakness and residual
+exposure risk; the modern model is descriptive context. \textbf{Self-reflection} applies up to three Self-Refine
 rounds~\cite{madaan2023selfrefine} per proxy-model bug, continuing the same
 conversation with the public example-test results, stopping at AC; \textbf{1{,}993}
-bugs survive. The total is \textbf{14{,}182 sandbox-confirmed bugs}
+bugs survive. The total is \textbf{14{,}182 released-sandbox bugs}
 (Table~\ref{tab:corpus}).
 
 \begin{table}[t]
@@ -394,7 +395,7 @@ submissions are curated CodeContests artifacts with separate correct and incorre
 pools; AI submissions are fixed-budget samples from a prompt. We therefore do not use
 the human correct:incorrect ratio and AI per-sample pass rate to compare programmer
 ability. The taxonomy estimand is narrower and conditional: \emph{among
-sandbox-confirmed non-AC C++ submissions on the same problems}, how are bug
+released-sandbox non-AC C++ submissions on the same problems}, how are bug
 mechanisms distributed? Acceptance rates are used only for within-source trends
 (e.g., by difficulty) and for the proxy-vs-modern contamination/capability contrast.
 This estimand does not claim that a curated human incorrect submission and a zero-shot
@@ -826,10 +827,10 @@ some hard problems is consistent with partial contamination, but the overall dec
 argues against pure memorization. The human rate is flat (42--59\%), a survivorship
 artifact: harder problems attract stronger solvers.
 
-The contrast between the two models is the contamination design. The proxy looks
-like a 2023-class model attempting unseen tasks from the statement; the modern arm
-may mix real capability gains and partial memorization of easier, more-discussed
-problems. We do not separate those readings. The proxy remains the cutoff-aligned
+The contrast between the two models is the exposure design. The proxy is a weak
+historical model under a reduced-exposure setup; the modern arm may mix real
+capability gains and partial memorization of easier, more-discussed problems. We do
+not separate those readings. The proxy remains the historical reduced-exposure
 anchor; the modern arm is only a descriptive contrast.
 
 The verdict mix is exact and label-free (Table~\ref{tab:verdict}). All sources are
@@ -861,7 +862,7 @@ $\le$1199 & 59.3 & 7.6 & 55.0\\
 
 \begin{table}[t]
 \centering
-\caption{Verdict distribution per source (\% of confirmed bugs, exact).}
+\caption{Verdict distribution per source (\% of released-sandbox bugs, exact).}
 \label{tab:verdict}
 \begin{tabular}{lrrrr}
 \toprule
@@ -987,7 +988,7 @@ preserves the qualitative results: proxy AC stays at the floor (1.7\%), modern A
 falls from 54.3\% to 7.8\% across difficulty, reflection remains weak
 (44/1{,}573=2.8\%), and zero-shot bugs remain WA-dominated with AE1/GE1 the largest
 screen (70.2--76.4\%). The modern model's contamination is uncontrolled by design,
-so its results are a contrast; the proxy anchors cutoff-aligned claims.
+so its results are a contrast; the proxy anchors reduced-exposure generator baselines.
 
 \textbf{External validity.} We study C++ Codeforces problems, one PaR-style prompt
 at temperature 1.0, and two models. Because the tasks are public, HuAIBench is not a
