@@ -265,19 +265,24 @@ AE1--AE6 & Math, greedy, graph, recursion/D\&C, DP, search (18)\\
 \section{Study Design}
 \label{sec:design}
 
-Figure~\ref{fig:pipeline} summarizes the pipeline: build a cutoff-filtered
-benchmark; collect human and AI buggy submissions; confirm verdicts in a sandbox;
-label a human gold sample and scale with an audited LLM judge; calibrate which claims
-the resulting labels can support.
+Figure~\ref{fig:pipeline} summarizes the study as four connected panels. The input
+panel filters CodeContests problems and brings together human submissions, a
+cutoff-aligned proxy model, its public-example self-reflection loop, and a modern
+contrast model. The central sandbox panel rejudges every C++ submission under one
+runner and assigns one of five verdicts. The taxonomy panel then applies the fixed
+32-leaf Wei et al. taxonomy through a blind human gold set, an audited LLM judge, and
+a stronger-evidence relabeling audit. The bottom panel calibrates the strength of the
+claims: sandbox verdicts support robust outcome claims, validated families support
+coarse taxonomy claims, and common-evidence labels do not support root-cause claims.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{figs/overview.pdf}
-\caption{Overview of the study pipeline: CodeContests problems are filtered into a
-post-cutoff C++ benchmark; human, zero-shot AI, and self-reflection submissions are
-judged by the same sandbox; taxonomy labels come from a fixed Wei et al. taxonomy
-through a blind human gold set and an audited LLM judge; claim strength is calibrated
-against stronger-evidence relabeling.}
+\includegraphics[width=\textwidth]{figs/overview_2.png}
+\caption{Overview of the study design. The input panel filters CodeContests problems
+and submission sources; the sandbox panel assigns shared AC/WA/TLE/RE/CE verdicts;
+the taxonomy panel combines the 32-leaf Wei et al. taxonomy, a blind human gold set,
+LLM judge labels, and stronger-evidence relabeling; the analysis panel calibrates
+which verdict, family-level, and root-cause claims the evidence can support.}
 \label{fig:pipeline}
 \end{figure*}
 
