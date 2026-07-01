@@ -1,0 +1,31 @@
+{
+  "manifest_files": 1282,
+  "manifest_mismatches": 0,
+  "problems": 107,
+  "manifest_problem_rows": 107,
+  "full_rows": 14182,
+  "zero_shot_rows": 12189,
+  "reflect_rows": 1993,
+  "source_rows": {
+    "human": 8648,
+    "gpt-3.5-turbo-0125": 4069,
+    "gpt-5.4-nano": 1465
+  },
+  "stage_rows": {
+    "human:zero_shot": 8648,
+    "gpt-3.5-turbo-0125:zero_shot": 2076,
+    "gpt-3.5-turbo-0125:reflect": 1993,
+    "gpt-5.4-nano:zero_shot": 1465
+  },
+  "gold_human1_rows": 375,
+  "gold_human2_rows": 375,
+  "root_cause_rows": 120,
+  "ai_zero_shot_incorrect_jsonl": {
+    "gpt-3.5-turbo-0125": 2076,
+    "gpt-5.4-nano": 1465
+  },
+  "ai_zero_shot_correct_jsonl": {
+    "gpt-3.5-turbo-0125": 64,
+    "gpt-5.4-nano": 675
+  }
+}

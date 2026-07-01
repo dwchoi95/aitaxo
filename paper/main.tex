@@ -1051,14 +1051,14 @@ evidence tier that can sustain it.
 
 \section{Artifact Package and Conformance Checklist}
 \label{sec:artifacts}
+\input{../analysis/artifact_audit_summary.tex}
 \begingroup\raggedright\scriptsize
-Artifacts: \url{https://anonymous.4open.science/r/aitaxo} includes metadata,
-prompts, programs, verdict caches, labels, predictions, audit packs, repair traces,
-hashes, and scripts. Prompts are in \texttt{src/prompts/}; verdicts/tests/programs
-in \texttt{data/manifest.csv} and \texttt{data/problems/*/}; gold labels and
-\texttt{full.csv} predictions in \texttt{data/classifications/}; root-cause packs,
-codebook, and taxonomy definitions in \texttt{analysis/root\_cause\_human\_audit/};
-and \texttt{analysis/} regenerates Tables~IV--XIV without model calls.
+Artifacts: \url{https://anonymous.4open.science/r/aitaxo}. The bundled
+\texttt{analysis/artifact\_audit.py} verifies \ArtifactManifestFiles{} hashed files
+with \ArtifactManifestMismatches{} mismatches and recomputes the paper's count
+anchors: \ArtifactProblems{} problems, \ArtifactFullRows{} non-AC rows,
+\ArtifactGoldRows{} gold-label rows per annotator, and \ArtifactRootRows{}
+root-cause rows; \texttt{analysis/} regenerates Tables~IV--XIV without model calls.
 \par\endgroup
 
 \bibliographystyle{IEEEtran}
