@@ -493,13 +493,18 @@ the evidence is private-test based (95 public, 25 private overall: 18/40 public 
 human, 40/40 for proxy, 37/40 for modern). The $n{=}120$ audit summarizes the overall
 family-change rate with about $\pm$9 percentage points of binomial precision; Wilson
 95\% intervals are reported with the audit counts in RQ1. It is
-not designed for per-family prevalence. The annotators adjudicated all disagreements,
-with a third tie-breaker for three items. The released root-cause score is exact
-leaf/family match or micro-$F_1$ against the adjudicated labels; the human-human
-agreement in RQ1 gives the ceiling. This track does not relabel the full corpus and
-is not an isolated evidence-effect experiment; it is the benchmark's root-cause seed
-task and stress-tests how unstable common-evidence diagnostic labels can be when the
-same taxonomy is applied with stronger evidence and a root-cause target.
+not designed for per-family prevalence. The track spans 62 problems (22 easy, 25
+medium, 15 hard; at most five items per problem) and its 120 items are 45/49/26
+easy/medium/hard. After adjudication it covers 9 families and 14 leaves, concentrated
+in the WA-heavy families expected from the sampled failure mode (AE1, GE1, AE2, AE5,
+GE2/GE3), so it is a root-cause \emph{seed} track rather than a mature all-leaf
+benchmark. The annotators adjudicated all disagreements, with a third tie-breaker
+for three items. The released root-cause score is exact leaf/family match or
+micro-$F_1$ against the adjudicated labels; the human-human agreement in RQ1 gives
+the ceiling. This track does not relabel the full corpus and is not an isolated
+evidence-effect experiment; it is the benchmark's root-cause seed task and
+stress-tests how unstable common-evidence diagnostic labels can be when the same
+taxonomy is applied with stronger evidence and a root-cause target.
 
 \section{Results}
 \label{sec:results}
@@ -843,6 +848,16 @@ capability gains and partial memorization of easier, more-discussed problems. We
 not separate those readings. The proxy remains the historical reduced-exposure
 anchor; the modern arm is only a descriptive contrast.
 
+We also surface the sandbox-risk sensitivity here, because outcome baselines are only
+as strong as the released tests. Removing the 27 retained problems whose stored
+incorrect submissions pass through our comparator more than half the time preserves
+the qualitative RQ3/RQ4 results: proxy AC remains at the floor (1.7\%), modern AC
+still falls sharply with difficulty (54.3\% to 7.8\%), reflection repairs only
+44/1{,}573 bugs (2.8\%), and zero-shot bugs remain WA-dominated with AE1/GE1 the
+largest screen (70.2--76.4\%). Thus high-risk problems are flagged in the artifact
+and should be used for sensitivity analyses, but they do not drive the reported
+directional outcome baselines.
+
 The verdict mix is exact and label-free (Table~\ref{tab:verdict}). All sources are
 wrong-answer dominated (90--95\%), but AI fails to \emph{compile} more often than
 humans (proxy 6.1\%, modern 5.1\% vs.\ 2.6\%) and the proxy model crashes more
@@ -983,11 +998,8 @@ therefore screens, not confirmed differences.
 weak-test pass-through, so outcomes mean released-sandbox verdicts. We mitigate
 special-judge and multiple-output risk by requiring a stored correct C++ solution to
 pass the comparator, dropping 7 otherwise, and quarantining sandbox-inconclusive
-stored incorrects; high-risk problems contain only 10.8\% of kept human bugs. Removing the 27 retained problems with $>$50\% pass-through
-preserves the qualitative results: proxy AC stays at the floor (1.7\%), modern AC
-falls from 54.3\% to 7.8\% across difficulty, reflection remains weak
-(44/1{,}573=2.8\%), and zero-shot bugs remain WA-dominated with AE1/GE1 the largest
-screen (70.2--76.4\%). The modern model's contamination is uncontrolled by design,
+stored incorrects; high-risk problems contain only 10.8\% of kept human bugs, and
+RQ3 reports the removal sensitivity. The modern model's contamination is uncontrolled by design,
 so its results are a contrast; the proxy anchors reduced-exposure generator baselines.
 
 \textbf{External validity.} We study C++ Codeforces problems, one PaR-style prompt
@@ -1030,7 +1042,9 @@ stores prompts; \texttt{analysis/root\_cause\_human\_audit/} stores the codebook
 taxonomy, adjudicated labels, and audit packs; \texttt{data/manifest.csv} and \texttt{data/problems/*/}
 store oracle-risk counts, tests, programs, and verdict caches; \texttt{data/classifications/}
 separates \texttt{gold\_human*.csv} answer keys from \texttt{full.csv} baseline
-predictions; and \texttt{analysis/} scripts regenerate tables/figures.
+predictions; \texttt{ARTIFACT\_MANIFEST.sha256} records hashes for the frozen
+prompts, caches, labels, scripts, and paper sources; and \texttt{analysis/} scripts
+regenerate tables/figures.
 \par\endgroup
 
 \clearpage
