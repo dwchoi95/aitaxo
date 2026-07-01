@@ -505,6 +505,10 @@ full-corpus screening. Coverage is a separate boundary: across the two human gol
 label sets, only 17/32 taxonomy leaves and 9/12 families appear at least once
 (AE3, AE4, and AE6 are absent). Thus HuAIBench supports aggregate labeler
 calibration and observed-family screens, not per-leaf leaderboards over all 32 leaves.
+The same gold rejects shallow labelers: a majority-prior labeler that always predicts
+AE1.1 reaches only micro-$F_1=0.32$ against the two humans, and a verdict-only
+heuristic (CE/RE$\to$GE5.1, TLE$\to$GE1.3, WA$\to$AE1.1) reaches 0.48; the judge's
+0.77 is therefore not explained by family prevalence or verdict cues alone.
 The judge is not neutral enough for fine distributional claims. On
 the same 375 gold items the judge assigns the broad design family to 26/34/41\% of
 human/proxy/modern bugs, while the human annotators assign 20/28/32\%: a 6--9 point
