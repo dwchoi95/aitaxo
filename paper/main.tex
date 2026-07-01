@@ -48,11 +48,10 @@ is intentionally tiered: exact verdict caches and oracle-risk metadata, a 375-bu
 doubly annotated common-evidence triage gold set (17 observed leaves), a 120-item
 stronger-evidence root-cause seed track (14 leaves) with failing tests and reference
 solutions, and repair/resampling trajectories; the 14{,}182 LLM-judge labels are
-baseline screen predictions, not an answer key. Its
-central contribution is a task contract: sandbox outcomes, common-evidence taxonomy
-triage, stronger-evidence root-cause labeling, full-corpus screening, and cached
-repair each have different evidence and scoring rules. The released baselines show why
-this separation matters. Common-evidence labels are reliable enough for triage but
+baseline screen predictions, not an answer key. Its central contribution is a task
+contract: T0 outcome replay and T4 fixed-failure repair are primary tracks, T1/T2
+calibrate labelers, and T3 is a screen. The released baselines show why this
+separation matters. Common-evidence labels are reliable enough for triage but
 weak root-cause proxies (55.0\% of primary families change in the stronger-evidence
 track); the LLM judge is useful as a screen but over-applies design by 6--9 points;
 the full-corpus signal that survives calibration is coarse math/design concentration
@@ -273,10 +272,9 @@ submissions. The sandbox panel assigns shared verdicts. The taxonomy panel combi
 the fixed Wei et al. taxonomy with human gold labels, LLM-judge baseline predictions,
 and a stronger-evidence audit. The analysis panel calibrates which verdict, family,
 and root-cause claims the evidence can support.
-Table~\ref{tab:claimcal} names the scoreable benchmark tasks that the panels feed
-and the baseline systems we release with them. Only T0 and T4 are full-corpus
-ground-truth tasks; T1 is observed-leaf triage, T2 is a seed root-cause task, and T3
-is a baseline screen rather than an answer key.
+Table~\ref{tab:claimcal} names the benchmark tasks and baselines. For benchmark
+reports, T0 outcome replay and T4 fixed-failure repair are primary; T1/T2 calibrate
+labelers at stated evidence tiers; T3 is a screen, not an answer key.
 
 \begin{figure*}[t]
 \centering
@@ -290,8 +288,8 @@ calibration.}
 
 \begin{table}[t]
 \centering
-\caption{HuAIBench task scorecard. Each tier has a released scoring key, baseline
-outputs, and a bounded claim boundary.}
+\caption{HuAIBench scorecard. T0/T4 are primary; T1/T2 calibrate taxonomy labelers;
+T3 is a released screen.}
 \label{tab:claimcal}
 \scriptsize
 \setlength{\tabcolsep}{1.5pt}
@@ -299,11 +297,11 @@ outputs, and a bounded claim boundary.}
 \toprule
 Task & Scoring key & Released baseline & Boundary\\
 \midrule
-T0 Outcome & verdict cache & AC/CE rates; risk slices & released tests\\
+T0* Outcome & verdict cache & AC/CE rates; risk slices & released tests\\
 T1 Triage & 375 labels & prior .32; verdict .48; judge .77; ceiling .80 & observed leaves\\
 T2 Root & 120 packs & common-evidence: leaf 50, family 54 & seed root cause\\
 T3 Screen & judge outputs & $V=.08$--$.11$; GE1 bias 6--9 pp & coarse candidates\\
-T4 Repair & repair traces & reflection 83/2{,}076; resample 82.6 & cached failures\\
+T4* Repair & repair traces & reflection 83/2{,}076; resample 82.6 & cached failures\\
 T5 Append & prompts; metadata & rerun T0--T4; report exposure & new arms\\
 \bottomrule
 \end{tabular}
@@ -978,10 +976,9 @@ runtime/time-limit failures never resolve.}
 \section{Discussion}
 \label{sec:discussion}
 \paragraph{Supported uses}
-HuAIBench should be used through Table~\ref{tab:claimcal}: replay verdicts for
-outcome studies (T0), use the 375 labels for common-evidence triage (T1), use the
-120 audit packs for stronger-evidence root cause (T2), treat \texttt{full.csv} as
-screen predictions (T3), and compare repair methods on fixed cached failures (T4).
+HuAIBench should be used through Table~\ref{tab:claimcal}: report outcome studies
+(T0) and fixed-failure repair (T4) as primary benchmark tracks; use T1/T2 to
+calibrate taxonomy labelers; treat \texttt{full.csv} as screen predictions (T3).
 Reports should name the evidence tier, label source, contamination status, and
 whether a result is an answer key or a screened candidate. Leaves absent from the
 gold sets are out-of-scope by default until users add adjudicated items at the same
