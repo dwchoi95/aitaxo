@@ -29,7 +29,7 @@
 \begin{document}
 
 \title{HuAIBench: A Tiered Benchmark\\
-for Code-Failure Triage}
+for Bounded Code-Failure Claims}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{\textit{Submitted for review}}}
@@ -45,7 +45,8 @@ CodeContests problems, aligned across human submissions, a cutoff proxy LLM, a
 modern contrast LLM, and a public-example self-reflection loop. HuAIBench supports
 three claim-gated tasks: exact sandbox outcome/difficulty analysis, observed-leaf
 common-evidence labeler calibration (statement, code, verdict), and repair/regeneration
-benchmarking on fixed cached failures. It keeps evidence tiers separate: exact
+benchmarking on fixed cached failures. There is no aggregate leaderboard score; each
+tier has its own supported use and failure mode. It keeps evidence tiers separate: exact
 sandbox verdicts; the Wei et al. taxonomy as a common vocabulary; a 375-bug, doubly
 annotated common-evidence gold set covering 17/32 observed leaves; LLM-judge
 full-corpus predictions released as baseline screens rather than truth; a 120-item
@@ -117,8 +118,8 @@ source-conditioned taxonomy screens remain after calibration; \textbf{RQ3} asks 
 capability, contamination risk, and difficulty shape label-free outcomes; and
 \textbf{RQ4} establishes a public-example self-reflection baseline.
 
-HuAIBench's main output is a calibrated benchmark contract, not an unconditional
-taxonomy or model leaderboard. Compared with CodeContests plus a small taxonomy
+HuAIBench's main output is a calibrated benchmark contract, not one leaderboard or
+one empirical distribution claim. Compared with CodeContests plus a small taxonomy
 sample, its reusable unit is the aligned evidence bundle: same-sandbox
 human/generated failures, cached prompts/outputs, human gold, audit packs, and
 repair/resampling traces. Researchers can replay exact verdict outcomes, evaluate
@@ -142,9 +143,9 @@ bugs, matching same-budget resampling.
 Contributions: \textbf{(i)} \emph{HuAIBench}, a released tiered measurement benchmark with
 14{,}182 sandbox-confirmed non-AC programs and exact verdicts, 375 human-gold
 taxonomy labels, 14{,}182 full-corpus LLM baseline predictions, stronger-evidence
-audit packs, and repair trajectories; \textbf{(ii)} benchmark
-tasks and baselines for sandbox outcomes, common-evidence triage-labeler calibration,
-diagnostic-stability stress testing, and self-reflection; \textbf{(iii)} a validation
+audit packs, and repair trajectories; \textbf{(ii)} separate benchmark
+tasks and baselines for sandbox outcomes, observed-leaf triage-labeler calibration,
+diagnostic-stability stress testing, and repair/resampling; \textbf{(iii)} a validation
 protocol combining human gold, power analysis, problem-level bootstrap, per-family
 judge error, bias correction, and stronger-evidence relabeling; and \textbf{(iv)}
 negative calibration findings that define the current supported claim boundary.
@@ -513,7 +514,10 @@ leaderboards over all 32 leaves.
 The same gold rejects shallow labelers: a majority-prior labeler that always predicts
 AE1.1 reaches only micro-$F_1=0.32$ against the two humans, and a verdict-only
 heuristic (CE/RE$\to$GE5.1, TLE$\to$GE1.3, WA$\to$AE1.1) reaches 0.48; the judge's
-0.77 is therefore not explained by family prevalence or verdict cues alone.
+0.77 is therefore not explained by family prevalence or verdict cues alone. This is
+an instrument test, not a source-distribution benchmark: the gold is large enough to
+reject shallow labelers and estimate family-level bias, but it is not used as an
+all-leaf or fine source-comparison leaderboard.
 The judge is not neutral enough for fine distributional claims. On
 the same 375 gold items the judge assigns the broad design family to 26/34/41\% of
 human/proxy/modern bugs, while the human annotators assign 20/28/32\%: a 6--9 point
@@ -943,7 +947,8 @@ nearly absent for hard algorithmic families.}
 \section{Discussion}
 \label{sec:discussion}
 \paragraph{Benchmark use}
-HuAIBench should be used as a tiered benchmark, not as a single truth table. For
+HuAIBench should be used as a tiered benchmark, not as a single truth table or
+single primary score. For
 outcome studies, users replay the sandbox and report released-test verdicts. For
 taxonomy studies, a future labeler should predict the 375 gold items from the same
 evidence (statement, code, verdict), beat the majority and verdict-only baselines,
