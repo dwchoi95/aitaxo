@@ -28,8 +28,8 @@
 
 \begin{document}
 
-\title{Calibrating Bug-Taxonomy Claims for\\
-Competitive-Programming Failures}
+\title{HuAIBench: A Sandbox-Verified Benchmark for\\
+Human and AI Code-Failure Taxonomies}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{\textit{Submitted for review}}}
@@ -37,35 +37,30 @@ Competitive-Programming Failures}
 \maketitle
 
 \begin{abstract}
-Bug taxonomies are attractive for explaining failed generated code, but scalable
-studies usually label from weak evidence: problem statement, buggy code, and verdict.
-We ask which claims such labels can support. As a calibration case study, we build
-14{,}182 sandbox-confirmed buggy C++ submissions for 107 post-cutoff CodeContests
-problems: human submissions, a cutoff-aligned proxy model, a descriptive modern
-model, and a public-example self-reflection loop. We reuse the 32-leaf taxonomy of
-Wei et al., collect a 375-bug doubly annotated gold set, validate an LLM judge, and
-audit a separate 120-item subset with first failing tests, actual/expected output,
-and reference solutions. The result is a claim ladder. Sandbox verdicts support
-label-free outcome claims. Validated family labels support coarse triage, but not
-small source-level differences: the judge reaches substantial agreement with the gold
-($\kappa\approx0.76$) while over-applying design by 6--9 points, and an
-arm-specific bias correction leaves focused source shifts small or order-unstable.
-Common-evidence
-labels do not establish root causes; even stronger-evidence labels remain a diagnostic
-construct rather than final proof. Stronger-evidence relabeling changes 55.0\% of
-audited family labels, mixing evidence gain, taxonomy-boundary ambiguity, and
-harder-task instability. Applying
-this ladder, the only stable taxonomy signal in the case study is a broad
-math/design concentration; low-level syntax/compile failures remain a
-source-conditional separation and the cutoff proxy's 3.0\% acceptance bounds
-generality. Label-free dynamics are
-clearer: public-example self-reflection repairs only 4.0\% of proxy-model bugs,
-matching same-budget resampling and fixing no runtime or time-limit failures. We
-release the corpus, prompts, cached outputs, labels, and analysis scripts.
+Benchmarks for code generation usually measure whether programs pass tests; they
+rarely provide calibrated evidence about how human and AI programs fail. We introduce
+\emph{HuAIBench}, a sandbox-verified benchmark and protocol for bug-taxonomy studies
+on competitive-programming failures: 14{,}182 buggy C++ submissions on 107
+post-cutoff CodeContests problems, aligned across human submissions, a cutoff-aligned
+proxy LLM, a modern contrast LLM, and a public-example self-reflection loop.
+HuAIBench pairs shared verdicts with the 32-leaf Wei et al. taxonomy, a 375-bug
+doubly annotated human gold set, audited LLM-judge labels for the full corpus, and a
+120-item stronger-evidence audit with failing tests and reference solutions. Its
+baseline calibration yields a claim ladder: sandbox verdicts support label-free
+outcome claims; validated family labels support coarse triage but not small
+source-level differences; and common-evidence labels do not establish root causes.
+The LLM judge reaches substantial agreement with the gold ($\kappa\approx0.76$) but
+over-applies design by 6--9 points; stronger-evidence relabeling changes 55.0\% of
+audited family labels. The stable benchmark signal is broad math/design
+concentration plus a source-conditional syntax/compile separation, not fine-grained
+human-vs-AI root-cause differences. Public-example self-reflection repairs only
+4.0\% of proxy-model bugs, matching same-budget resampling and fixing no runtime or
+time-limit failures. We release the benchmark data, prompts, cached outputs, labels,
+audit packs, and analysis scripts.
 \end{abstract}
 
 \begin{IEEEkeywords}
-large language models, competitive programming, bug taxonomy, empirical study,
+large language models, competitive programming, benchmark, bug taxonomy,
 LLM-as-a-judge, data contamination
 \end{IEEEkeywords}
 
@@ -79,9 +74,11 @@ formats~\cite{li2022alphacode,wei2026evaluating}. Most work measures \emph{wheth
 models solve such problems, via pass@$k$ on benchmarks like HumanEval, MBPP, and
 APPS~\cite{chen2021codex,austin2021mbpp,hendrycks2021apps,liu2023evalplus}. Far
 less is known about \emph{how} models fail, and even less about which failure claims
-are justified by the evidence available at scale.
+are justified by the evidence available at scale. This is a benchmark gap: the field
+has many pass-rate benchmarks, but few artifacts that align human and AI failures on
+the same tasks, under the same sandbox, with calibrated taxonomy labels.
 
-The question matters because taxonomies are already used as measurement instruments.
+The gap matters because taxonomies are already used as measurement instruments.
 If a taxonomy identifies stable failure regions, it can guide review, testing, and
 education for AI-assisted development. If labels instead reflect missing tests,
 over-broad categories, or an automated judge's granularity, then a precise-looking
@@ -94,9 +91,10 @@ across human and generated failures, while still avoiding a false behavioral
 equivalence between curated human submissions and fixed-budget model samples. Third,
 labeling tens of thousands of buggy programs into a fine-grained taxonomy is beyond
 manual reach, pushing studies toward automated (LLM) labeling whose reliability is
-itself unestablished.
+itself unestablished. A useful benchmark must therefore include not only programs and
+labels, but also the evidence needed to bound those labels' reliability.
 
-We address all three. We adopt the recent bug taxonomy of Wei et
+We introduce \emph{HuAIBench} to address this measurement gap. It adopts the recent bug taxonomy of Wei et
 al.~\cite{wei2026evaluating}---six general-error and six algorithm-specific
 families, 32 leaves (Table~\ref{tab:taxonomy})---and bound contamination risk by using
 the test split of CodeContests~\cite{li2022alphacode}: 107 Codeforces problems
@@ -104,46 +102,36 @@ first published after the September-2021 cutoff of
 \texttt{gpt-3.5-turbo}~\cite{openai2023gpt4}. We use four sources as a stress test
 for the instrument: human submissions; a cutoff-aligned proxy model; a modern model
 whose training window covers the problems (a descriptive contrast, not a
-cutoff-controlled source); and a self-reflection loop on the cutoff proxy. Every submission is judged in
-a hardened sandbox; two independent annotators label a stratified 375-bug gold set;
-and an LLM judge labels the full corpus, which we validate against the human gold and
-the human inter-annotator ceiling.
+cutoff-controlled source); and a self-reflection loop on the cutoff proxy. Every
+submission is judged in a hardened sandbox; two annotators label a 375-bug gold set;
+an LLM judge labels the full corpus; and a 120-item audit adds failing tests and
+reference solutions.
 
-We answer four research questions, ordered from measurement calibration to the
-case-study claims it permits:
-\begin{itemize}
-\item \textbf{RQ1:} Which taxonomy claims are reliable under common evidence,
-automated labeling, and stronger failure evidence?
-\item \textbf{RQ2:} Which calibrated taxonomy signals remain in the case study?
-\item \textbf{RQ3:} How do capability, contamination risk, and problem difficulty
-shape label-free dynamics?
-\item \textbf{RQ4:} What does public-example self-reflection repair, and which
-failures persist?
-\end{itemize}
+We evaluate HuAIBench through four questions, ordered from benchmark validation to
+baseline findings: \textbf{RQ1} asks how reliable taxonomy labels are under common
+evidence, automated labeling, and stronger failure evidence; \textbf{RQ2} asks which
+source-conditioned taxonomy signals remain after calibration; \textbf{RQ3} asks how
+capability, contamination risk, and difficulty shape label-free outcomes; and
+\textbf{RQ4} establishes a public-example self-reflection baseline.
 
-The main finding is a calibrated claim ladder. (1) A validated LLM judge is adequate
-for coarse family triage, but not for fine source separation: it reaches substantial
-agreement with the gold while inflating design labels by 6--9 points. (2)
-Common-evidence labels are diagnostic proxies, not root causes:
-first-failing-test/reference evidence changes 55\% of audited family labels and still
-requires adjudication. (3)
-Fine source-family shifts are therefore exploratory screens; the defensible taxonomy
-signal in this case study is only coarse concentration in mathematics/design, plus a
-separate syntax/compile separation in model samples. (4) Label-free dynamics are stronger: the modern
-contaminated reference is more capable but difficulty-sensitive, and
-public-example feedback repairs only 4\% of proxy-model bugs, matching same-budget
-resampling with no runtime or time-limit fixes.
+The benchmark's main output is a calibrated claim ladder. A validated LLM judge is
+adequate for coarse family triage but not fine source separation: it reaches
+substantial agreement with the gold while inflating design labels by 6--9 points.
+Common-evidence labels are diagnostic proxies, not root causes: stronger evidence
+changes 55\% of audited family labels. Fine source-family shifts are therefore
+benchmark screens; the defensible taxonomy signal is coarse mathematics/design
+concentration plus a source-conditional syntax/compile separation. Label-free
+dynamics are stronger: the modern contrast is more capable but difficulty-sensitive,
+and public-example feedback repairs only 4\% of proxy-model bugs, matching
+same-budget resampling.
 
-Beyond applying standard re-testing, agreement, and audit controls, we measure how
-far taxonomy claims still move under those controls and turn that movement into
-explicit claim boundaries. Contributions: \textbf{(i)} a released case-study artifact for
-failed-submission measurement (14{,}182 bugs, 107 identical problems, 375
-doubly-annotated gold items); \textbf{(ii)} a transferable claim-calibration
-checklist---human gold, power analysis, problem-level bootstrap, per-family judge
-error, arm-specific bias correction, and a stronger-evidence audit---that states what each evidence level can and cannot
-support; \textbf{(iii)} empirical evidence that common-evidence taxonomy labels are
-often not stable under stronger evidence; and \textbf{(iv)} label-free and taxonomy-aware
-self-reflection analyses. All artifacts are released.
+Contributions: \textbf{(i)} \emph{HuAIBench}, a released human-and-AI
+failed-submission benchmark with 14{,}182 sandbox-confirmed bugs, gold labels,
+automated labels, and audit packs; \textbf{(ii)} a validation protocol combining
+human gold, power analysis, problem-level bootstrap, per-family judge error, bias
+correction, and stronger-evidence relabeling; \textbf{(iii)} evidence that
+common-evidence labels often change under stronger evidence; and \textbf{(iv)}
+label-free and taxonomy-aware self-reflection baselines.
 
 \section{Background and Related Work}
 \label{sec:background}
@@ -162,9 +150,9 @@ succeeds---pass@$k$ on HumanEval, MBPP, APPS, and successors~\cite{chen2021codex
 or repository-level tasks like SWE-bench~\cite{jimenez2024swebench}, drawing on code
 corpora and contest archives~\cite{lu2021codexglue,puri2021codenet,kulal2019spoc}---and
 rigorous re-testing shows such pass rates are often optimistic~\cite{liu2023evalplus}.
-We instead study what can be learned about \emph{how} failures occur, and what
-evidence is needed before taxonomy labels become defensible measurements rather than
-diagnostic guesses.
+HuAIBench complements pass-rate benchmarks with aligned failure artifacts and asks
+what can be learned about \emph{how} failures occur, and what evidence is needed
+before taxonomy labels become defensible measurements rather than diagnostic guesses.
 
 \subsection{Data contamination}
 Because contest problems and editorial solutions are public, they routinely enter
@@ -173,8 +161,8 @@ and mitigates this~\cite{sainz2023contamination,golchin2024timetravel,riddell202
 LiveCodeBench~\cite{jain2024livecodebench} adopts rolling, recent problems and
 reports strong models near zero on the hardest unseen tasks, and Wei et
 al.~\cite{wei2026evaluating} run an explicit contamination audit. We take the same
-stance structurally: the CodeContests test split post-dates the
-\texttt{gpt-3.5-turbo} cutoff (our cutoff proxy), and we add a modern model as a
+stance structurally: HuAIBench's CodeContests test split post-dates the
+\texttt{gpt-3.5-turbo} cutoff used for its proxy arm, and it adds a modern model as a
 deliberately contamination-uncontrolled contrast rather than a cutoff-controlled
 measurement.
 
@@ -188,13 +176,13 @@ studies of AI code (e.g., Copilot~\cite{pearce2022copilot}) examine vulnerabilit
 rather than a general bug taxonomy. Closest to us, Wei et al.~\cite{wei2026evaluating}
 recently proposed the taxonomy we adopt and hand-labeled 75 incorrect programs from a
 single model with strong inter-annotator agreement ($\kappa=0.86$), using \emph{no}
-automated labeler and providing \emph{no} human baseline. We reuse their taxonomy
-verbatim but differ in kind as much as scale: we label \textbf{14{,}182} bugs (a
+automated labeler and providing \emph{no} human baseline. HuAIBench reuses their taxonomy
+verbatim but differs in kind as much as scale: it labels \textbf{14{,}182} bugs (a
 $\sim$190$\times$ larger corpus) from \emph{four} sources---including \emph{human}
 submissions to the \emph{same} problems---under explicit cutoff alignment and
 contamination caveats, with
 an LLM judge whose reliability we validate against a 375-bug doubly-annotated human
-gold. The human baseline lets us calibrate source effects on identical problems, and
+gold. The human baseline lets the benchmark calibrate source effects on identical problems, and
 the scale forces measurement questions---statistical power, within-problem
 clustering, and labeler granularity---that a 75-program, single-model, AI-only study
 never has to confront.
@@ -207,7 +195,7 @@ repair~\cite{xia2023repair}. For models repairing their \emph{own} output,
 Self-Refine~\cite{madaan2023selfrefine} critiques and revises with self-feedback,
 self-debugging~\cite{chen2023selfdebug} and Reflexion~\cite{shinn2023reflexion} add
 execution or verbal feedback, and Olausson et al.~\cite{olausson2024selfrepair}
-question whether self-repair is a ``silver bullet.'' We instantiate a reflection
+question whether self-repair is a ``silver bullet.'' HuAIBench includes a reflection
 loop with the public example-test results a contestant actually sees, and ask
 whether repair changes the \emph{type} of remaining bugs rather than only the pass
 rate.
@@ -216,7 +204,7 @@ rate.
 Using an LLM to score or label outputs is now
 widespread~\cite{zheng2023judging,liu2023geval}, but it carries known
 biases~\cite{wang2023fair} and its reliability for fine-grained, domain-specific
-taxonomies is rarely audited. We treat the judge as a measurement instrument: we
+taxonomies is rarely audited. HuAIBench treats the judge as a measurement instrument: we
 size the human gold by Cochran's proportion
 formula~\cite{cochran1977sampling,krejcie1970determining}, report chance-corrected
 agreement and its interpretation~\cite{cohen1960kappa,landis1977measurement,mchugh2012kappa,artstein2008agreement,krippendorff2018content},
@@ -265,28 +253,23 @@ AE1--AE6 & Math, greedy, graph, recursion/D\&C, DP, search (18)\\
 \section{Study Design}
 \label{sec:design}
 
-Figure~\ref{fig:pipeline} summarizes the study as four connected panels. The input
-panel filters CodeContests problems and brings together human submissions, a
-cutoff-aligned proxy model, its public-example self-reflection loop, and a modern
-contrast model. The central sandbox panel rejudges every C++ submission under one
-runner and assigns one of five verdicts. The taxonomy panel then applies the fixed
-32-leaf Wei et al. taxonomy through a blind human gold set, an audited LLM judge, and
-a stronger-evidence relabeling audit. The bottom panel calibrates the strength of the
-claims: sandbox verdicts support robust outcome claims, validated families support
-coarse taxonomy claims, and common-evidence labels do not support root-cause claims.
+Figure~\ref{fig:pipeline} summarizes HuAIBench as four panels. The input panel filters
+CodeContests problems and collects human, proxy-LLM, modern-LLM, and reflection
+submissions. The sandbox panel assigns shared verdicts. The taxonomy panel combines
+the fixed Wei et al. taxonomy with human gold labels, LLM-judge labels, and a
+stronger-evidence audit. The analysis panel calibrates which verdict, family, and
+root-cause claims the evidence can support.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{figs/overview_2.png}
-\caption{Overview of the study design. The input panel filters CodeContests problems
-and submission sources; the sandbox panel assigns shared AC/WA/TLE/RE/CE verdicts;
-the taxonomy panel combines the 32-leaf Wei et al. taxonomy, a blind human gold set,
-LLM judge labels, and stronger-evidence relabeling; the analysis panel calibrates
-which verdict, family-level, and root-cause claims the evidence can support.}
+\includegraphics[width=0.90\textwidth]{figs/overview_2.png}
+\caption{Overview of HuAIBench: filtered human/AI submissions are rejudged in one
+sandbox, labeled with the Wei et al. taxonomy through human gold and LLM-judge
+labels, audited with stronger evidence, and interpreted through claim calibration.}
 \label{fig:pipeline}
 \end{figure*}
 
-\subsection{Benchmark, sandbox, and submissions}
+\subsection{HuAIBench construction: tasks, sandbox, and submissions}
 We use the CodeContests~\cite{li2022alphacode} \emph{test} split: Codeforces
 problems first published after 2021-09-21, conservatively after
 \texttt{gpt-3.5-turbo}'s September-2021 cutoff~\cite{openai2023gpt4}. We treat this
@@ -490,7 +473,7 @@ taxonomy is applied with stronger evidence.
 \section{Results}
 \label{sec:results}
 
-\subsection{RQ1: Which taxonomy claims are reliable?}
+\subsection{RQ1: How reliable are HuAIBench taxonomy labels?}
 \label{sec:rq1}
 The first result is about the instrument, not the model. The two human annotators on
 the 375-bug common-evidence gold agree strongly---Cohen's $\kappa=0.80$ at leaf level
@@ -597,7 +580,7 @@ AE5 & 13 & 7 & GE1 3; GE2 2\\
 
 \begin{table}[t]
 \centering
-\caption{Claim-calibration checklist used before interpreting RQ2--RQ4. The steps are
+\caption{HuAIBench claim-calibration checklist used before interpreting RQ2--RQ4. The steps are
 transferable; thresholds are evidence-level gates for this study, not universal
 significance cutoffs.}
 \label{tab:claimcal}
@@ -647,7 +630,7 @@ evidence is private rather than public (72.0\% [52.4,85.7] vs.\ 50.5\%
 treat fine shifts as exploratory screens and reserve strong claims for bounded
 coarse patterns and label-free verdict dynamics.
 
-\subsection{RQ2: Which calibrated taxonomy signals remain?}
+\subsection{RQ2: What calibrated source signals remain?}
 \label{sec:rq2}
 RQ2 applies the calibration in Table~\ref{tab:claimcal}: we treat family
 distributions as screens unless a signal is larger than known labeler bias and
@@ -779,7 +762,7 @@ AE5 & Dynamic programming & 8 & 6 & 8\\
 \end{tabular}
 \end{table}
 
-\subsection{RQ3: Capability, contamination, and difficulty}
+\subsection{RQ3: Capability, contamination, and difficulty outcomes}
 \label{sec:rq3}
 Table~\ref{tab:corpus} reports three success metrics, but they answer different
 questions: the human number is a curated correct:incorrect ratio, whereas the AI
@@ -850,7 +833,7 @@ model declines overall but not monotonically, and humans are flat (survivorship)
 \label{fig:acdiff}
 \end{figure}
 
-\subsection{RQ4: What does self-reflection repair?}
+\subsection{RQ4: Self-reflection baseline}
 \label{sec:rq4}
 We study one concrete, common setup---the proxy model revising its own code with
 \emph{public example-test} feedback for three rounds---and report what it can and
@@ -934,7 +917,7 @@ runtime/time-limit failures never resolve.}
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{figs/reflection_taxonomy_heatmap.pdf}
+\includegraphics[width=0.90\textwidth]{figs/reflection_taxonomy_heatmap.pdf}
 \caption{Taxonomy-aware repair rate of self-reflection, using the original bug's
 AI-judge primary family label after family-level validation against the 375-item
 human gold. Rows show families with at least 100 initial proxy-model bugs (two
@@ -945,97 +928,80 @@ nearly absent for hard algorithmic families.}
 
 \section{Discussion}
 \label{sec:discussion}
-\paragraph{A claim ladder for this class of studies}
-The main result is operational and empirical. The operational part is a claim ladder:
-taxonomy studies should state the evidence level of each claim. Sandbox verdicts
-support outcome and repair dynamics directly. Validated family labels support triage
-statements such as ``most failures look mathematical/design-like.'' Small
-source-level shifts require a human gold set, labeler-bias analysis, and
-problem-level clustering control; in our data they remain screens, not explanations.
-The empirical part is that these controls still leave large residual movement:
-corrected source deltas have wide gold-sample uncertainty, and stronger-evidence
-labels change family for 55.0\% of audited wrong answers. Root-cause claims therefore
-require failing-test or reference evidence. We do not validate this ladder
-universally; we offer it as a transferable checklist and show one full instantiation.
-It explains why this case study stops at a coarse math/design concentration plus a
-separate syntax/compile gap.
-
-\paragraph{Evaluation and measurement}
-Pass@$k$ is not enough once the remaining failures are algorithmic and small tests
-miss them. A taxonomy-grounded profile is a useful complementary axis, but RQ1 shows
-that it must be read carefully: a substantial-agreement judge can still be too coarse
-to adjudicate small distributional differences, and first-failing evidence can change
-the family label entirely. Reliability must be established at the granularity of the
-claim, not only by an aggregate $\kappa$; our own coarse claim therefore rests on the
-extra audit decomposition, not only on full-corpus judge labels.
+\paragraph{Benchmark claim boundaries}
+HuAIBench's main result is both operational and empirical. Operationally, taxonomy
+benchmarks should state the evidence level of each claim: sandbox verdicts support
+outcome and repair dynamics; validated family labels support triage statements such
+as ``most failures look mathematical/design-like''; and root-cause claims require
+failing-test or reference evidence. Empirically, our full instantiation shows why:
+corrected source deltas have wide gold-sample uncertainty, the judge has family-level
+bias, and stronger-evidence labels change family for 55.0\% of audited wrong
+answers. Pass@$k$ alone misses these failure modes, but taxonomy profiles are useful
+only at the granularity where the instrument is reliable. This is why HuAIBench's
+baseline findings stop at coarse math/design concentration plus a separate
+syntax/compile gap.
 
 \section{Threats to Validity}
 \label{sec:threats}
-We organize threats following standard empirical-SE
-guidance~\cite{wohlin2012experimentation,runeson2009guidelines}.
+We organize threats following empirical-SE guidance~\cite{wohlin2012experimentation,runeson2009guidelines}.
 
 \textbf{Construct validity.} The human acceptance ``rate'' is CodeContests'
-correct:incorrect ratio, not a real success rate; we compare only within-source
-\emph{trends} with difficulty. Taxonomy labeling is subjective, so we use two
-provenance-blind annotators, adjudication, and report inter-annotator $\kappa=0.80$
-as the reliability ceiling. Common-evidence labels are diagnostic hypotheses, not
-demonstrated root causes; the 120-item stronger-evidence audit shows that
-first-failing-test/reference evidence changes 55.0\% of family labels. RQ1 also
-shows sensitivity to taxonomy boundaries and granularity, so we fix a ``prefer the
-most specific leaf'' rule and avoid fine causal claims. A remaining threat is that
-the judge (\texttt{gpt-5.4}) and modern model (\texttt{gpt-5.4-nano}) share a model
-family: the judge's excess design labels grow across human/proxy/modern
-($6\%/8\%/10\%$). We therefore treat modern-arm taxonomy shifts as screens, not
-confirmed differences.
+correct:incorrect ratio, so we compare only within-source difficulty trends.
+Taxonomy labeling is subjective; we use two provenance-blind annotators,
+adjudication, and report inter-annotator $\kappa=0.80$ as the reliability ceiling.
+Common-evidence labels are diagnostic hypotheses, not demonstrated root causes: the
+120-item audit changes 55.0\% of family labels. RQ1 also shows sensitivity to
+taxonomy granularity, so we fix a ``prefer the most specific leaf'' rule and avoid
+fine causal claims. The judge (\texttt{gpt-5.4}) and modern model
+(\texttt{gpt-5.4-nano}) share a model family, and the judge's excess design labels
+grow across human/proxy/modern ($6\%/8\%/10\%$); modern-arm taxonomy shifts are
+therefore screens, not confirmed differences.
 
 \textbf{Internal validity.} Excluding generated tests for tractability admits
 occasional weak-test pass-through, which can mislabel a buggy program as correct;
-this affects all sources symmetrically and so should not bias the source-profile
-checks. We mitigate special-judge and multiple-output risk by requiring at least one
-stored correct C++ solution to pass the sandbox comparator, dropping 7 otherwise; we
-also discard unexpected-AC stored incorrects rather than treating them as bugs.
-Verdicts and acceptance come from a deterministic, cached sandbox and are not subject
-to taxonomy-labeling error. The modern model's contamination is uncontrolled by
-design, so its results are a contrast, not a cutoff-controlled measurement. Contamination can
-also change the \emph{conditional} diagnostic-label profile: if memorized or easy-to-recall
-solutions become AC, they leave the non-AC pool whose labels we analyze. This
-selection effect is another reason we make no taxonomy claim from the modern arm; the
-proxy model anchors only a cutoff-aligned signal.
+this affects all sources symmetrically. We mitigate special-judge and
+multiple-output risk by requiring at least one stored correct C++ solution to pass
+the sandbox comparator, dropping 7 otherwise, and discard unexpected-AC stored
+incorrects. Verdicts come from a deterministic, cached sandbox and are not subject to
+taxonomy-labeling error. The modern model's contamination is uncontrolled by design,
+so its results are a contrast. Contamination can also change the conditional
+diagnostic-label profile by removing memorized or easy-to-recall AC solutions from
+the non-AC pool; this is another reason the proxy model anchors cutoff-aligned
+claims.
 
-\textbf{External validity.} We study C++ Codeforces problems, one PaR-style prompt at
-temperature 1.0, and two models; this bounds the scope. The proxy-model limit is
-\emph{structural}: post-2021 problems require a pre-2021 training cutoff, ruling out
-most stronger code models and motivating contamination-aware benchmarks
-~\cite{jain2024livecodebench}. Its 3\% acceptance is a property of this hidden-test
-setting, not a statement about current LLMs; many failures may be hopeless attempts,
-which can inflate broad math/design diagnoses. WA-only and accepted-problem checks
-reduce, but do not remove, this confound. We therefore claim only a bounded coarse
+\textbf{External validity.} We study C++ Codeforces problems, one PaR-style prompt
+at temperature 1.0, and two models. The proxy-model limit is \emph{structural}:
+post-2021 problems require a pre-2021 cutoff, ruling out most stronger code models
+and motivating contamination-aware benchmarks~\cite{jain2024livecodebench}. Its 3\%
+acceptance is a property of this hidden-test setting, not current LLMs; hopeless
+attempts can inflate broad math/design diagnoses. WA-only and accepted-problem
+checks reduce, but do not remove, this confound, so we claim only a bounded coarse
 profile plus measurement-limited fine shifts.
 
 \textbf{Conclusion validity.} Bugs cluster within problems and labels are
 multi-label, so we bootstrap over the 107 problems rather than treat 14{,}182 bugs as
 independent. Some intervals exclude zero, but effect sizes are small and estimated
 with the same judge whose family-level bias is 6--9 points; corrected-delta CIs in
-Table~\ref{tab:measerr} therefore control our interpretation more than raw
-significance does. The 125-bug-per-arm gold is also underpowered for small shifts
-($V\!\lesssim\!0.26$). The stronger-evidence audit adds only a coarse check:
-math/design membership is stable for 70.0\% of the audit ([61.3,77.5]) and moves
-inward more often than outward (25 vs.\ 11). Thus the dominant coarse region is
-stable under our checks, while fine source-level differences remain
+Table~\ref{tab:measerr} control our interpretation more than raw significance does.
+The 125-bug-per-arm gold is underpowered for small shifts ($V\!\lesssim\!0.26$).
+The stronger-evidence audit adds a coarse check: math/design membership is stable
+for 70.0\% of the audit ([61.3,77.5]) and moves inward more often than outward (25
+vs.\ 11). The dominant coarse region is stable; fine source differences remain
 measurement-limited.
 
 \section{Conclusion}
 \label{sec:conclusion}
-Bug-taxonomy labels are useful only when the claim matches the evidence. In this
-case study, sandbox verdicts support outcome claims; validated family labels support
-only coarse triage; and neither common-evidence nor automated labels support fine
-source-level explanations. The transferable lesson is a claim-calibration checklist:
-validate the labeler, control sample and problem clustering, audit stronger evidence,
-and state results at the granularity the instrument can sustain.
+HuAIBench is a benchmark for measuring human and AI code failures, and its central
+lesson is that benchmark labels are useful only when the claim matches the evidence.
+Sandbox verdicts support outcomes; validated family labels support coarse triage;
+and neither common-evidence nor automated labels support fine source-level
+root-cause explanations. The transferable rule is to validate the labeler, control
+problem clustering, audit stronger evidence, and state benchmark results at the
+granularity the instrument can sustain.
 
 \section{Artifact Availability}
 \label{sec:artifacts}
-All artifacts are available at \url{https://anonymous.4open.science/r/aitaxo}: problem
+HuAIBench artifacts are available at \url{https://anonymous.4open.science/r/aitaxo}: problem
 metadata, prompts, raw generated/reflected programs, judge labels, human gold labels,
 stronger-evidence audit packs, cached verdicts, and analysis scripts. Exact
 proprietary-model regeneration is not required for the reported tables.
