@@ -16,6 +16,7 @@ from pathlib import Path
 
 ARMS = ["human", "gpt-3.5-turbo-0125", "gpt-5.4-nano"]
 FAMILIES = ["GE1", "GE2", "GE3", "GE4", "GE5", "GE6", "AE1", "AE2", "AE3", "AE4", "AE5", "AE6"]
+MATH_DESIGN = {"AE1", "GE1"}
 
 
 def labels(cell):
@@ -36,6 +37,11 @@ def pct(n, d):
 
 def primary(label_values):
     return label_values[0] if label_values else ""
+
+
+def primary_family(label_values):
+    first = primary(label_values)
+    return first.split(".")[0] if first else ""
 
 
 def cohen_kappa(xs, ys, cats=None):
@@ -84,18 +90,41 @@ def main():
     missing = [r["item_id"] for r in rows if not labels(r["root_labels"])]
 
     by_arm = defaultdict(lambda: Counter(n=0, leaf_changed=0, family_changed=0))
+    coarse = Counter()
+    primary_transitions = Counter()
     family_before = defaultdict(Counter)
     family_after = defaultdict(Counter)
     for row in completed:
         arm = row["model"]
         orig = labels(row["original_labels"])
         root = labels(row["root_labels"])
+        primary_transitions[(primary_family(label_list(row["original_labels"])), primary_family(label_list(row["root_labels"])))] += 1
+        orig_family = families(orig)
+        root_family = families(root)
+        orig_md = bool(orig_family & MATH_DESIGN)
+        root_md = bool(root_family & MATH_DESIGN)
         by_arm[arm]["n"] += 1
         by_arm[arm]["leaf_changed"] += orig != root
-        by_arm[arm]["family_changed"] += families(orig) != families(root)
-        for fam in families(orig):
+        by_arm[arm]["family_changed"] += orig_family != root_family
+        by_arm[arm]["math_design_before"] += orig_md
+        by_arm[arm]["math_design_after"] += root_md
+        by_arm[arm]["math_design_cross"] += orig_md != root_md
+        by_arm[arm]["math_design_into"] += (not orig_md) and root_md
+        by_arm[arm]["math_design_out"] += orig_md and (not root_md)
+        coarse["math_design_before"] += orig_md
+        coarse["math_design_after"] += root_md
+        coarse["math_design_stable"] += orig_md == root_md
+        coarse["math_design_cross"] += orig_md != root_md
+        coarse["math_design_into"] += (not orig_md) and root_md
+        coarse["math_design_out"] += orig_md and (not root_md)
+        if orig_family != root_family:
+            coarse["changed_math_design_stable"] += orig_md == root_md
+            coarse["changed_math_design_cross"] += orig_md != root_md
+            coarse["changed_math_design_into"] += (not orig_md) and root_md
+            coarse["changed_math_design_out"] += orig_md and (not root_md)
+        for fam in orig_family:
             family_before[arm][fam] += 1
-        for fam in families(root):
+        for fam in root_family:
             family_after[arm][fam] += 1
 
     summary = {
@@ -103,6 +132,8 @@ def main():
         "missing": len(missing),
         "missing_item_ids": missing,
         "by_arm": {arm: dict(by_arm[arm]) for arm in ARMS},
+        "coarse_math_design": dict(coarse),
+        "primary_family_transitions": {f"{src}->{dst}": n for (src, dst), n in sorted(primary_transitions.items())},
         "family_before": {arm: dict(family_before[arm]) for arm in ARMS},
         "family_after": {arm: dict(family_after[arm]) for arm in ARMS},
     }
@@ -189,6 +220,20 @@ def main():
         "\\midrule",
         f"All & {total_n} & {total_leaf} ({pct(total_leaf, total_n):.1f}\\%) & "
         f"{total_family} ({pct(total_family, total_n):.1f}\\%) \\\\",
+        "\\bottomrule",
+        "\\end{tabular}",
+        "",
+        "\\vspace{0.5em}",
+        "",
+        "\\begin{tabular}{lrr}",
+        "\\toprule",
+        "Math/design audit check & Count & Value \\\\",
+        "\\midrule",
+        f"Before stronger evidence & {coarse['math_design_before']}/{total_n} & {pct(coarse['math_design_before'], total_n):.1f}\\% \\\\",
+        f"After stronger evidence & {coarse['math_design_after']}/{total_n} & {pct(coarse['math_design_after'], total_n):.1f}\\% \\\\",
+        f"Bucket stable & {coarse['math_design_stable']}/{total_n} & {pct(coarse['math_design_stable'], total_n):.1f}\\% \\\\",
+        f"Into math/design & {coarse['math_design_into']}/{total_n} & {pct(coarse['math_design_into'], total_n):.1f}\\% \\\\",
+        f"Out of math/design & {coarse['math_design_out']}/{total_n} & {pct(coarse['math_design_out'], total_n):.1f}\\% \\\\",
         "\\bottomrule",
         "\\end{tabular}",
         "",

@@ -1,0 +1,161 @@
+{
+  "slices": [
+    {
+      "slice": "All non-AC",
+      "human_n": 8648,
+      "human_md": 70.80249768732655,
+      "human_syntax": 2.5786308973172987,
+      "gpt-3.5-turbo-0125_n": 2076,
+      "gpt-3.5-turbo-0125_md": 64.64354527938343,
+      "gpt-3.5-turbo-0125_syntax": 6.1175337186897885,
+      "gpt-5.4-nano_n": 1465,
+      "gpt-5.4-nano_md": 69.69283276450511,
+      "gpt-5.4-nano_syntax": 5.051194539249146
+    },
+    {
+      "slice": "WA only",
+      "human_n": 8181,
+      "human_md": 73.75626451534042,
+      "human_syntax": 0.0,
+      "gpt-3.5-turbo-0125_n": 1868,
+      "gpt-3.5-turbo-0125_md": 70.39614561027837,
+      "gpt-3.5-turbo-0125_syntax": 0.0,
+      "gpt-5.4-nano_n": 1370,
+      "gpt-5.4-nano_md": 73.57664233576642,
+      "gpt-5.4-nano_syntax": 0.0
+    },
+    {
+      "slice": "Proxy AC-problems",
+      "human_n": 874,
+      "human_md": 85.35469107551488,
+      "human_syntax": 0.0,
+      "gpt-3.5-turbo-0125_n": 208,
+      "gpt-3.5-turbo-0125_md": 82.6923076923077,
+      "gpt-3.5-turbo-0125_syntax": 0.0,
+      "gpt-5.4-nano_n": 0,
+      "gpt-5.4-nano_md": 0.0,
+      "gpt-5.4-nano_syntax": 0.0
+    },
+    {
+      "slice": "Modern AC-problems",
+      "human_n": 5083,
+      "human_md": 75.6443045445603,
+      "human_syntax": 0.0,
+      "gpt-3.5-turbo-0125_n": 0,
+      "gpt-3.5-turbo-0125_md": 0.0,
+      "gpt-3.5-turbo-0125_syntax": 0.0,
+      "gpt-5.4-nano_n": 779,
+      "gpt-5.4-nano_md": 72.01540436456996,
+      "gpt-5.4-nano_syntax": 0.0
+    }
+  ],
+  "heterogeneity": [
+    {
+      "group": "Source",
+      "value": "Proxy",
+      "n": 40,
+      "changed": 20,
+      "rate": 50.0
+    },
+    {
+      "group": "Source",
+      "value": "Modern",
+      "n": 40,
+      "changed": 20,
+      "rate": 50.0
+    },
+    {
+      "group": "Source",
+      "value": "Human",
+      "n": 40,
+      "changed": 26,
+      "rate": 65.0
+    },
+    {
+      "group": "Difficulty",
+      "value": "Easy",
+      "n": 23,
+      "changed": 15,
+      "rate": 65.21739130434783
+    },
+    {
+      "group": "Difficulty",
+      "value": "Hard",
+      "n": 26,
+      "changed": 15,
+      "rate": 57.69230769230769
+    },
+    {
+      "group": "Difficulty",
+      "value": "Medium",
+      "n": 71,
+      "changed": 36,
+      "rate": 50.70422535211268
+    },
+    {
+      "group": "First fail",
+      "value": "Private",
+      "n": 25,
+      "changed": 18,
+      "rate": 72.0
+    },
+    {
+      "group": "First fail",
+      "value": "Public",
+      "n": 95,
+      "changed": 48,
+      "rate": 50.526315789473685
+    }
+  ],
+  "family_changes": [
+    {
+      "family": "AE1",
+      "n": 22,
+      "changed": 8,
+      "rate": 36.36363636363637,
+      "top_dest": "AE5 4, GE2 2"
+    },
+    {
+      "family": "AE2",
+      "n": 25,
+      "changed": 6,
+      "rate": 24.0,
+      "top_dest": "GE3 3, GE1 2"
+    },
+    {
+      "family": "AE5",
+      "n": 13,
+      "changed": 6,
+      "rate": 46.15384615384615,
+      "top_dest": "GE1 3, GE2 2"
+    },
+    {
+      "family": "GE1",
+      "n": 21,
+      "changed": 14,
+      "rate": 66.66666666666667,
+      "top_dest": "AE1 6, AE6 1"
+    },
+    {
+      "family": "GE2",
+      "n": 20,
+      "changed": 18,
+      "rate": 90.0,
+      "top_dest": "GE1 8, GE3 5"
+    },
+    {
+      "family": "GE4",
+      "n": 10,
+      "changed": 9,
+      "rate": 90.0,
+      "top_dest": "AE1 5, GE2 2"
+    },
+    {
+      "family": "GE6",
+      "n": 8,
+      "changed": 5,
+      "rate": 62.5,
+      "top_dest": "GE1 4, AE1 1"
+    }
+  ]
+}
