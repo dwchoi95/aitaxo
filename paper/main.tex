@@ -52,11 +52,12 @@ full-corpus predictions released as baseline screens rather than truth; a 120-it
 stronger-evidence stress set with failing tests and reference solutions; and
 reflection trajectories with a same-budget resampling baseline. HuAIBench is not a
 root-cause benchmark, not a complete 32-leaf taxonomy leaderboard, and not a
-contamination-proof future-model leaderboard. Baselines define the supported
-boundary: an intentionally non-causal stronger-evidence stress test changes 55.0\%
-of primary families, the judge over-applies design by 6--9 points, the robust
-taxonomy signal is only a coarse math/design bucket plus syntax/compile separation,
-and public-example self-reflection repairs 4.0\% of proxy bugs, matching resampling.
+contamination-proof future-model leaderboard. The main empirical result is a
+negative calibration boundary: an intentionally non-causal stronger-evidence stress
+test changes 55.0\% of primary families, the judge over-applies design by 6--9
+points, full-corpus taxonomy screens collapse to a coarse math/design bucket plus
+syntax/compile separation, and public-example self-reflection repairs 4.0\% of proxy
+bugs, matching resampling.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -146,7 +147,7 @@ tasks and baselines for sandbox outcomes, common-evidence triage-labeler calibra
 diagnostic-stability stress testing, and self-reflection; \textbf{(iii)} a validation
 protocol combining human gold, power analysis, problem-level bootstrap, per-family
 judge error, bias correction, and stronger-evidence relabeling; and \textbf{(iv)}
-baseline findings that define the current supported claim boundary.
+negative calibration findings that define the current supported claim boundary.
 
 \section{Background and Related Work}
 \label{sec:background}
@@ -672,13 +673,13 @@ evidence is private rather than public (72.0\% [52.4,85.7] vs.\ 50.5\%
 treat fine shifts as exploratory screens and reserve strong claims for bounded
 coarse patterns and label-free verdict dynamics.
 
-\subsection{RQ2: What calibrated source screens remain?}
+\subsection{RQ2: What survives full-corpus screening?}
 \label{sec:rq2}
-RQ2 is a benchmark sanity check: it asks what a user would see when applying the
+RQ2 is a negative calibration check: it asks what remains after a user applies the
 released baseline predictor under the claim gates, not whether humans and LLMs have
-intrinsic failure distributions. We treat family distributions as screens unless a
-signal is larger than known labeler bias and consistent with the audit's coarse
-stability check. On the human gold (Table~\ref{tab:family}) all three sources
+intrinsic failure distributions. We report the full-corpus screen because users will
+run it; we promote only signals larger than known labeler bias and consistent with
+the audit's coarse stability check. On the human gold (Table~\ref{tab:family}) all three sources
 are dominated by the same two families---mathematics (AE1, $\approx$33\%) and design
 (GE1, 20--32\%)---and their high-level general-vs-algorithmic split is similar
 without being diagnostic. A \emph{weak} directional tendency is visible: design (GE1)
