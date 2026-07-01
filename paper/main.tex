@@ -40,7 +40,7 @@ Code-Failure Outcomes and Labeler Calibration}
 Benchmarks for code generation usually measure whether programs pass tests; they
 rarely provide reusable evidence about how human and generated submissions fail. We introduce
 \emph{HuAIBench}, a tiered benchmark for competitive-programming code failures:
-14{,}182 sandbox-confirmed non-AC C++ submissions on 107 post-cutoff CodeContests
+14{,}182 sandbox-confirmed non-AC C++ submissions on 107 proxy-cutoff-aligned CodeContests
 problems, aligned across human submissions, a cutoff-aligned proxy LLM, a modern
 contrast LLM, and a public-example self-reflection loop. HuAIBench is tiered rather
 than a labeled corpus: it provides exact sandbox verdicts, the 32-leaf Wei et al.
@@ -49,14 +49,16 @@ for labeler evaluation, LLM-judge baseline predictions released as system output
 rather than benchmark truth, a 120-item stronger-evidence
 audit with failing tests and reference solutions, and reflection trajectories with a
 same-budget resampling baseline. This structure turns the dataset into benchmark
-tasks with explicit evidence levels. Exact verdicts support outcome, difficulty, and
-repair claims; human gold labels support taxonomy-labeler calibration; full-corpus
-LLM predictions support only exploratory coarse screens; and stronger-evidence packs
-stress-test diagnostic-label stability. Baseline results show a
-stable math/design concentration plus a syntax/compile separation, a judge that
-reaches substantial agreement but over-applies design by 6--9 points, and
-public-example self-reflection that repairs only 4.0\% of proxy-model bugs, matching
-resampling and fixing no runtime or time-limit failures. We release the benchmark
+tasks with explicit evidence levels: sandbox outcomes, common-evidence triage
+labeling, stronger-evidence stress tests, and repair baselines. Exact verdicts
+support outcome, difficulty, and repair claims; human gold labels support
+taxonomy-labeler calibration; full-corpus LLM predictions support only exploratory
+coarse screens; and stronger-evidence packs stress-test diagnostic-label stability.
+The taxonomy task is triage under fixed evidence, not root-cause recovery. Baselines
+show the boundary: stronger evidence changes 55.0\% of audited primary families, the
+judge over-applies design by 6--9 points, the only robust taxonomy signal is a coarse
+math/design bucket plus syntax/compile separation, and public-example self-reflection
+repairs only 4.0\% of proxy bugs, matching resampling. We release the benchmark
 data, prompts, cached outputs, human labels, baseline predictions, audit packs, and
 analysis scripts.
 \end{abstract}
@@ -98,8 +100,8 @@ labels, but also the evidence needed to bound those labels' reliability.
 
 We introduce \emph{HuAIBench} to address this measurement gap. It adopts the recent bug taxonomy of Wei et
 al.~\cite{wei2026evaluating}---six general-error and six algorithm-specific
-families, 32 leaves (Table~\ref{tab:taxonomy})---and bound contamination risk by using
-the test split of CodeContests~\cite{li2022alphacode}: 107 Codeforces problems
+families, 32 leaves (Table~\ref{tab:taxonomy})---and bounds proxy-arm contamination risk by using
+the test split of CodeContests~\cite{li2022alphacode}: 107 public Codeforces problems
 first published after the September-2021 cutoff of
 \texttt{gpt-3.5-turbo}~\cite{openai2023gpt4}. We use four sources as a stress test
 for the instrument: human submissions; a cutoff-aligned proxy model; a modern model
@@ -107,9 +109,10 @@ whose training window covers the problems (a descriptive contrast, not a
 cutoff-controlled source); and a self-reflection loop on the cutoff proxy. Every
 submission is judged in a hardened sandbox; two annotators label a 375-bug gold set;
 an LLM judge produces full-corpus baseline predictions; and a 120-item audit adds failing tests and
-reference solutions. The current model arms are baseline instantiations, not the
-benchmark's ceiling: future generators or labelers can be run through the same
-problems, sandbox, gold labels, and audit packs.
+reference solutions. The current model arms are baseline instantiations. HuAIBench
+is not a contamination-proof leaderboard for future public models; it is a static
+measurement substrate for cached failures, labeler calibration, diagnostic-stability
+checks, and repair baselines.
 
 We evaluate HuAIBench through four questions, ordered from benchmark validation to
 baseline findings: \textbf{RQ1} asks how reliable taxonomy labels and baseline
@@ -119,23 +122,23 @@ capability, contamination risk, and difficulty shape label-free outcomes; and
 \textbf{RQ4} establishes a public-example self-reflection baseline.
 
 HuAIBench's main output is a set of calibrated benchmark tasks, not an unconditional
-taxonomy leaderboard. Researchers can evaluate new code generators on the same
-post-cutoff tasks and sandbox; evaluate taxonomy labelers against the 375-bug human
-gold; stress-test diagnostic labels on the 120 stronger-evidence packs; and compare
-repair methods against the released reflection and resampling trajectories. Our
-baseline instantiation shows which uses are supported: exact verdicts are stable;
-human gold labels support labeler calibration; full-corpus predictions are baseline
-screens; and root-cause claims require stronger evidence. The defensible taxonomy signal is coarse
+taxonomy or model leaderboard. Researchers can evaluate common-evidence taxonomy
+labelers against the 375-bug human gold, stress-test diagnostic labels on the
+120 stronger-evidence packs, compare repair methods against reflection/resampling
+trajectories, and study cached generator failures while reporting contamination
+status. Our baseline instantiation shows which uses are supported: exact verdicts
+are stable sandbox outcomes; human gold labels support triage-labeler calibration;
+full-corpus predictions are baseline screens; and root-cause claims require stronger evidence. The defensible taxonomy signal is coarse
 mathematics/design concentration plus a source-conditional syntax/compile separation.
 Label-free dynamics are stronger: the modern contrast is more capable but
 difficulty-sensitive, and public-example feedback repairs only 4\% of proxy-model
 bugs, matching same-budget resampling.
 
-Contributions: \textbf{(i)} \emph{HuAIBench}, a released tiered benchmark with
+Contributions: \textbf{(i)} \emph{HuAIBench}, a released tiered measurement benchmark with
 14{,}182 sandbox-confirmed non-AC programs and exact verdicts, 375 human-gold
 taxonomy labels, 14{,}182 full-corpus LLM baseline predictions, stronger-evidence
 audit packs, and repair trajectories; \textbf{(ii)} benchmark
-tasks and baselines for sandbox outcomes, taxonomy-labeler calibration,
+tasks and baselines for sandbox outcomes, common-evidence triage-labeler calibration,
 diagnostic-stability stress testing, and self-reflection; \textbf{(iii)} a validation
 protocol combining human gold, power analysis, problem-level bootstrap, per-family
 judge error, bias correction, and stronger-evidence relabeling; and \textbf{(iv)}
@@ -302,9 +305,12 @@ not pass our sandbox comparator, and 7 with too few confirmed human bugs, leavin
 \textbf{107 problems} (ratings 800--3500). This gate is also our guard against
 special-judge or multiple-output mismatches: we do not run Codeforces custom
 checkers, so problems for which known-correct code cannot be accepted under our
-token/float comparator are excluded. For retained problems, stored incorrect
-solutions that unexpectedly pass our tests are discarded rather than counted as bugs
-(3{,}690 of 12{,}356 judged incorrect C++ submissions). The set is deliberately hard-skewed---25 problems rated $\le$1199, 12 at
+token/float comparator are excluded. During filtering, stored incorrect
+solutions that unexpectedly pass our tests are quarantined as sandbox-inconclusive
+pass-throughs, not counted as bugs (3{,}690 of 12{,}356 judged incorrect C++
+submissions). For retained problems, per-problem counts are released as oracle-risk metadata; they
+flag weak-test or multiple-output risk and bound the outcome task to ``verdict under
+the released sandbox tests,'' not semantic correctness in the abstract. The set is deliberately hard-skewed---25 problems rated $\le$1199, 12 at
 1200--1599, 13 at 1600--1999, 22 at 2000--2399, and 35 rated 2400+---so RQ3's
 difficulty analysis spans the full competitive range rather than only easy tasks.
 Each C++ submission is compiled with GNU \texttt{g++} (\texttt{gnu++17})
@@ -411,9 +417,9 @@ presence penalties are set. Responses are cached by model, temperature, prompt, 
 nonce; because proprietary model strings are not immutable snapshots, the released
 raw generations, judge outputs, and cache keys define the audit record. The API calls
 that produced the released generation/reflection corpus were completed on 2026-06-29,
-and the judge predictions on 2026-06-30. The cache stores raw response text rather than
-provider response identifiers, so exact re-generation is not promised; reproducibility
-means re-running the analysis from the released outputs. The judge is provenance-blind and receives
+and the judge predictions on 2026-06-30. Exact re-generation is not promised;
+reproducibility means replaying the analyses from released prompts, outputs, labels,
+verdicts, and scripts. The judge is provenance-blind and receives
 neither the failing hidden test nor a reference solution, matching the human
 annotators' information exactly so that disagreement reflects judgment, not evidence.
 This is a deliberate choice for an apples-to-apples agreement study, but we
@@ -601,20 +607,22 @@ a baseline metric in this paper, and a supported claim level.}
 \toprule
 Task & Released evidence & Baseline metric & Claim gate\\
 \midrule
-Outcome & sandbox verdicts, tests, cache & pass/verdict by problem & direct\\
-Labeler & 375 human gold labels & $\kappa$, $F_1$, bias & calibration\\
-Corpus screen & 14{,}182 judge predictions & bootstrap + bias & exploratory coarse\\
-Root-cause stress & 120 stronger packs & stability, transitions & diagnostic only\\
+Sandbox outcome & verdicts, tests, cache & pass/verdict by problem & sandbox direct\\
+Triage labeler & 375 human gold labels & $\kappa$, $F_1$, bias & common evidence\\
+Corpus screen & 14{,}182 judge predictions & bootstrap + bias & coarse only\\
+Evidence stress & 120 stronger packs & stability, transitions & diagnostic only\\
 Repair & reflection trajectories & fixed vs.\ resampling & repair baseline\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Table~\ref{tab:claimcal} is the construct boundary for using HuAIBench. The benchmark
-has direct ground truth for outcomes and repair trajectories, human ground truth for
-labeler evaluation, full-corpus baseline predictions for coarse family profiles, and a
-stronger-evidence stress set for diagnostic-label robustness. The judge predictions are released
-as a baseline system output, not as benchmark ground truth. A full-corpus taxonomy
+has direct ground truth for released-test sandbox outcomes and repair trajectories,
+human ground truth for \emph{common-evidence triage labeling} (given statement, code,
+and verdict, predict the label a provenance-blind human assigns), full-corpus baseline
+predictions for coarse family profiles, and a stronger-evidence stress set for
+diagnostic-label robustness. The judge predictions are released as a baseline system
+output, not as benchmark ground truth. A full-corpus taxonomy
 difference is not promoted beyond a screen unless it survives problem-level
 clustering and the arm-specific bias correction in Table~\ref{tab:measerr};
 root-cause claims are never made from common evidence alone. The 55.0\% should not be
@@ -851,38 +859,17 @@ model declines overall but not monotonically, and humans are flat (survivorship)
 \subsection{RQ4: Self-reflection baseline}
 \label{sec:rq4}
 We study one concrete, common setup---the proxy model revising its own code with
-\emph{public example-test} feedback for three rounds---and report what it can and
-cannot fix; the numbers below are specific to this model and this feedback signal, not
-a claim about self-reflection in general. Part of why the rate is so low is that the
-public examples were already in the original prompt (they ship with the Codeforces
-statement); reflection's \emph{new} information is therefore only the model's own wrong
-output on inputs it had already seen, not fresh test data---so it can correct a
-mis-handled visible case but is blind to everything the hidden tests check. In that
-setting, repair reaches only \textbf{4.0\%} (83/2{,}076) of the proxy model's bugs,
-and that number is not distinguishable from a trivial same-budget alternative. Using
-the existing 20-sample zero-shot budget as a leave-one-out pool, three fresh draws
-from the other 19 cached samples for each failed attempt would fix \textbf{82.6} bugs
-in expectation (\textbf{4.0\%}; problem-bootstrap 95\% CI 41.6--132.2); the
-reflection count lies inside that uncertainty range.
-Table~\ref{tab:resample}
-therefore changes the interpretation of RQ4: public-example reflection is not an
-efficient repair strategy over simple resampling; it is a diagnostic probe for which
-bugs survive weak feedback. Figure~\ref{fig:sankey} tracks every bug's verdict across
-the three rounds: the accepted band grows $0\rightarrow53\rightarrow73\rightarrow83$,
-so most repairs land in the first round and the third adds only ten, while the
-wrong-answer mass ($\approx$1{,}850) is essentially static. The rate is sharply
-stratified by verdict: compile errors reach 5.5\% and wrong answers 4.1\%, but
-\textbf{runtime (0/55) and time-limit (0/27) errors are never repaired}---runtime
-errors even tick up as the model perturbs code while chasing a wrong answer.
-Structural failures---a wrong-complexity algorithm, a crash on an unseen
-input---pass the small public examples unchanged, so reflection sees no signal.
-Because RQ1 validates automated labels only at family level, Fig.~\ref{fig:taxorepair}
-uses the judge's primary family labels over
-all 2{,}076 proxy-model bugs. The result is still narrow: repairs concentrate in
-easy syntax/design cases, while boundary, mathematical, greedy, and DP failures
-	mostly persist. The surviving diagnostic-label profile is therefore almost unchanged
-(general-error share 61\%$\rightarrow$61\%): the AI's failure signature is
-\emph{robust to self-correction}.
+\emph{public example-test} feedback for three rounds. Since those examples are already
+in the original statement, reflection's new signal is only the model's own wrong output
+on visible inputs, not hidden-test evidence. It repairs \textbf{4.0\%} of proxy bugs
+(83/2{,}076), which matches a same-budget resampling expectation of \textbf{82.6} fixes
+(4.0\%; 95\% CI 41.6--132.2; Table~\ref{tab:resample}). Figure~\ref{fig:sankey}
+shows most fixes arrive in round 1 ($0\rightarrow53\rightarrow73\rightarrow83$ AC),
+while wrong answers remain near 1{,}850. Compile errors reach 5.5\% repair and wrong
+answers 4.1\%, but \textbf{runtime (0/55) and time-limit (0/27) errors are never
+repaired}. Using family-level validated judge labels, Fig.~\ref{fig:taxorepair} shows
+repairs concentrated in easy syntax/design cases; boundary, math, greedy, and DP
+failures mostly persist, leaving the diagnostic-label profile almost unchanged.
 
 \begin{table}[t]
 \centering
@@ -905,20 +892,10 @@ Fresh samples & 3 & 82.6 [41.6,132.2] & 4.0\%\\
 \end{table}
 
 \paragraph{Repair power collapses with difficulty}
-Splitting the same trajectories by problem difficulty and original bug family
-(Fig.~\ref{fig:taxorepair}) shows the repair rate falling monotonically with rating:
-\textbf{7.1\%} on easy problems ($\le$1599), \textbf{3.4\%} on medium (1600--2399),
-and \textbf{1.4\%} on hard (2400+). On hard problems the accepted band barely moves
-after the first round ($8\rightarrow10\rightarrow10$ of 693), whereas easy problems
-keep accruing fixes ($30\rightarrow43\rightarrow50$ of 700). Reflection thus helps
-exactly where the model was already close---easy problems with surface slips---and is
-nearly inert on the hard, design-bound problems where its bugs concentrate (RQ2,
-RQ3). Self-correction is not a substitute for choosing the right algorithm. Two
-secondary dynamics point the same way: compile errors---the one locally diagnosable
-failure---are cleared in every band (e.g.\ $54\rightarrow26$ on hard), but on hard
-problems they convert to \emph{wrong answers} rather than acceptances; runtime errors
-slightly \emph{increase} on medium and hard problems as edits chasing a wrong answer
-introduce new crashes.
+The repair rate falls from \textbf{7.1\%} on easy problems ($\le$1599) to
+\textbf{3.4\%} on medium (1600--2399) and \textbf{1.4\%} on hard (2400+). Hard-problem
+ACs barely move after round 1 ($8\rightarrow10\rightarrow10$ of 693), so reflection
+helps near-miss surface slips, not the design-bound failures that dominate RQ2--RQ3.
 
 \begin{figure}[t]
 \centering
@@ -944,25 +921,14 @@ nearly absent for hard algorithmic families.}
 \section{Discussion}
 \label{sec:discussion}
 \paragraph{Benchmark claim boundaries}
-HuAIBench's main result is a usable benchmark suite with explicit claim gates. It
-separates four common downstream uses that are often conflated: measuring outcome
-dynamics, evaluating taxonomy labelers, screening full-corpus failure profiles, and
-testing whether diagnostic labels survive stronger evidence. Sandbox verdicts support
-outcome and repair dynamics directly; the 375-bug gold supports labeler comparison;
-the full-corpus judge predictions support only coarse triage; and root-cause claims
-require failing-test or reference evidence. Empirically, our baseline instantiation
-shows why these gates matter: corrected source deltas have wide gold-sample
-uncertainty, the judge has family-level bias, and stronger-evidence labels change
-family for 55.0\% of audited wrong answers. Pass@$k$ alone misses these failure
-modes, but taxonomy profiles are useful at the granularity where the instrument is
-reliable. This is why HuAIBench's baseline findings stop at coarse math/design
-concentration plus a separate syntax/compile gap, while leaving future generators and
-labelers a fixed benchmark substrate.
+HuAIBench separates outcome dynamics, triage-labeler calibration, full-corpus screens,
+evidence-stability stress tests, and repair baselines. The central result is the gate
+between them: verdicts support outcome claims directly; the 375-bug gold supports
+common-evidence labeler evaluation; full-corpus judge predictions support only coarse
+triage; and root-cause claims require failing-test or reference evidence.
 
 \section{Threats to Validity}
 \label{sec:threats}
-We organize threats following empirical-SE guidance~\cite{wohlin2012experimentation,runeson2009guidelines}.
-
 \textbf{Construct validity.} The human acceptance ``rate'' is CodeContests'
 correct:incorrect ratio, so we compare only within-source difficulty trends.
 Taxonomy labeling is subjective; we use two provenance-blind annotators,
@@ -988,9 +954,11 @@ the non-AC pool; this is another reason the proxy model anchors cutoff-aligned
 claims.
 
 \textbf{External validity.} We study C++ Codeforces problems, one PaR-style prompt
-at temperature 1.0, and two models. The proxy-model limit is \emph{structural}:
-post-2021 problems require a pre-2021 cutoff, ruling out most stronger code models
-and motivating contamination-aware benchmarks~\cite{jain2024livecodebench}. Its 3\%
+at temperature 1.0, and two models. Because the tasks are public, HuAIBench is not a
+future-model capability leaderboard; later arms must report contamination status and
+be interpreted as descriptive cached-arm additions. The proxy-model limit is
+\emph{structural}: post-2021 problems require a pre-2021 cutoff, ruling out most
+stronger code models and motivating contamination-aware benchmarks~\cite{jain2024livecodebench}. Its 3\%
 acceptance is a property of this hidden-test setting, not current LLMs; hopeless
 attempts can inflate broad math/design diagnoses. WA-only and accepted-problem
 checks reduce, but do not remove, this confound, so we claim only a bounded coarse
@@ -1009,20 +977,19 @@ measurement-limited.
 
 \section{Conclusion}
 \label{sec:conclusion}
-HuAIBench is a benchmark for measuring code failures with explicit
-evidence tiers. It provides sandbox-grounded outcome tasks, human-gold labeler
-calibration, full-corpus baseline taxonomy screens, stronger-evidence diagnostic stress tests,
-and repair baselines. Its first baselines show stable coarse math/design
-concentration, a syntax/compile separation, and weak public-example self-reflection.
-The transferable rule is to report benchmark results at the granularity the released
-evidence can sustain.
+HuAIBench measures code failures through explicit evidence tiers: sandbox outcomes,
+human-gold labeler calibration, full-corpus baseline taxonomy screens,
+stronger-evidence diagnostic stress tests, and repair baselines. Its first baselines
+show stable coarse math/design concentration, a syntax/compile separation, and weak
+public-example self-reflection. The transferable rule is to report results only at
+the granularity the released evidence can sustain.
 
 \section{Artifact Availability}
 \label{sec:artifacts}
 \begingroup\raggedright
-HuAIBench artifacts are available at \url{https://anonymous.4open.science/r/aitaxo}:
-metadata, prompts, raw programs, verdict/test caches, human gold labels, LLM baseline
-predictions, audit packs, reflection trajectories, and table-regeneration scripts.
+Artifacts: \url{https://anonymous.4open.science/r/aitaxo} (metadata, prompts,
+programs, verdict/test caches, labels, predictions, audit packs, repair trajectories,
+and scripts).
 \par\endgroup
 
 \bibliographystyle{IEEEtran}
