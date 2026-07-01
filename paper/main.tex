@@ -54,11 +54,11 @@ verdict---before users commit to expensive failing-test or reference-solution
 analysis. Exact verdicts support outcome, difficulty, and repair claims; human gold
 labels support observed-leaf triage-labeler calibration; full-corpus predictions
 support only exploratory coarse screens; and stronger-evidence packs stress-test
-diagnostic-label stability. Baselines show the boundary: a stronger-evidence
-relabeling audit changes 55.0\% of primary families under a different protocol, the
-judge over-applies design by 6--9 points, the robust taxonomy signal is only a
-coarse math/design bucket plus syntax/compile separation, and public-example
-self-reflection repairs 4.0\% of proxy bugs, matching resampling. The released schema
+diagnostic-label stability. Baselines show the boundary: an intentionally non-causal
+stronger-evidence stress test changes 55.0\% of primary families, the judge
+over-applies design by 6--9 points, the robust taxonomy signal is only a coarse
+math/design bucket plus syntax/compile separation, and public-example self-reflection
+repairs 4.0\% of proxy bugs, matching resampling. The released schema
 keeps human-gold labels, judge predictions, stronger-evidence labels, and repair
 trajectories in separate evidence tiers with scripts that rerun tables from caches.
 \end{abstract}
@@ -123,7 +123,8 @@ capability, contamination risk, and difficulty shape label-free outcomes; and
 
 HuAIBench's main output is a set of calibrated benchmark tasks, not an unconditional
 taxonomy or model leaderboard; its gold task covers observed leaves rather than all
-32 taxonomy leaves. Compared with CodeContests plus a small taxonomy sample, its
+32 taxonomy leaves, and this labeler-calibration task does not depend on accepting
+the proxy arm as a perfectly uncontaminated model. Compared with CodeContests plus a small taxonomy sample, its
 reusable unit is the aligned evidence bundle: same-sandbox human/generated failures,
 cached prompts/outputs, human gold, audit packs, and repair/resampling traces. Researchers can evaluate common-evidence taxonomy
 labelers against the 375-bug human gold, stress-test diagnostic labels on the
@@ -1014,7 +1015,7 @@ measurement-limited.
 \label{sec:conclusion}
 HuAIBench is a static archive and calibration suite for code failures: sandbox
 outcomes, human-gold labeler calibration, full-corpus baseline taxonomy screens,
-stronger-evidence diagnostic stress tests, and repair baselines. Its first baselines
+non-causal stronger-evidence diagnostic stress tests, and repair baselines. Its first baselines
 show coarse math/design concentration, a syntax/compile separation, and weak
 public-example self-reflection. The transferable rule is to report results only at
 the granularity the released evidence can sustain.
