@@ -1,0 +1,376 @@
+problem_id,item_id,verdict,labels,rationale
+1575B,411c75ac10,WA,GE1.2,"Fixes the circle center at the origin, misreading ""touch the origin"" as ""centered at the origin"" rather than allowing any center at distance r from the origin."
+1575B,83a00ad507,CE,GE5.1,Compilation fails: error: redeclaration of 'const double PI'
+1575B,2d9a8527fc,CE,GE5.1,Compilation fails: error: 'int y1' redeclared as different kind of entity
+1575C,e4e1e4034c,WA,AE1.1,Counts cyclic segments with the wrong prefix-remainder formula; it does not pair equal residues correctly.
+1575C,56d5dbba87,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1575C,5601e4e9bf,WA,AE1.1,Uses an incorrect combinatorial/remainder-counting formula for cyclic segments.
+1575C,9dcf937c41,WA,AE1.1,Uses an incorrect combinatorial/remainder-counting formula for cyclic segments.
+1575C,e593127744,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1575C,97f0fadb98,CE,GE5.1,Compilation fails: error: redeclaration of 'long long int N'
+1575C,7135755e51,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1575C,dd0957aa4b,WA,AE1.1,Uses an incorrect combinatorial/remainder-counting formula for cyclic segments.
+1575D,2a61a0e58f,CE,GE5.1,Compilation fails: error: 'next_permutation' was not declared in this scope
+1575D,363080885e,WA,AE1.1,"Hard-codes the endings divisible by 25 with the wrong counting formula for ""_"" and shared ""X"" digits, so the number of valid fillings is miscounted."
+1575D,6ecfc8864a,WA,GE3.1,"A branch condition checks `a[len - 1] == 7` instead of the character `'7'`, so valid cases for endings like 75 follow the wrong branch."
+1575D,7a42372a34,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1575E,0f538307ca,WA,GE1.1,The chosen algorithmic strategy is incorrect for the task.
+1575E,83b6c367ee,WA,GE1.1,The chosen algorithmic strategy is incorrect for the task.
+1575E,2445805fb9,CE,GE5.1,"Compilation fails: error: no match for call to '(std::function<void(int, int, int, int, long long int)>) (std::tuple_element<0, std::pair<int, int> >::type&, int&, int&, std::tuple_element<1, std::pair<int, int> >::type&, int&, long long int)'"
+1575G,9dd54ef466,WA,AE1.2,"Its divisor/phi preprocessing is broken: `phi[i]` is only built for `i <= sqrt(N)`, so later totient-based GCD counting uses uninitialized values for larger divisors."
+1575G,2c64dfd2db,WA,AE1.1,Replaces the required double-GCD sum with an invalid divisor-counting formula.
+1575G,0f34a59fc9,WA,AE1.2,"After reversing the divisor list, its inclusion-exclusion loop still stops at `m <= v.back()`, so multiples of `x` are never subtracted correctly in the divisor-count DP."
+1575H,2fb4ad3864,WA,GE1.2,"Treats k as a window offset and only computes minimum mismatches for one placement of `b`, instead of the minimum edits for exactly k total occurrences in `a`."
+1575I,4bce9efa97,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1575K,9f05d5e5ed,WA,AE1.1,Uses an invalid counting formula for the equality constraints between the two rectangles instead of counting connected components of forced-equal cells.
+1575K,717756c961,TLE,GE1.3,"Builds the constraint structure explicitly over rectangle cells, which is far too expensive for r,c up to 10^6 and leads to TLE."
+1575L,aa2573940a,WA,AE5.1,"The DP formulation does not correctly capture how deleting unmatched elements shifts later indices, so the state space is wrong."
+1575L,7c367bcd60,WA,AE5.2,"Reduces the problem to an LIS-style DP with incorrect ordering/tie handling, so it allows invalid transitions between candidates."
+1579B,d517076fe7,WA,GE6.2,"Simulates moving the chosen element to the end by a one-step left rotation, but outputs offset i-id instead, so the printed operations do not match the intended transformations."
+1579B,f620ea70be,CE,GE5.1,Compilation fails: error: 'rotate' was not declared in this scope
+1579C,511f667ff9,WA,GE1.2,"Checks whether every `*` cell can itself be the center of a tick of size at least k, but the task asks whether the `*` cells can be covered by some union of ticks."
+1579C,9d684335ff,WA,GE1.2,"Validates each star as a standalone full tick, instead of reconstructing whether the whole picture is obtainable as a union of ticks of size at least k."
+1579C,260cd223d2,WA,GE1.2,"Removes stars only when they match ticks rooted at that same cell, which solves a different coverage condition than the statement's union-of-ticks construction."
+1579D,e279075216,RE,"AE1.1,GE2.1","Uses the wrong maximum-talk bound `sum/2` even when one person dominates, then pops two participants from the heap after fewer than two nonzero people remain."
+1579D,a0b883b75d,WA,AE2.1,"Commits to a hub-style greedy schedule centered on the maximum-sociability person, but that local pairing rule does not always realize a maximum valid set of talks."
+1579D,06fbac3be3,RE,"AE1.1,GE2.1","Assumes the answer is always `sum/2`, then blindly pops two heap elements for each talk, which crashes when the true optimum is limited by a dominant participant."
+1579D,4554bff278,WA,AE2.1,Always pairing the two currently largest remaining counts is an unjustified greedy rule for this construction and can miss a valid maximum schedule.
+1579D,b9294998c2,RE,"AE1.1,GE2.1","Computes `k = total/2` without the `min(total/2, total-max)` bound and then pops from the priority queue even after only one active person remains."
+1579E2,81f888236b,WA,GE1.1,The code never implements the deque-inversion computation and instead leaves an editorial-style DP sketch with no coherent completed algorithm.
+1579E2,d0fa44599e,WA,GE1.1,"Replaces the real front/back choice process with an unsupported pivot-threshold model over values, which does not characterize minimum inversions in the deque."
+1579E2,1245229aa2,WA,GE1.1,"Reduces the task to matching the longest sorted prefix or suffix, which is unrelated to minimizing inversions under front/back deque insertions."
+1579E2,060f6f89f3,WA,GE2.2,"After `unique`, it still binary-searches the full length-`n` array instead of the unique prefix, so coordinate compression queries use an invalid search range."
+1579E2,fb39646df1,CE,GE5.1,Compilation fails: fatal error: myheader.h: No such file or directory
+1579E2,23c45deff3,CE,GE5.1,"Compilation fails: error: no matching function for call to 'min(int&, std::vector<int>::size_type)'"
+1580B,7c1b30f48e,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1580B,4f30c9000d,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1580B,ef6284408d,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1580C,1e5f89d3cd,WA,GE2.2,"Shifts maintenance intervals by the wrong inclusive/exclusive day boundaries, so trains start or stop contributing one day off."
+1580D,f6c0369657,WA,AE5.2,The DP/combination transition on the tree decomposition is incorrect.
+1580D,9132143ca9,WA,AE5.2,The DP/combination transition on the tree decomposition is incorrect.
+1580D,9356217b14,WA,AE5.2,The DP/combination transition on the tree decomposition is incorrect.
+1580F,9e1a91a612,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1580F,0b3c3eb7bf,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1580F,5e73302fae,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1580F,473c8e6f27,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1580F,085140ca93,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1581A,8d39163261,WA,AE1.1,Uses the wrong counting formula for permutations with at least n ascents.
+1581A,75570b37a9,WA,AE1.1,Uses the wrong counting formula for permutations with at least n ascents.
+1581A,bca98527c2,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1581A,40bb20fcc9,WA,AE1.1,Uses the wrong counting formula for permutations with at least n ascents.
+1581A,d15a7a1d6f,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1581A,30b55918ac,WA,AE1.1,Uses the wrong counting formula for permutations with at least n ascents.
+1581A,8ac7b807bc,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1581A,f25bca858a,CE,GE5.1,Compilation fails: error: 'n' was not declared in this scope
+1581B,7935f15ef4,WA,AE1.1,"Uses the wrong graph-feasibility formula, including an incorrect edge upper bound and an incorrect condition for complete graphs."
+1581B,c422e07888,WA,AE1.1,"Treats every connected simple graph as valid once k>=3, ignoring the actual diameter cases for complete and non-complete graphs."
+1582D,548721218b,WA,AE1.1,The construction of coefficients b is mathematically invalid and does not guarantee dot product zero.
+1582D,9d28572bd2,WA,AE1.1,The construction of coefficients b is mathematically invalid and does not guarantee dot product zero.
+1582D,f93adbcb77,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1582D,768962a9b5,WA,AE1.1,The construction of coefficients b is mathematically invalid and does not guarantee dot product zero.
+1582D,f1e88c8b14,WA,AE1.1,The construction of coefficients b is mathematically invalid and does not guarantee dot product zero.
+1582D,ea67aeecf9,WA,AE1.1,The construction of coefficients b is mathematically invalid and does not guarantee dot product zero.
+1582D,d7e2d962fa,WA,AE1.1,The construction of coefficients b is mathematically invalid and does not guarantee dot product zero.
+1582D,2f7502ffbf,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1582E,4dc7657b4e,WA,AE5.1,"Uses a greedy earliest-placement feasibility model for lengths k..1, but feasibility depends on richer DP state over suffix positions and previous segment sums."
+1582E,965dd6e662,WA,GE1.1,"After an unsupported assumption that feasible segments can be treated as consecutive blocks, the check is left effectively unimplemented and returns false."
+1582F1,925e6fc7cd,WA,GE1.2,"Treats the problem as subset XOR over distinct present values, ignoring that an increasing subsequence must respect the original index order as well as value order."
+1582F1,bd41d2d42b,WA,GE1.2,"Assumes any chosen set of distinct values can always be realized as an increasing subsequence, so it collapses the task to subset XOR over present values only."
+1582F1,ee22969e89,CE,GE5.1,Compilation fails: error: conversion from 'vector<bool>' to non-scalar type 'vector<int>' requested
+1582F1,6cd3c4f2ef,WA,GE1.2,"Computes XORs of arbitrary subsequences instead of increasing subsequences, completely dropping the required monotone-value and index-order constraint."
+1582F2,c8936200f8,WA,AE5.2,The DP transition over reachable states is incorrect.
+1582F2,84d34c7e92,WA,AE5.2,The DP transition over reachable states is incorrect.
+1582F2,82827c3041,WA,AE5.2,The DP transition over reachable states is incorrect.
+1582G,690adef3e4,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1582G,839bb1b073,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1582G,adcf9600e5,CE,GE5.1,Compilation fails: error: reference to 'size' is ambiguous
+1582G,1cd5440a17,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1586A,e64071aab2,WA,AE1.1,"The subset-selection rule about prime/composite sums is mathematically wrong, so it can miss the maximum valid subset."
+1586A,f84f7d74f5,WA,AE1.1,"The subset-selection rule about prime/composite sums is mathematically wrong, so it can miss the maximum valid subset."
+1586A,b48ca44f52,WA,AE1.1,"The subset-selection rule about prime/composite sums is mathematically wrong, so it can miss the maximum valid subset."
+1586A,ccb40d97b5,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1586A,192bd00e0e,WA,AE1.1,"The subset-selection rule about prime/composite sums is mathematically wrong, so it can miss the maximum valid subset."
+1586A,83f9b686a4,WA,AE1.1,"The subset-selection rule about prime/composite sums is mathematically wrong, so it can miss the maximum valid subset."
+1586C,d2b1245745,CE,GE5.1,Compilation fails: error: expected primary-expression before 'long'
+1586C,d1d8da1604,WA,GE1.2,"Misreads determinability as a DP over exitable cells and propagates the wrong state, instead of using the actual bad-boundary criterion between adjacent columns."
+1586C,29dff54dd8,WA,GE1.2,"Uses a crossed-2x2 pattern in the exitable grid as the deciding condition, but the real query condition is the presence of a bad `X`/`X` adjacent-column boundary."
+1586E,cdb9807d57,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1586E,d002aac79f,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1586E,913641ad31,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1586E,76944aa45b,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1586E,9813537b0d,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1586F,3866caf8d8,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1586F,69c0d077bb,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1586F,818d57f68b,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1586F,e53c24c62a,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1586G,abaf766a62,WA,AE5.1,"The DP state/model for completed tasks under time-travel resets is incorrect, so it does not represent the true process."
+1586G,7597eb1554,WA,AE5.1,"Uses a subset-count DP that does not capture the reset behavior caused by travelling back to a_k, so the state definition is wrong."
+1586H,d7af7bdc99,RE,GE3.1,"The DFS loop pops the stack twice per iteration, corrupting traversal state and leading to a runtime crash."
+1586H,32e6fb2851,CE,GE5.1,Compilation fails: error: 'INT_MAX' was not declared in this scope
+1586I,fff0a4b984,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1586I,a024c75ff0,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1586I,c32231608e,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1591A,4b8da456a7,WA,GE2.1,"Treats the first unwatered day as death by initializing prev=0, so the day-1 edge case is handled incorrectly."
+1591B,d83968774a,WA,GE1.1,Uses an unrelated consecutive-value DP and does not model the repeated stable partitions of the eversion process.
+1591B,226d4c7c43,WA,GE1.1,"Simulates the process with an incorrect rule based on jumping between larger elements, so the number of eversions is miscomputed."
+1591E,fa5d380a3a,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1591E,ef41a321db,WA,GE1.2,The overall strategy does not match the problem requirements.
+1591E,6c3bc44962,CE,GE5.1,Compilation fails: error: 'sync' is not a member of 'std::ios' {aka 'std::basic_ios<char>'}
+1591E,a4e5acc6ca,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1591E,b6b55c487e,WA,GE1.2,The overall strategy does not match the problem requirements.
+1591E,9b9d68f842,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1591F,3ac824b5f3,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1591F,04e2d0ca0a,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1591F,fe314f7654,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1594A,347933b789,WA,AE1.1,"Uses an incorrect arithmetic-series relation to derive l and r, so the produced interval sum is not generally n."
+1594A,f550873c91,WA,GE4.1,"Stores n and derived endpoints in int even though values can reach 1e18, causing overflow."
+1594C,3b6e063b84,WA,GE1.2,"Treats the task as a general divisibility set-cover problem and chooses many indices, missing the simple 0/1/2-operation construction."
+1594C,3ea8244491,WA,GE6.2,"Outputs an operation count of 1 but then prints many numbers, so the output format is inconsistent with the specification."
+1594C,67a99eeb63,WA,GE2.1,"Only checks whether the last position already equals c for the one-operation case, missing other valid indices x>n/2."
+1594E1,75d34d79c2,WA,AE1.1,Uses the wrong recurrence for the number of colorings; it does not account for the 6 root choices and 4 choices per edge.
+1594E1,93fb6a6478,WA,AE1.1,Applies an incorrect closed-form expression unrelated to the tree-coloring count.
+1594E2,7805da3e79,CE,GE5.1,"Compilation fails: error: no match for 'operator[]' (operand types are 'std::map<std::__cxx11::basic_string<char>, int>' and 'std::map<std::__cxx11::basic_string<char>, int>::mapped_type' {aka 'int'})"
+1594E2,25efc5e492,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1594E2,d82f916b1b,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1594E2,f61a0a243b,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1594F,17f5d29522,WA,AE1.1,"Uses the wrong inequality on `s`, `n`, and `k` for when every positive distribution must contain a segment summing to `k`."
+1594F,58ffca13e8,WA,AE1.1,"Reduces the criterion to `n*k >= s`, which is not the correct mathematical condition for ideality of all positive distributions."
+1594F,ed2bc81f45,WA,AE1.1,"Computes a `lucky_segments` quantity from average load and remainder, but that formula is not the actual necessary-and-sufficient condition for this segment-sum property."
+1594F,ea690cebbe,WA,AE1.1,"Uses the ad hoc test `(s/n) % k != 0` together with special cases, which is not the correct number-theoretic condition for ideal farms."
+1594F,828ac5a03f,WA,AE1.1,"Bases the answer on `(s / n) % k` and `(s / n) / k`, but those derived formulas do not characterize when every distribution contains a segment of sum `k`."
+1598A,add04d3fc3,WA,GE1.2,Uses an ad hoc diagonal-trap pattern check instead of actually reasoning about reachability in the 2×n grid.
+1598C,b835411fb7,WA,AE1.1,"Derives the condition from prefix balance instead of the required pair sum a[i]+a[j]=2*sum/n, so it counts the wrong objects."
+1598C,bafeb85c8c,WA,GE6.2,"Prints debug information for each frequency before the final answer, violating the required output format."
+1598E,7ea6e802f5,WA,GE1.2,Builds unrelated local hashes instead of maintaining the required global combinatorial count after each toggle.
+1598F,3619b66a16,WA,AE5.2,The subset/ordering DP transition is incorrect.
+1598F,9492b4d8f8,WA,AE5.2,The subset/ordering DP transition is incorrect.
+1598F,97f48e9ab1,WA,AE5.2,The subset/ordering DP transition is incorrect.
+1598G,e3dcd89307,CE,GE5.1,Compilation fails: error: ISO C++ forbids declaration of 'mul' with no type [-fpermissive]
+1598G,999e3d3658,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1598G,271c622d58,CE,GE5.1,Compilation fails: error: 'pow' is not a member of 'std'
+1598G,34c18e9d2f,CE,GE5.1,Compilation fails: error: ISO C++ forbids declaration of 'mul' with no type [-fpermissive]
+1598G,06c52b845c,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1598G,60677f1c15,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1598G,debe278b41,WA,GE6.2,Produces extra debugging or non-answer output.
+1599A,3c9faa8893,WA,AE2.1,"Assigns weights greedily by current extremes, which does not guarantee a globally feasible balance sequence."
+1599A,a106c0ca58,WA,AE2.1,"Assigns weights greedily by current extremes, which does not guarantee a globally feasible balance sequence."
+1599A,7946a04afc,WA,AE2.1,"Assigns weights greedily by current extremes, which does not guarantee a globally feasible balance sequence."
+1599B,588cf4fcd7,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1599B,ec1ef885d4,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1599B,1aa267679e,WA,UNCOVERED,"The program is incorrect, but the exact mechanism is unclear from inspection."
+1599B,ce75931599,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1599B,253ffde569,WA,UNCOVERED,"The program is incorrect, but the exact mechanism is unclear from inspection."
+1599B,48e322d93c,WA,UNCOVERED,"The program is incorrect, but the exact mechanism is unclear from inspection."
+1599C,26bf0a3535,WA,AE1.1,Uses an incorrect probability/combinatorial formula.
+1599C,c4e83d95b7,WA,AE1.1,Uses an incorrect probability/combinatorial formula.
+1599C,6d4b98aeab,WA,AE1.1,Uses an incorrect probability/combinatorial formula.
+1599F,a05be4773d,RE,GE1.2,Implements a completely different gcd-based range-query criterion and does not solve the stated problem.
+1599G,5bef2cc5d1,WA,AE1.1,The geometric/mathematical derivation used by the solution is wrong.
+1599G,ee4722e55d,WA,AE1.1,The geometric/mathematical derivation used by the solution is wrong.
+1599G,471acae3ae,WA,AE1.1,The geometric/mathematical derivation used by the solution is wrong.
+1599G,170486a440,WA,AE1.1,The geometric/mathematical derivation used by the solution is wrong.
+1599G,688c56c168,WA,AE1.1,The geometric/mathematical derivation used by the solution is wrong.
+1599G,c21c22beb4,WA,AE1.1,The geometric/mathematical derivation used by the solution is wrong.
+1599I,dd7f5dfebe,WA,GE1.1,The chosen algorithmic strategy is incorrect for the task.
+1599I,bf7655afe4,WA,GE1.1,The chosen algorithmic strategy is incorrect for the task.
+1599I,d210f25136,WA,GE1.1,The chosen algorithmic strategy is incorrect for the task.
+1600E,da004a617d,WA,AE2.1,Uses the wrong local greedy heuristic instead of the true winning-state game analysis.
+1600E,cc35b37a0c,WA,AE2.1,Uses the wrong local greedy heuristic instead of the true winning-state game analysis.
+1600E,2607e29f65,WA,AE2.1,Uses the wrong local greedy heuristic instead of the true winning-state game analysis.
+1600E,a1bce57a25,WA,AE2.1,Uses the wrong local greedy heuristic instead of the true winning-state game analysis.
+1600F,8d766db2ab,WA,GE1.1,Searches for a very specific local pattern around a high-degree vertex instead of solving the 5-clique / 5-independent-set existence problem.
+1600F,1eddce1794,CE,GE5.1,Compilation fails: error: 'compeg' was not declared in this scope; did you mean 'compg'?
+1600J,bc29f74ca9,RE,GE2.1,"BFS moves to row-1/col-1 and row+1/col+1 without boundary checks, causing out-of-bounds access on border cells."
+1601B,f3d8a3a4e2,CE,GE5.1,"Compilation fails: error: return-statement with a value, in function returning 'void' [-fpermissive]"
+1601B,2900da8b82,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1601B,9b37c85812,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1601D,28f7763843,CE,GE5.1,Compilation fails: error: 'deque' does not name a type
+1601D,4c0782c357,WA,AE2.1,"Greedily processes climbers by increasing skill, but that local order is not globally optimal because neatness updates change future feasibility."
+1601E,e99a4694b2,WA,AE5.2,The DP transition/update rule is incorrect.
+1601E,4f703b78b0,WA,AE5.2,The DP transition/update rule is incorrect.
+1604D,62e05b01a7,WA,AE1.1,Uses an incorrect mathematical construction for n.
+1604D,4e3ca32bd5,WA,AE1.1,Uses an incorrect mathematical construction for n.
+1604D,f556ccb15d,WA,AE1.1,Uses an incorrect mathematical construction for n.
+1604D,f810128d38,WA,AE1.1,Uses an incorrect mathematical construction for n.
+1606A,3718f0141f,WA,GE1.2,The overall strategy does not match the problem requirements.
+1606A,9edcbdec15,CE,GE5.1,Compilation fails: error: no matching function for call to 'std::__cxx11::basic_string<char>::basic_string(int&)'
+1606A,4b4fd764c7,WA,GE1.2,It tries to repair individual ab/ba substrings instead of using the real invariant for this problem.
+1606A,d50ee9546e,WA,GE1.2,"Solves the task through a heavier transition-balance DP instead of the actual invariant, so it targets the wrong condition."
+1606B,e37d543a27,WA,AE1.1,"Models the process with the wrong arithmetic formula, using triangular-number style calculations unrelated to the doubling-plus-linear copying dynamics."
+1606B,f8b54f4860,WA,GE1.1,"Assumes copies can be spread at rate k immediately and ignores the initial doubling phase, so cases like k>=n are still computed incorrectly."
+1606E,1f3a534ee1,WA,GE1.1,"Counts compositions of a total sum with a knapsack-style DP, which does not model simultaneous arena eliminations or the no-unique-winner condition at all."
+1606E,a64f80a077,WA,GE1.1,Builds an unrelated combinatorial DP over `k` heroes and health threshold `w`; it is not the arena process and its recurrence does not encode winnerless fights.
+1606E,3ac93220b4,WA,GE1.1,"Uses a Catalan-like partition recurrence on `(i,j)` states, which is a different counting problem rather than the stated simultaneous-damage elimination process."
+1606E,1121570545,WA,GE1.1,The solution never arrives at a valid model of the elimination process and devolves into speculative comments plus an unrelated counting formula.
+1606E,50c4024672,WA,GE1.1,"The recurrence combines left/right subproblems as if the arena outcome decomposed recursively, but the fight dynamics do not have that structure."
+1606E,7bddea141e,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1606E,305060fa01,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1606E,433b05cd0f,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1606E,c9861d8e3e,WA,GE1.1,"This 3D DP only tracks the current maximum and a uniqueness flag, which is not enough to capture the multi-round simultaneous-elimination process."
+1607A,30bf1e6573,WA,GE2.2,"Builds and queries the keyboard-position array with shifted indices based on character codes, so it reads the wrong positions."
+1607A,c5018204d6,WA,GE1.2,"Stores each key’s ASCII value instead of its position, so movement is computed from letter codes rather than keyboard indices."
+1607A,91d4a46a66,CE,GE5.1,Contains compile-time language/syntax errors.
+1607A,63037d2f80,WA,GE6.1,"Ignores the input test-count and processes only one test case, so it reads the stream with the wrong format."
+1607A,c93380ed95,WA,GE1.2,Computes distance from the letters’ character codes and ignores the provided keyboard layout entirely.
+1607B,9924dbe7a1,WA,GE1.1,"Uses an incorrect round-based model of the jumps instead of the actual 4-step parity pattern, so the computed displacement is wrong."
+1607B,33bbc465ef,WA,GE6.2,"Prints extra debug values before the answer, violating the required output format."
+1607B,0de65a5c3e,WA,AE1.1,Applies the periodic formula incorrectly and even replaces some answers by constants like 0 or 1 instead of offsetting x.
+1607B,62a46f7e5f,CE,GE5.1,References undeclared helpers/macros and does not compile.
+1607H,ada214e043,WA,AE2.1,"Greedily groups dishes by local overlap, which does not minimize the final variety."
+1607H,88e1b410d6,WA,AE2.1,"Greedily groups dishes by local overlap, which does not minimize the final variety."
+1607H,9c0f0a3485,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1607H,0afacdc3fa,WA,AE2.1,"Greedily groups dishes by local overlap, which does not minimize the final variety."
+1608A,41979a8c56,WA,"GE1.2,GE4.1","Builds powers of 10 starting from 1, which immediately violates the required non-divisibility relation, and the repeated `*10` growth can overflow `int`."
+1608A,baca4e2bd0,WA,GE1.2,"Simply outputs `1..n`, ignoring that each next number must not be divisible by the previous constructed number."
+1608A,96f5cb253b,WA,GE1.2,"Outputs consecutive integers, so the second value is divisible by the first and the construction does not satisfy the required relation."
+1608A,f1dbe3f7a9,WA,"GE1.2,GE4.1",The repunit construction ignores the actual non-divisibility requirement and also exceeds the allowed numeric range as the numbers grow.
+1608A,52d88b0b24,WA,GE1.2,"Starts the construction with `1`, so every later number is divisible by the first and the claimed prime-based idea still violates the requirement."
+1608B,df8147c34a,WA,AE2.1,The zigzag construction uses incorrect local arrangement rules for peak/valley counts.
+1608B,6f96a5d295,WA,AE2.1,The zigzag construction uses incorrect local arrangement rules for peak/valley counts.
+1608B,53799455b3,WA,AE2.1,The zigzag construction uses incorrect local arrangement rules for peak/valley counts.
+1608B,878004eb4c,WA,AE2.1,The zigzag construction uses incorrect local arrangement rules for peak/valley counts.
+1608C,80b84b608f,WA,AE2.1,"Uses an incorrect greedy winner criterion based on suffix maxima of a and b, which is not sufficient for the elimination process."
+1608D,46878048d4,WA,AE1.1,The combinatorial counting formula is incorrect.
+1608D,679075ff22,CE,GE5.1,Compilation fails: error: invalid operands of types '__gnu_cxx::__promote<double>::__type' {aka 'double'} and 'const int' to binary 'operator%'
+1608D,d88b4c7386,CE,GE5.1,Compilation fails: error: '__builtin_ctilog2' was not declared in this scope; did you mean '__builtin_log2'?
+1608D,1fa9c85023,WA,AE1.1,The combinatorial counting formula is incorrect.
+1608E,19c526d116,WA,GE1.1,"Assumes the optimum can always be found by axis-separating the three colors with guillotine-style partitions, which is a stronger algorithmic restriction than the problem allows."
+1608E,3900356c62,WA,GE1.1,"Builds the solution around a guillotine-partition feasibility check (`x`-first or `y`-first splits), but three disjoint rectangles are not characterized by that restricted structure."
+1608E,76d2e58902,WA,GE1.1,"Restricts the search to recursive axis separations of the three rectangles, so it solves a narrower partition problem than the actual maximum-keep geometry task."
+1608F,57266421e6,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1608F,618eacc3b9,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1608F,3e5fea99bb,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1608F,851015fd19,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1613B,2914ccf03e,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1613B,17c1d4fac1,WA,AE2.1,"Chooses pairs by an incorrect greedy rule, so it does not guarantee enough valid distinct pairs."
+1613B,0e4d1007d2,WA,AE2.1,"Chooses pairs by an incorrect greedy rule, so it does not guarantee enough valid distinct pairs."
+1613B,155df4d9b4,WA,AE2.1,"Chooses pairs by an incorrect greedy rule, so it does not guarantee enough valid distinct pairs."
+1613B,88aca551d7,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1613B,238b015230,WA,AE2.1,"Chooses pairs by an incorrect greedy rule, so it does not guarantee enough valid distinct pairs."
+1613C,509b712ab7,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1613C,b3bba669d7,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1613C,67cc372aae,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1613C,27c866a285,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1613C,67ed133ada,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1613C,cc3c5cfa58,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1613C,396d305ed5,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1613C,07507c362d,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1613D,d2418aa992,CE,GE5.1,"Compilation fails: error: no matching function for call to 'max(long long int&, __gnu_cxx::__alloc_traits<std::allocator<int>, int>::value_type)'"
+1613D,a968750161,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1613D,1b1f65b352,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1613E,742d6d58cc,WA,GE3.1,"Uses the wrong branching condition for expanding cells in the labyrinth BFS, so it fills cells that should remain unchanged."
+1613F,e2f6d8433a,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1613F,daa007a60a,CE,GE5.1,Compilation fails: error: 'binpow' was not declared in this scope
+1615E,fadf8a9eb0,WA,AE1.1,Uses an incorrect mathematical scoring/optimization formula.
+1615E,93c29613eb,WA,AE1.1,Uses an incorrect mathematical scoring/optimization formula.
+1615E,8d7a916121,WA,AE1.1,Uses an incorrect mathematical scoring/optimization formula.
+1615E,df0591710b,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1615F,5ad6760d66,WA,AE1.1,Uses an incorrect combinatorial/DP-derived formula.
+1615F,79b998f617,WA,AE1.1,Uses an incorrect combinatorial/DP-derived formula.
+1615F,bcda3f7f77,WA,AE1.1,Uses an incorrect combinatorial/DP-derived formula.
+1615H,e349b17b61,WA,GE1.1,"Greedily fixes vertices to successive sorted score levels with repeated min-cuts, but the task is a global minimum-L1 isotonic regression on a DAG, not this peeling construction."
+1615H,c25274b6bf,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1615H,a8ec806d94,WA,GE1.1,"Collapses SCCs to medians and then hand-waves the rest as isotonic regression, which is not a valid algorithm for the full minimum-adjustment problem on the constraint DAG."
+1615H,ec29bad7fe,WA,GE4.1,"The divide-and-conquer min-cut code stores final scores in `int f[]`, but the statement explicitly allows optimal `b_i` values up to `1e15`, so truncation can corrupt the answer."
+1617C,19936b4bb8,WA,AE1.1,Uses the wrong mathematical/greedy condition for when a value can be reduced to a missing permutation element.
+1617C,2a7875578e,WA,AE1.1,Uses the wrong mathematical/greedy condition for when a value can be reduced to a missing permutation element.
+1617C,a287988df1,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1617C,f5d0c91239,WA,AE1.1,Uses the wrong mathematical/greedy condition for when a value can be reduced to a missing permutation element.
+1618B,24e2b26d3d,WA,GE1.2,The code misinterprets an important requirement or condition of the problem.
+1618B,d60ceb8401,WA,GE1.2,The code misinterprets an important requirement or condition of the problem.
+1618B,bd620ce8c4,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1618C,0109091f18,WA,AE1.1,"Computes the candidate divisor/GCD incorrectly, so the alternating divisibility test fails."
+1618C,409665ff1a,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1618C,cc102c16d8,WA,GE6.2,Produces extra debugging or non-answer output.
+1618C,50fb18a88c,WA,AE1.1,"Computes the candidate divisor/GCD incorrectly, so the alternating divisibility test fails."
+1618C,9277160393,WA,AE1.1,"Computes the candidate divisor/GCD incorrectly, so the alternating divisibility test fails."
+1618D,08025b38c4,WA,AE1.1,The score formula / pairing logic is mathematically incorrect for minimizing the total.
+1618D,bbee1d8d12,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1618D,3d5ce53a07,WA,AE1.1,The score formula / pairing logic is mathematically incorrect for minimizing the total.
+1618D,3fb928cf30,WA,AE1.1,The score formula / pairing logic is mathematically incorrect for minimizing the total.
+1618D,ce028ae4a5,WA,AE1.1,The score formula / pairing logic is mathematically incorrect for minimizing the total.
+1618D,4ec9cc542f,WA,AE1.1,The score formula / pairing logic is mathematically incorrect for minimizing the total.
+1618F,0edf69c33e,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1618F,27752d1a12,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1618F,acceef8c79,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1618F,f01e10f993,CE,GE5.1,Compilation fails: error: expected primary-expression before 'long'
+1618G,24b1a3efc0,WA,AE2.1,Uses a greedy exchange/matching rule that is not globally optimal.
+1618G,4a74e2d3ab,WA,AE2.1,Uses a greedy exchange/matching rule that is not globally optimal.
+1618G,5a0706e2b2,WA,AE2.1,Uses a greedy exchange/matching rule that is not globally optimal.
+1618G,0239601b7b,WA,AE2.1,Uses a greedy exchange/matching rule that is not globally optimal.
+1619A,af48f09086,WA,GE1.2,"Checks whether the string is periodic with any divisor length, not whether it is exactly two identical halves."
+1619A,4438c1279f,WA,GE6.2,"Prints extra debug substrings and even outputs ""N0"" instead of ""NO"", violating the required output format."
+1619B,d0f0fdc012,WA,GE4.2,"Computes floor roots through floating-point sqrt/cbrt and implicit truncation, which can miscount perfect powers on boundaries."
+1619B,0a213dce08,WA,GE2.1,"Handles the contribution of 1 incorrectly, so small cases like n=2 are undercounted."
+1619C,2e3886bd20,CE,GE5.1,Contains compile-time errors.
+1619C,21fbed1799,WA,GE1.2,Treats the task like ordinary addition/carry instead of Tanya's digit-block sum process.
+1619C,0b3c85b4bf,WA,GE1.2,The code misinterprets an important requirement or condition of the problem.
+1619C,a59b1c529a,CE,GE5.1,Contains compile-time errors.
+1619F,8096087ced,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1619F,569b6683fa,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1619F,609c26c913,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1619H,220b3f7127,WA,GE6.2,The type-2 query handler is left unfinished and produces no answer for queries that require output.
+1620A,5e1e3f47b6,WA,GE1.2,"Uses only the first/last characters and the n=2 case, ignoring the real consistency condition on the whole cycle."
+1620A,a1d2211033,WA,GE1.2,"Treats the presence of any E as impossible, which misunderstands the consistency condition completely."
+1620A,2816d0acd0,WA,GE1.2,"Decides feasibility only from whether the first and last characters match, ignoring the rest of the cycle constraints."
+1620B,fab1ff5cc1,WA,AE1.1,Uses the wrong triangle-area formula; the optimum depends on side span times the opposite side length.
+1620B,a82a4e183c,WA,AE1.1,Uses the wrong triangle-area formula; the optimum depends on side span times the opposite side length.
+1620B,9184014705,WA,AE1.1,Uses the wrong triangle-area formula; the optimum depends on side span times the opposite side length.
+1620B,fd8d9435a4,WA,AE1.1,Uses the wrong triangle-area formula; the optimum depends on side span times the opposite side length.
+1620B,cb89a8c338,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1620B,9895527757,WA,AE1.1,Uses the wrong triangle-area formula; the optimum depends on side span times the opposite side length.
+1620C,26475c1bd0,WA,AE1.1,"Decodes `x` by handling each `*` separately, but distinct BA-strings are determined by grouped `*` blocks with `(block_len*k+1)` choices and mixed-radix reconstruction."
+1620C,9a5170b5e5,TLE,GE1.3,The enumeration/reconstruction strategy is too slow and heavy for the limits.
+1620C,36bc59c4a3,WA,AE1.1,"Counts the suffix choices as `(k+1)^{remaining_stars}`, ignoring that consecutive `*` characters collapse into one block and therefore do not contribute independently."
+1620C,11ba9dbf19,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1620C,facf973233,WA,AE1.1,"Groups consecutive `*` blocks, but the mixed-radix decoding of `x` is off, so the chosen `b` counts for the blocks do not reconstruct the required lexicographic rank."
+1620C,621cb21fc3,WA,AE1.1,"Treats the suffix after the selected block as if every remaining `*` must expand to exactly `k` `b`s, which is not the correct mixed-radix reconstruction of the x-th BA-string."
+1620D,43b1e17104,WA,AE2.1,Optimizes per-price coin choices greedily instead of the shared multiset needed to pay every price.
+1620D,f4d65c36dd,WA,AE2.1,Optimizes per-price coin choices greedily instead of the shared multiset needed to pay every price.
+1620D,19075cbcd1,WA,AE2.1,Optimizes per-price coin choices greedily instead of the shared multiset needed to pay every price.
+1620D,8bc1cba5bf,WA,AE2.1,Optimizes per-price coin choices greedily instead of the shared multiset needed to pay every price.
+1620D,ed4134362f,WA,AE2.1,Optimizes per-price coin choices greedily instead of the shared multiset needed to pay every price.
+1620E,ae37eaa4cf,WA,GE6.1,"Reads type-1 and type-2 queries with the same three-field format and never stores the queries at all, so it misparses the input stream and prints an empty result."
+1620E,209aa6eae0,WA,GE1.2,"The reverse DSU merges values that happen to share the same future image, but a replace `x -> y` should affect only current occurrences of `x`, not all values with that final representative."
+1620E,9d19303964,WA,GE1.2,"When processing forward, it stores `find(x)` for a new append, incorrectly treating earlier replacements of `x` as if they also changed later freshly appended `x` values."
+1620E,c515b9fe13,WA,GE1.2,"Its lazy `to[]` mapping treats value replacement as a permanent rename of the label, so later appends of `x` are wrongly affected by earlier `x -> y` operations."
+1620E,7ba96fd8c0,WA,GE1.2,"Keeps only the last direct replacement for each value and applies it once at the end, ignoring transitive chains and the fact that replacements affect existing occurrences only."
+1620F,8dda62a80c,WA,AE5.2,The dynamic-programming transition logic is incorrect.
+1620F,5dfe26dda7,WA,AE5.2,The dynamic-programming transition logic is incorrect.
+1620F,706a7e9f40,WA,AE5.2,The dynamic-programming transition logic is incorrect.
+1620F,6239c3af0e,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1620G,f32edbf515,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1620G,798fa185b1,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1620G,4b170755d7,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1620G,bcae69e404,RE,GE2.1,Invalid boundary or state handling causes a runtime failure.
+1622A,c7a59278fc,WA,GE1.2,"Assumes any pair of equal sticks is enough, ignoring that the remaining stick must also be splittable to form the second pair."
+1622A,db0f3ff272,WA,GE2.1,"Misses the valid case where the two smaller sticks are equal and the largest stick is even, such as 3 3 4."
+1622A,4cec720a74,WA,GE2.1,"Its pairing check rejects the all-four-equal case after splitting, so cases like 2 2 4 are missed."
+1622A,191889443a,WA,GE1.2,Uses an unrelated triangle-style condition instead of the rectangle split conditions.
+1622A,de3fb67824,WA,GE2.1,Checks only whether one stick equals the sum of the other two and misses the equal-pair-plus-even-third case.
+1622A,6155954f6a,CE,GE5.1,Contains compile-time syntax errors.
+1622B,8f02ab65bc,WA,AE2.1,"Greedily reorders the original ratings within liked/disliked groups instead of assigning the low ranks to 0s and high ranks to 1s, so the ordering constraint can fail."
+1622B,9d45d6dde0,WA,AE2.1,Uses the wrong greedy construction: it places sorted groups contiguously and ignores the songs’ original positions when assigning new ranks.
+1622C,1e6a849a2b,WA,GE1.1,"Searches over a simplified target value with an incorrect optimization strategy, so it misses the true minimum-operation construction."
+1622D,1d5c42128c,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1622D,690fb0797d,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1622D,1c9bd8f5ac,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1622D,21fa4ea301,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1622D,fc3573b590,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1622F,4c89bfba9d,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1622F,eb0ad55520,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1622F,603ef62a02,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1622F,c04fc12a1f,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1623B,9361516fe3,WA,GE1.2,The code misinterprets an important requirement or condition of the problem.
+1623B,43cf35d0b6,RE,GE3.1,Traversal/control-state handling causes a runtime failure.
+1623B,eeb290f062,CE,GE5.1,"Compilation fails: error: no match for 'operator>>' (operand types are 'std::istream' {aka 'std::basic_istream<char>'} and 'std::pair<int, int>')"
+1623B,7a5ffd25b3,WA,GE1.2,The code misinterprets an important requirement or condition of the problem.
+1623B,d410a53014,WA,GE1.2,The code misinterprets an important requirement or condition of the problem.
+1623D,05d247e67d,CE,GE5.1,Compilation fails: error: '__gcd' is not a member of 'std'
+1623D,f0c087e959,TLE,GE1.3,The chosen approach is too expensive for the full constraints.
+1623D,8b80712f50,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1623D,3d0f66dcfa,WA,AE1.1,Uses an incorrect mathematical derivation or formula.
+1623E,635e30db60,WA,AE2.1,Uses an incorrect greedy choice rule.
+1623E,bac7e7e9bd,WA,AE2.1,Uses an incorrect greedy choice rule.
+1623E,54fd8fcab8,CE,GE5.1,Compilation fails: error: no match for 'operator==' (operand types are 'int' and 'std::string' {aka 'std::__cxx11::basic_string<char>'})
+1623E,64bdcb78ab,CE,GE5.1,Compilation fails: error: use of local variable with automatic storage from containing function

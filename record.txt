@@ -1,0 +1,5 @@
+논문 작성 시 고려 사항
+- Wei et al.은 DeepSeek-R1로 80문제를 풀게 했는데, 정답/오답 비율을 명확히 보고했습니다. 80문제 중 5개만 AC(정답), 나머지 75개가 실패였습니다(WA 63, TLE 5, CE 7). 즉 **pass rate가 6.25%**입니다. 우리도 gpt-3.5-turbo로 실행했을때, 3%로 비슷한 성능을 보임. 이는 우리의 문제가 아닌, AI가 문제와 public tests만으로 해결하는데 한계가 있음을 뜻함. 그나마 최신 추론능력이 있는 gpt-5.4-nano는 knowledge cutoff가 Aug 31, 2025인데도 불구하고 테스트 해보았으나 여전히 31.5%의 낮은 정답 비율을 보임.
+- 우리의 AI submission taxonomy 분포 결과에 대한 근거를 Wei et al.의 taxonomy 분포로 뒷받침 할것.
+- benchmark의 문제 통계 표 만들때, 1) 난이도별 분포, 2)LOC, 3)CodeContests raw data, 4)필터링 후 최종 data, 5)ai submissions의 모델+방법별 correct, incorrect 수
+- gpt-5.4-nano는 self-reflection 결과가 없는데?

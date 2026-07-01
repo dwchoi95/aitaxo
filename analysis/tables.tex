@@ -1,0 +1,200 @@
+% Auto-generated — RQ1 (with Cohen's h 95% CI), RQ2, judge tables
+
+\begin{table}[t]
+\centering
+\caption{Bug-family distribution by arm (zero-shot, \% of each arm's bugs). $h$ is Cohen's $h$ vs.\ human (positive: AI more frequent) with 95\% CI; $q$ is BH-FDR.}
+\label{tab:rq1-family}
+\small
+\begin{tabular}{llrrrr@{\,}lr}
+\toprule
+Fam & Name & Human & GPT-3.5 & G5.4-nano & \multicolumn{2}{c}{$h_{3.5}$ [95\% CI]} & $q_{3.5}$ \\
+\midrule
+GE1 & Design & 51.4 & 44.7 & 52.3 & -0.13 & [-0.18, -0.09] & 2.0e-07$^{*}$ \\
+GE2 & Boundary & 8.2 & 9.9 & 6.3 & +0.06 & [+0.01, +0.11] & 2.5e-02$^{*}$ \\
+GE3 & Condition & 0.0 & 0.0 & 0.0 & -0.02 & [-0.07, +0.03] & 6.2e-01 \\
+GE4 & Data Type & 1.0 & 0.0 & 0.1 & -0.16 & [-0.21, -0.11] & 2.4e-05$^{*}$ \\
+GE5 & Syntax & 2.6 & 6.1 & 5.1 & +0.18 & [+0.13, +0.23] & 4.0e-15$^{*}$ \\
+GE6 & I/O & 1.2 & 0.0 & 0.0 & -0.18 & [-0.22, -0.13] & 4.8e-06$^{*}$ \\
+AE1 & Math & 19.4 & 19.9 & 17.4 & +0.01 & [-0.03, +0.06] & 6.2e-01 \\
+AE2 & Greedy & 7.7 & 9.2 & 10.1 & +0.05 & [+0.00, +0.10] & 3.5e-02$^{*}$ \\
+AE5 & DP & 8.5 & 10.1 & 8.7 & +0.06 & [+0.01, +0.10] & 2.5e-02$^{*}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Adjusted AI-vs-human odds ratios per bug family. GEE logistic, exchangeable working correlation, clustered by problem; adjusted for difficulty bin and primary algorithm tag. OR$>$1: more common in AI.}
+\label{tab:rq2-gee}
+\small
+\begin{tabular}{llrrl}
+\toprule
+Fam & Name & OR & 95\% CI & $p$ \\
+\midrule
+GE1 & Design & 0.86 & [0.78, 0.95] & 2.3e-03$^{*}$ \\
+GE2 & Boundary & 1.05 & [0.81, 1.36] & 7.1e-01 \\
+GE4 & Data Type & 0.00 & [0.00, 0.00] & 0.0e+00$^{*}$ \\
+GE5 & Syntax & 2.05 & [1.44, 2.92] & 7.4e-05$^{*}$ \\
+GE6 & I/O & 0.02 & [0.00, 0.13] & 7.5e-05$^{*}$ \\
+AE1 & Math & 1.07 & [0.78, 1.47] & 6.8e-01 \\
+AE2 & Greedy & 1.08 & [0.97, 1.21] & 1.7e-01 \\
+AE5 & DP & 1.04 & [0.78, 1.39] & 7.9e-01 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{LLM-judge validation against a two-annotator human gold set (375 items, 125/arm). Inter-annotator $\kappa$, judge micro-$F_1$ vs.\ consensus labels, and per-arm primary-family accuracy.}
+\label{tab:judge}
+\small
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+Gold items & 375 \\
+Inter-annotator $\kappa$ (primary family) & 0.797 \\
+Inter-annotator $\kappa$ (primary leaf) & 0.764 \\
+Inter-annotator exact set match & 0.792 \\
+\midrule
+Judge family $F_1$ (vs consensus) & 0.791 \\
+Judge leaf $F_1$ (vs consensus) & 0.756 \\
+Judge family acc.\ (agreement subset) & 0.863 \\
+Judge leaf acc.\ (agreement subset) & 0.847 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===== paper-expansion tables (P1,P5,P2,P3) =====
+
+% --- P1 by-tag ---
+\begin{table*}[t]
+\centering
+\caption{Bug-family rates by Codeforces problem tag (multi-membership; tags on $\geq$8 problems). For each tag and family we report Human / GPT-3.5 \% and Cohen's $h$ (GPT-3.5$-$Human).}
+\label{tab:by-tag}
+\small
+\begin{tabular}{lr ccc ccc ccc}
+\toprule
+& & \multicolumn{3}{c}{Design (GE1)} & \multicolumn{3}{c}{Syntax (GE5)} & \multicolumn{3}{c}{Math (AE1)} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}\cmidrule(lr){9-11}
+Tag & \#prob & Hum & 3.5 & $h$ & Hum & 3.5 & $h$ & Hum & 3.5 & $h$ \\
+\midrule
+math & 47 & 48.5 & 41.1 & -0.15 & 2.4 & 5.0 & +0.14 & 38.1 & 42.9 & +0.10 \\
+greedy & 36 & 44.4 & 32.1 & -0.25 & 2.1 & 4.1 & +0.12 & 17.2 & 17.1 & -0.00 \\
+dp & 28 & 49.6 & 35.8 & -0.28 & 2.2 & 4.8 & +0.15 & 7.9 & 14.2 & +0.20 \\
+data structures & 27 & 42.5 & 33.5 & -0.19 & 3.7 & 6.6 & +0.13 & 7.3 & 11.3 & +0.14 \\
+implementation & 26 & 78.7 & 67.0 & -0.26 & 2.3 & 7.6 & +0.26 & 5.1 & 10.1 & +0.19 \\
+brute force & 19 & 52.8 & 47.6 & -0.11 & 1.9 & 7.0 & +0.26 & 13.6 & 10.5 & -0.10 \\
+constructive algorithms & 19 & 55.4 & 55.8 & +0.01 & 1.6 & 4.5 & +0.17 & 21.0 & 17.4 & -0.09 \\
+combinatorics & 15 & 60.0 & 55.0 & -0.10 & 1.9 & 6.3 & +0.23 & 34.5 & 35.3 & +0.02 \\
+sortings & 14 & 41.7 & 21.2 & -0.45 & 2.6 & 11.9 & +0.38 & 21.7 & 20.1 & -0.04 \\
+dfs and similar & 13 & 58.0 & 52.7 & -0.11 & 2.6 & 7.0 & +0.21 & 6.5 & 7.4 & +0.03 \\
+graphs & 11 & 46.6 & 49.1 & +0.05 & 1.8 & 4.5 & +0.16 & 27.0 & 22.7 & -0.10 \\
+two pointers & 11 & 49.9 & 36.3 & -0.28 & 2.1 & 2.4 & +0.02 & 1.2 & 9.0 & +0.39 \\
+binary search & 10 & 44.3 & 37.0 & -0.15 & 4.4 & 8.0 & +0.15 & 13.3 & 10.0 & -0.10 \\
+trees & 10 & 42.6 & 29.0 & -0.28 & 2.6 & 13.5 & +0.43 & 13.8 & 9.5 & -0.13 \\
+number theory & 8 & 42.2 & 32.9 & -0.19 & 0.7 & 2.8 & +0.17 & 54.1 & 64.3 & +0.21 \\
+strings & 8 & 86.1 & 80.4 & -0.15 & 4.7 & 5.2 & +0.03 & 0.0 & 0.0 & +0.00 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% --- P5 rq3-residual ---
+\begin{table}[t]
+\centering
+\caption{GPT-3.5 self-reflection: per-family turn-0 vs.\ residual bug counts, persistence rate (residual/turn-0), and the change in each family's share of the stage's bugs. $p$ tests the share shift (two-proportion).}
+\label{tab:rq3-residual}
+\small
+\begin{tabular}{llrrrr}
+\toprule
+Fam & Name & Turn-0 & Residual & Persist\% & $\Delta$share \\
+\midrule
+GE1 & Design & 929 & 905 & 97 & +0.7 \\
+GE2 & Boundary & 205 & 226 & 110 & +1.5 \\
+GE4 & Data Type & 1 & 2 & 200 & +0.1 \\
+GE5 & Syntax & 127 & 75 & 59 & -2.4 \\
+GE6 & I/O & 1 & 0 & 0 & -0.0 \\
+AE1 & Math & 413 & 391 & 95 & -0.3 \\
+AE2 & Greedy & 190 & 196 & 103 & +0.7 \\
+AE5 & DP & 210 & 198 & 94 & -0.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% --- P2 leaf-dist ---
+\begin{table}[t]
+\centering
+\caption{Leaf-level (primary-label) bug distribution by arm (zero-shot, \% of arm's bugs). Only leaves observed in the corpus are shown; per-family leaf shares sum to the family total.}
+\label{tab:leaf-dist}
+\small
+\begin{tabular}{llrrr}
+\toprule
+Leaf & Name & Human & GPT-3.5 & G5.4-nano \\
+\midrule
+\addlinespace
+GE1.1 & Incorrect Algorithm & 26.39 & 29.24 & 30.65 \\
+GE1.2 & Misunderstanding Requirements & 24.13 & 14.21 & 20.75 \\
+GE1.3 & Overly Complex/Inefficient & 0.91 & 1.30 & 0.89 \\
+\addlinespace
+GE2.1 & Edge/Boundary Handling & 7.93 & 8.91 & 5.80 \\
+GE2.2 & Off-by-one & 0.29 & 0.96 & 0.55 \\
+\addlinespace
+GE3.1 & Faulty Condition & 0.01 & 0.00 & 0.00 \\
+\addlinespace
+GE4.1 & Overflow/Precision & 1.03 & 0.05 & 0.07 \\
+\addlinespace
+GE5.1 & Compilation Error & 2.58 & 6.12 & 5.05 \\
+\addlinespace
+GE6.1 & Input Format & 1.12 & 0.00 & 0.00 \\
+GE6.2 & Output Format & 0.08 & 0.05 & 0.00 \\
+\addlinespace
+AE1.1 & Formula/Derivation & 19.10 & 19.65 & 16.72 \\
+AE1.2 & Special Math Structure & 0.27 & 0.24 & 0.68 \\
+\addlinespace
+AE2.1 & Suboptimal Greedy Choice & 7.69 & 9.15 & 10.10 \\
+\addlinespace
+AE5.1 & DP State Definition & 1.36 & 2.84 & 3.14 \\
+AE5.2 & DP Transition & 7.10 & 7.27 & 5.60 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% --- P3 verdict ---
+\begin{table}[t]
+\centering
+\caption{Verdict mix per arm (\% of arm's non-AC submissions). CE is the GE5 Syntax family by construction; the WA body carries the conceptual bugs.}
+\label{tab:verdict}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Arm & WA & CE & RE & TLE \\
+\midrule
+Human & 94.7 & 2.6 & 1.8 & 0.9 \\
+GPT-3.5 & 90.0 & 6.1 & 2.6 & 1.3 \\
+GPT-5.4-nano & 93.5 & 5.1 & 0.5 & 0.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===== S4 WA-body table =====
+\begin{table}[t]
+\centering
+\caption{Bug-family distribution on the WA body only (compile failures/GE5 removed), \% of each arm's WA submissions. $h$ is Cohen's $h$ (GPT-3.5$-$Human); $q$ is BH-FDR.}
+\label{tab:wa-body}
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+Fam & Name & Human & GPT-3.5 & G5.4-nano & $h_{3.5}$ & $q_{3.5}$ \\
+\midrule
+GE1 & Design & 53.28 & 48.29 & 54.96 & -0.10 & 2.9e-04$^{*}$ \\
+GE2 & Boundary & 6.80 & 8.08 & 6.20 & +0.05 & 7.4e-02 \\
+GE3 & Condition & 0.01 & 0.00 & 0.00 & -0.02 & 7.1e-01 \\
+GE4 & Data Type & 1.09 & 0.05 & 0.07 & -0.16 & 8.4e-05$^{*}$ \\
+GE5 & Syntax & 0.00 & 0.00 & 0.00 & +0.00 & 1.0e+00 \\
+GE6 & I/O & 1.27 & 0.05 & 0.00 & -0.18 & 2.7e-05$^{*}$ \\
+AE1 & Math & 20.47 & 22.11 & 18.61 & +0.04 & 1.5e-01 \\
+AE2 & Greedy & 8.13 & 10.17 & 10.80 & +0.07 & 7.7e-03$^{*}$ \\
+AE5 & DP & 8.95 & 11.24 & 9.34 & +0.08 & 4.8e-03$^{*}$ \\
+\bottomrule
+\end{tabular}
+\end{table}

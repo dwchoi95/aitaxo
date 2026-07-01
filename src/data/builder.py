@@ -29,8 +29,11 @@ class Builder:
         self.cpp = LANG.get(b["cpp_language"], "cpp")
         self.min_correct = b["min_correct"]
         self.min_incorrect = b["min_incorrect"]
+        self.test_kinds = b["test_kinds"]
+        self.require_private = b["require_private"]
+        self.hi_threshold = b["high_disagreement_pct"] / 100.0
         self.workers = b["workers"]
-        self.out = Path(config["paths"]["data"])
+        self.out = Path(config["paths"]["problems"])
         self.validator = Validator(config)
 
     def run(self):
@@ -48,16 +51,40 @@ class Builder:
                     "correct_disagree_pct": round(100 * (cj - ca) / cj, 2) if cj else 0.0,
                     "incorrect_judged": ij, "incorrect_disagree_unexpected_ac": ia,
                     "incorrect_disagree_pct": round(100 * ia / ij, 2) if ij else 0.0}
+        # Codeforces problems lacking public / private tests (reported, not excluded)
+        no_public = sorted(r["problem_id"] for r in results if r["np"] == 0)
+        no_private = sorted(r["problem_id"] for r in results if r["nv"] == 0)
+        # problems where a large share of known-incorrect submissions judge AC: suspect weak tests
+        # (generated excluded), a special judge / multiple valid outputs, or a nondeterministic problem
+        hi = sorted(({"problem_id": r["problem_id"], "incorrect_judged": r["ij"],
+                      "unexpected_ac": r["ia"], "disagree_pct": round(100 * r["ia"] / r["ij"], 1),
+                      "kept": r["kept"], "drop_reason": r["drop_reason"]}
+                     for r in results if r["ij"] and r["ia"] / r["ij"] >= self.hi_threshold),
+                    key=lambda x: -x["disagree_pct"])
+        stats["high_disagreement"] = hi
         stats["kept_problems"] = len(kept)
         stats["dropped"] = dict(dropped)
         stats["disagreement"] = disagree
+        stats["no_public_tests"] = no_public
+        stats["no_private_tests"] = no_private
         self._write_stats(stats)
         self._write_manifest([r["manifest"] for r in kept])
         return {"test_problems": len(rows), "codeforces": len(cf), "kept_problems": len(kept),
-                "dropped": dict(dropped), "disagreement": disagree, "out": str(self.out)}
+                "dropped": dict(dropped), "disagreement": disagree,
+                "no_public_tests": {"count": len(no_public), "ids": no_public},
+                "no_private_tests": {"count": len(no_private), "ids": no_private},
+                "high_disagreement": {"threshold_pct": int(self.hi_threshold * 100), "count": len(hi),
+                                      "problems": hi},
+                "out": str(self.out)}
 
     def _process_problem(self, ex):
         pid = self._pid(ex)
+        np_, nv_ = len(ex["public_tests"]["input"]), len(ex["private_tests"]["input"])
+        base = {"problem_id": pid, "cj": 0, "ca": 0, "ij": 0, "ia": 0, "np": np_, "nv": nv_}
+        # drop problems with no private tests: only the sample (public) tests would remain, too weak
+        if self.require_private and nv_ == 0:
+            return {**base, "kept": False, "drop_reason": "no_private"}
+
         d = self.out / pid
         d.mkdir(parents=True, exist_ok=True)
         (d / "description.txt").write_text(ex["description"], encoding="utf-8")
@@ -76,7 +103,7 @@ class Builder:
             if self.validator.judge(d, s)["verdict"] == "AC":
                 ca = 1
                 break
-        res = {"problem_id": pid, "cj": cj, "ca": ca, "ij": 0, "ia": 0}
+        res = {**base, "cj": cj, "ca": ca}
         # no correct judged AC -> problem is not exactly judgeable -> delete it.
         if ca < self.min_correct:
             shutil.rmtree(d)
@@ -89,9 +116,12 @@ class Builder:
             shutil.rmtree(d)
             return {**res, "kept": False, "drop_reason": "too_few_bugs"}
 
-        # corrects are stored unfiltered (kept as-is); incorrects are the confirmed-non-AC subset
-        self._write_jsonl(d / "correct.jsonl", [{"source": s} for s in correct])
-        self._write_jsonl(d / "incorrect.jsonl", [{"source": s} for s in bugs])
+        # human submissions go under <pid>/human/ (the AI submissions are filled later under
+        # <pid>/ai/ by the generation step); meta.json, description.txt, tests.jsonl stay problem-level.
+        h = d / "human"
+        h.mkdir(exist_ok=True)
+        self._write_jsonl(h / "correct.jsonl", [{"source": s} for s in correct])
+        self._write_jsonl(h / "incorrect.jsonl", [{"source": s} for s in bugs])
         self._write_meta(d, pid, ex, n_correct=len(correct),
                          n_incorrect=len(bugs), n_incorrect_dropped=res["ia"])
         return {**res, "kept": True, "drop_reason": None,
@@ -114,7 +144,7 @@ class Builder:
 
     def _tests(self, ex):
         rows = []
-        for kind in ("public", "private", "generated"):
+        for kind in self.test_kinds:
             t = ex[f"{kind}_tests"]
             for inp, outp in zip(t["input"], t["output"]):
                 rows.append({"input": inp, "output": outp, "kind": kind})

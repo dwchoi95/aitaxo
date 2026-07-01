@@ -1,0 +1,113 @@
+{
+  "completed": 120,
+  "missing": 0,
+  "missing_item_ids": [],
+  "by_arm": {
+    "human": {
+      "n": 40,
+      "leaf_changed": 27,
+      "family_changed": 26
+    },
+    "gpt-3.5-turbo-0125": {
+      "n": 40,
+      "leaf_changed": 22,
+      "family_changed": 20
+    },
+    "gpt-5.4-nano": {
+      "n": 40,
+      "leaf_changed": 21,
+      "family_changed": 20
+    }
+  },
+  "family_before": {
+    "human": {
+      "GE1": 6,
+      "AE1": 7,
+      "GE4": 9,
+      "GE3": 1,
+      "GE6": 7,
+      "GE2": 4,
+      "AE2": 5,
+      "AE5": 3
+    },
+    "gpt-3.5-turbo-0125": {
+      "GE1": 8,
+      "GE4": 2,
+      "GE6": 1,
+      "AE2": 10,
+      "GE2": 8,
+      "AE1": 8,
+      "AE5": 5
+    },
+    "gpt-5.4-nano": {
+      "GE1": 8,
+      "GE4": 2,
+      "GE6": 2,
+      "AE2": 10,
+      "GE2": 8,
+      "AE5": 5,
+      "AE1": 8
+    }
+  },
+  "family_after": {
+    "human": {
+      "AE1": 11,
+      "GE4": 3,
+      "GE3": 6,
+      "GE6": 3,
+      "GE1": 6,
+      "GE2": 4,
+      "AE2": 3,
+      "AE5": 3,
+      "AE6": 1
+    },
+    "gpt-3.5-turbo-0125": {
+      "GE1": 12,
+      "GE6": 2,
+      "GE2": 3,
+      "GE3": 5,
+      "AE1": 8,
+      "AE2": 8,
+      "AE5": 4
+    },
+    "gpt-5.4-nano": {
+      "GE1": 10,
+      "AE1": 11,
+      "AE2": 10,
+      "AE5": 5,
+      "GE2": 4
+    }
+  },
+  "agreement": {
+    "n": 120,
+    "leaf_exact": 84,
+    "leaf_exact_pct": 70.0,
+    "family_exact": 85,
+    "family_exact_pct": 70.83333333333333,
+    "primary_leaf_kappa": {
+      "kappa": 0.6916158046900097,
+      "po": 0.7333333333333333,
+      "pe": 0.13527777777777777
+    },
+    "primary_family_kappa": {
+      "kappa": 0.6882333221589004,
+      "po": 0.7416666666666667,
+      "pe": 0.1713888888888889
+    },
+    "binary_leaf_kappa": {
+      "kappa": 0.7116603295310522,
+      "po": 0.9613095238095238,
+      "pe": 0.8658163265306122
+    },
+    "binary_family_kappa": {
+      "kappa": 0.7066576128892871,
+      "po": 0.9541666666666667,
+      "pe": 0.8437548225308642
+    },
+    "adjudicated_rows": 36,
+    "adjudication_source": {
+      "tie_breaker": 3,
+      "adjudication_agreement": 33
+    }
+  }
+}

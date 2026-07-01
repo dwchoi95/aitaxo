@@ -35,9 +35,6 @@ htmlcov/
 # LLM call logs (may contain prompts; large)
 /logs/
 
-# ---- Manuscript: excluded from the public artifact repo ----
-/paper/
-
 # ---- Gold annotation: per-item detail files are regenerable from final.jsonl + seed ----
 # (README, CODEBOOK, manifest, and the filled annotator CSVs ARE tracked)
 /human/items/
@@ -52,6 +49,7 @@ htmlcov/
 *.fls
 *.fdb_latexmk
 main.pdf
+!/paper/main.pdf
 
 # ---- Secrets ----
 .env
@@ -60,6 +58,7 @@ main.pdf
 # ---- macOS ----
 .DS_Store
 /scratch/
+/tmp/
 
 # ---- local state backups (large tarballs) ----
 /backups/

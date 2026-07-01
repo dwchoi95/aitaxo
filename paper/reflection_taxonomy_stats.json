@@ -1,0 +1,109 @@
+{
+  "criterion": {
+    "bootstraps": 2000,
+    "family_kappa_ci95_low_must_exceed": 0.6,
+    "family_micro_f1_ci95_low_must_exceed": 0.7,
+    "seed": 13
+  },
+  "label_source": "judge_full",
+  "n_fixed": 83,
+  "n_rows": 2076,
+  "summary": {
+    "fixed": {
+      "AE1:All": 11,
+      "AE1:Easy": 8,
+      "AE1:Hard": 0,
+      "AE1:Medium": 3,
+      "AE2:All": 6,
+      "AE2:Easy": 3,
+      "AE2:Hard": 0,
+      "AE2:Medium": 3,
+      "AE5:All": 1,
+      "AE5:Hard": 0,
+      "AE5:Medium": 1,
+      "GE1:All": 57,
+      "GE1:Easy": 31,
+      "GE1:Hard": 10,
+      "GE1:Medium": 16,
+      "GE2:All": 1,
+      "GE2:Easy": 1,
+      "GE2:Hard": 0,
+      "GE2:Medium": 0,
+      "GE4:All": 0,
+      "GE4:Hard": 0,
+      "GE5:All": 7,
+      "GE5:Easy": 7,
+      "GE5:Hard": 0,
+      "GE5:Medium": 0,
+      "GE6:All": 0,
+      "GE6:Easy": 0
+    },
+    "total": {
+      "AE1:All": 413,
+      "AE1:Easy": 237,
+      "AE1:Hard": 95,
+      "AE1:Medium": 81,
+      "AE2:All": 190,
+      "AE2:Easy": 64,
+      "AE2:Hard": 37,
+      "AE2:Medium": 89,
+      "AE5:All": 210,
+      "AE5:Hard": 97,
+      "AE5:Medium": 113,
+      "GE1:All": 929,
+      "GE1:Easy": 272,
+      "GE1:Hard": 366,
+      "GE1:Medium": 291,
+      "GE2:All": 205,
+      "GE2:Easy": 92,
+      "GE2:Hard": 43,
+      "GE2:Medium": 70,
+      "GE4:All": 1,
+      "GE4:Hard": 1,
+      "GE5:All": 127,
+      "GE5:Easy": 34,
+      "GE5:Hard": 54,
+      "GE5:Medium": 39,
+      "GE6:All": 1,
+      "GE6:Easy": 1
+    }
+  },
+  "validation": {
+    "base": {
+      "human1_human2_family_kappa": 0.8279474290291243,
+      "judge_human1_family_f1": 0.7847769028871392,
+      "judge_human1_family_kappa": 0.7683432497557131,
+      "judge_human2_family_f1": 0.8179419525065963,
+      "judge_human2_family_kappa": 0.8072498531427452
+    },
+    "ci95": {
+      "human1_human2_family_kappa": [
+        0.7900368601956543,
+        0.8681167915182509
+      ],
+      "judge_human1_family_f1": [
+        0.743691899070385,
+        0.8261437908496733
+      ],
+      "judge_human1_family_kappa": [
+        0.7231761493897508,
+        0.8134932568414724
+      ],
+      "judge_human2_family_f1": [
+        0.7777777777777777,
+        0.8552631578947368
+      ],
+      "judge_human2_family_kappa": [
+        0.763199183868489,
+        0.8465680456242944
+      ]
+    },
+    "clean_arm": {
+      "judge_human1_family_kappa": 0.8180505415162452,
+      "judge_human2_family_kappa": 0.8267148014440436,
+      "n": 125
+    },
+    "n": 375,
+    "passes": true
+  }
+}

@@ -12,6 +12,10 @@ build:
   # AND yields >= min_incorrect confirmed-non-AC incorrects.
   min_correct: 1
   min_incorrect: 10
+  test_kinds: [public, private]   # generated tests (up to ~200/problem) excluded for speed
+  require_private: true           # drop problems that have no private tests (would judge on samples only)
+  high_disagreement_pct: 50       # flag problems where >= this %% of known-incorrect submissions judge AC
+                                  # (suspect: weak tests / special-judge / nondeterministic problem)
   workers: 18
 
 execution:
@@ -24,6 +28,48 @@ execution:
   default_memory_mb: 256
   first_failing_cap_chars: 6000 # truncate stored first_failing_test input/expected/actual
 
+ai_submission:
+  models:
+    - gpt-3.5-turbo-0125         # PRIMARY contamination-clean arm (Sep-2021 cutoff < problem release)
+    - gpt-5.4-nano               # CONTRAST arm — modern, contamination NOT controlled (saw these problems)
+  temperature: 1.0               # FIXED — high temperature for diverse attempts (mirrors many human users)
+  k_max: 20                      # FIXED sample budget per problem (no early stop; keep every generation)
+  min_incorrect: 10              # report-only: flag problems yielding < this many non-AC (not dropped)
+  concurrency: 32                # max simultaneous OpenAI calls in flight
+  workers: 18                    # max simultaneous sandbox validations
+
+reflect:
+  models:
+    - gpt-3.5-turbo-0125         # self-refine only on the contamination-clean primary arm
+  temperature: 1.0               # continues the zero-shot conversation at the same sampling
+  rounds: 3                      # up to N reflect+revise rounds per bug; early stop when AC
+  concurrency: 32                # max simultaneous OpenAI calls in flight
+  workers: 18                    # max simultaneous sandbox runs (public feedback + AC check)
+
+judge:
+  model: gpt-5.4                 # taxonomy judge (multi-label); same inputs as the human annotators
+  m: 3                           # self-consistency samples per submission (majority vote)
+  temperature: 0.4
+  size_cap_chars: 6000           # clip long description / code / oracle inside the prompt
+  concurrency: 32                # max simultaneous OpenAI calls in flight
+  workers: 18                    # max simultaneous sandbox judgments (verdict + first failing test)
+
+gold:
+  arms:                          # zero-shot corpora to validate the judge on (provenance-blind)
+    human: human/incorrect.jsonl
+    gpt-3.5-turbo-0125: ai/gpt-3.5-turbo-0125/incorrect.jsonl
+    gpt-5.4-nano: ai/gpt-5.4-nano/incorrect.jsonl
+  per_arm: 125                   # balanced allocation per arm (Cochran ~375 total, FPC on 14,182)
+  verdict_floors: {CE: 12, RE: 12, TLE: 12}   # oversample rare bug types (rest -> WA); weight back for pooled
+  per_problem_cap: 4             # no single problem dominates the sample
+  seed: 42
+  annotators: [annotator1, annotator2]        # both label the SAME items -> inter-annotator kappa
+
 paths:
   data: data
+  problems: data/problems        # per-problem data (meta, description, tests, human/, ai/)
+  classifications: data/classifications   # full.csv = gpt-5.4 judge (all bugs); gold.csv = human gold
   artifacts: artifacts
+  analysis: analysis
+  gold: gold                     # annotator package (zip this): <pid>.md, label.csv, codebook.md
+  cache: logs/cache              # LLM response cache (re-runs are free)

@@ -1,0 +1,1 @@
+There is a C++ programming problem. Below is the problem description, including the input format, the output format, and some examples. Please write a correct and efficient program that solves the C++ programming problem, and return only the program as a single C++ code block.
