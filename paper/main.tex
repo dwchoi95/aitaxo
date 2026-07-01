@@ -126,15 +126,14 @@ repair/resampling traces. Researchers can replay exact verdict outcomes, evaluat
 common-evidence taxonomy labelers against the 375-bug human gold, stress-test
 diagnostic labels on the 120 stronger-evidence packs, compare repair methods against
 reflection/resampling trajectories, and study cached generator failures while
-reporting contamination status. The labeler-calibration task covers observed leaves
-rather than all 32 leaves and does not require accepting the proxy arm as perfectly
-uncontaminated. Common-evidence triage is useful for scalable decisions---whether a
-labeler can screen a large failure corpus, which buckets need human audit or new
-tests, and which failures enter repair queues---but not for certifying final root
-causes. Our baseline instantiation shows which uses are supported: exact verdicts
-are stable sandbox outcomes; human gold labels support observed-leaf triage-labeler
-calibration; full-corpus predictions are baseline screens; and root-cause claims
-require stronger evidence. The defensible taxonomy signal is coarse
+reporting contamination status. The primary scoreable taxonomy task is the 375-item
+observed-leaf labeler calibration; the 14{,}182 LLM-judge predictions are a released
+baseline screen, never an answer key. Common-evidence triage is useful for scalable
+decisions---which buckets need human audit, new tests, or repair---but not for
+certifying final root causes. Our baseline instantiation shows which uses are
+supported: exact verdicts are stable sandbox outcomes; human gold labels support
+observed-leaf triage-labeler calibration; full-corpus predictions are baseline
+screens; and root-cause claims require stronger evidence. The defensible taxonomy signal is coarse
 mathematics/design concentration plus a source-conditional syntax/compile
 separation. Label-free dynamics are stronger: the modern contrast is more capable
 but difficulty-sensitive, and public-example feedback repairs only 4\% of proxy-model
@@ -511,9 +510,9 @@ substantial agreement with both annotators (family $\kappa=0.77/0.81$,
 micro-$F_1\approx0.77$; Table~\ref{tab:kappa}), so it is usable for coarse
 full-corpus screening. Coverage is part of the benchmark contract, not a hidden
 limitation: across the two human gold label sets, only 17/32 taxonomy leaves and
-9/12 families appear at least once (AE3, AE4, and AE6 are absent). Thus HuAIBench
-supports observed-leaf labeler calibration and observed-family screens, not per-leaf
-leaderboards over all 32 leaves.
+9/12 families appear at least once (AE3, AE4, and AE6 are absent). Thus the gold set
+scores \emph{observed-leaf} labelers; full-corpus predictions are reference outputs
+for observed-family screening, not per-leaf leaderboards over all 32 leaves.
 The same gold rejects shallow labelers: a majority-prior labeler that always predicts
 AE1.1 reaches only micro-$F_1=0.32$ against the two humans, and a verdict-only
 heuristic (CE/RE$\to$GE5.1, TLE$\to$GE1.3, WA$\to$AE1.1) reaches 0.48; the judge's
@@ -632,7 +631,7 @@ Tier & Released evidence & Intended use & Do not use for\\
 \midrule
 Sandbox & verdicts, tests, cache & outcome/difficulty curves & semantic AC beyond tests\\
 Triage gold & 375 human labels & observed-leaf common-evidence labeler calibration & all-leaf/root-cause labels\\
-Corpus screen & 14{,}182 predictions & coarse source screens & gold fine taxonomy\\
+Corpus screen & 14{,}182 baseline predictions & coarse source screens & answer-key labels\\
 Evidence stress & 120 audit packs & label-stability checks & prevalence estimates\\
 Repair & reflection trajectories & repair baselines & general self-repair claims\\
 \bottomrule
@@ -645,9 +644,9 @@ outcomes and repair trajectories; human ground truth exists only for
 \emph{common-evidence triage labeling} (given statement, code, and verdict, predict
 the label a provenance-blind human assigns); full-corpus taxonomy predictions are
 baseline system outputs for coarse screening; and the 120 stronger-evidence packs are
-a stress set, not a prevalence sample. The artifact schema enforces this separation
-by storing gold labels, baseline predictions, and stronger-evidence audit labels in
-separate tables. A full-corpus taxonomy difference is not promoted beyond a screen
+a stress set, not a prevalence sample. The artifact schema enforces this separation:
+\texttt{gold\_human*.csv} are taxonomy answer keys, while \texttt{full.csv}
+contains baseline predictions only. A full-corpus taxonomy difference is not promoted beyond a screen
 unless it survives problem-level clustering and the arm-specific bias correction in
 Table~\ref{tab:measerr}; root-cause claims are never made from common evidence alone.
 The 55.0\% should not be read as a pure evidence effect: the comparison changes
@@ -951,17 +950,12 @@ nearly absent for hard algorithmic families.}
 \label{sec:discussion}
 \paragraph{Benchmark use}
 HuAIBench should be used as a tiered benchmark, not as a single truth table or
-single primary score. For
-outcome studies, users replay the sandbox and report released-test verdicts. For
-taxonomy studies, a future labeler should predict the 375 gold items from the same
-evidence (statement, code, verdict), beat the majority and verdict-only baselines,
-report per-family bias, and disclose which observed leaves it covers; full-corpus
-labels remain screens until corrected. For repair studies, methods run on fixed
-cached failures and compare against reflection/resampling, not semantic repair beyond
-tests. New generator arms are appended with cached submissions, model date/cutoff,
-contamination status, sandbox outcomes, and the same calibration/scope checks; this
-is the update path as public tasks become more exposed. None of these tasks defines a
-human-vs-AI root-cause distribution.
+single primary score. Outcome studies replay released-test verdicts; taxonomy studies
+score labelers on the 375 gold items and treat full-corpus labels as screens; repair
+studies compare fixed cached failures against reflection/resampling. New generator
+arms append cached submissions with model date/cutoff, contamination status, sandbox
+outcomes, and the same calibration/scope checks. None defines a human-vs-AI
+root-cause distribution.
 This ordering is the central result: verdicts support outcome claims directly; the
 375-bug gold supports common-evidence evaluation only for observed leaves; full-corpus judge
 predictions support only coarse triage; and root-cause claims require failing-test or
@@ -1016,12 +1010,11 @@ measurement-limited.
 
 \section{Conclusion}
 \label{sec:conclusion}
-HuAIBench is a static archive and calibration suite for code failures: sandbox
-outcomes, human-gold labeler calibration, full-corpus baseline taxonomy screens,
-non-causal stronger-evidence diagnostic stress tests, and repair baselines. Its first baselines
-show coarse math/design concentration, a syntax/compile separation, and weak
-public-example self-reflection. The transferable rule is to report results only at
-the granularity the released evidence can sustain.
+HuAIBench is a static calibration suite for code failures: released-sandbox outcomes,
+human-gold labeler calibration, baseline taxonomy screens, stronger-evidence stress
+tests, and repair baselines. Its first baselines support only coarse math/design
+concentration, syntax/compile separation, and weak public-example self-reflection;
+the transferable rule is to report only the granularity the evidence can sustain.
 
 \section{Artifact Availability}
 \label{sec:artifacts}
@@ -1031,8 +1024,9 @@ programs, caches, labels, predictions, audit packs, repair trajectories, and scr
 Tables~IV--XIV rerun from caches without model calls). Checklist: \texttt{src/prompts/}
 stores prompts; \texttt{analysis/root\_cause\_human\_audit/} stores the codebook,
 taxonomy, and audit packs; \texttt{data/manifest.csv} and \texttt{data/problems/*/}
-store oracle-risk counts, tests, programs, and verdict caches; \texttt{data/classifications/*.csv}
-stores predictions/gold; and \texttt{analysis/} scripts regenerate tables/figures.
+store oracle-risk counts, tests, programs, and verdict caches; \texttt{data/classifications/}
+separates \texttt{gold\_human*.csv} answer keys from \texttt{full.csv} baseline
+predictions; and \texttt{analysis/} scripts regenerate tables/figures.
 \par\endgroup
 
 \bibliographystyle{IEEEtran}
