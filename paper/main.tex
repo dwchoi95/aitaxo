@@ -28,8 +28,8 @@
 
 \begin{document}
 
-\title{HuAIBench: An Evidence-Tiered Calibration Benchmark\\
-for Human and AI Code Failures}
+\title{HuAIBench: A Claim-Gated Benchmark Artifact\\
+for Released-Sandbox Human and AI Code Failures}
 
 \author{\IEEEauthorblockN{Anonymous Author(s)}
 \IEEEauthorblockA{\textit{Submitted for review}}}
@@ -39,14 +39,16 @@ for Human and AI Code Failures}
 \begin{abstract}
 Code-generation benchmarks usually measure whether programs pass tests; they rarely
 calibrate what can be scored about failed programs. We introduce
-\emph{HuAIBench}, an evidence-tiered benchmark for human and AI code failures:
+\emph{HuAIBench}, a claim-gated benchmark artifact for released-sandbox human and AI
+code-failure claims:
 14{,}182 released-sandbox non-AC C++ submissions on 107 post-2021 CodeContests
 problems, aligned across human submissions, a date-reduced proxy LLM, a modern
-contrast LLM, and a public-example self-reflection loop. HuAIBench packages exact
-verdict caches and oracle-risk metadata, a 375-bug doubly annotated common-evidence
-triage gold set (17 observed leaves), 14{,}182 LLM-judge baseline screen
-predictions, a 120-item stronger-evidence root-cause seed track (14 leaves) with
-failing tests and reference solutions, and repair/resampling trajectories. Its
+contrast LLM, and a public-example self-reflection loop. Its scoreable ground truth
+is intentionally tiered: exact verdict caches and oracle-risk metadata, a 375-bug
+doubly annotated common-evidence triage gold set (17 observed leaves), a 120-item
+stronger-evidence root-cause seed track (14 leaves) with failing tests and reference
+solutions, and repair/resampling trajectories; the 14{,}182 LLM-judge labels are
+baseline screen predictions, not an answer key. Its
 central contribution is a task contract: sandbox outcomes, common-evidence taxonomy
 triage, stronger-evidence root-cause labeling, full-corpus screening, and cached
 repair each have different evidence and scoring rules. The first baselines show why
@@ -55,10 +57,10 @@ weak root-cause proxies (55.0\% of primary families change in the stronger-evide
 track); the LLM judge is useful as a screen but over-applies design by 6--9 points;
 the full-corpus signal that survives calibration is coarse math/design concentration
 plus syntax/compile separation; and public-example self-reflection repairs 4.0\% of
-proxy bugs, matching same-budget resampling. HuAIBench is therefore a calibration
-benchmark, not an all-leaf taxonomy answer key: it specifies which failure-analysis
-claims are scoreable from common evidence, which require stronger evidence, and
-which remain exploratory screens.
+proxy bugs, matching same-budget resampling. HuAIBench is therefore not an all-leaf
+taxonomy benchmark or semantic-correctness oracle: it specifies which
+failure-analysis claims are scoreable from common evidence, which require stronger
+evidence, and which remain exploratory screens over released-sandbox failures.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -104,8 +106,10 @@ published after the September-2021 cutoff of \texttt{gpt-3.5-turbo}~\cite{openai
 Every retained human, proxy-LLM, modern-LLM, and reflection submission is rejudged in
 one sandbox; the artifact then adds human gold labels, LLM-judge baseline
 predictions, stronger-evidence audit packs, and repair traces. The model arms are
-cached benchmark baselines whose contamination status is reported, not a
-future-model leaderboard.
+cached historical baselines whose contamination status is reported, not a
+future-model leaderboard. All outcome claims are released-test claims unless a
+sensitivity check says otherwise; semantic correctness beyond this sandbox is outside
+the benchmark's answer key.
 
 HuAIBench's contribution is an evidence-tiered benchmark contract: it turns
 plausible code-failure diagnoses into scoreable tasks with known evidence
@@ -975,7 +979,9 @@ outcome studies (T0), use the 375 labels for common-evidence triage (T1), use th
 120 audit packs for stronger-evidence root cause (T2), treat \texttt{full.csv} as
 screen predictions (T3), and compare repair methods on fixed cached failures (T4).
 Reports should name the evidence tier, label source, contamination status, and
-whether a result is an answer key or a screened candidate.
+whether a result is an answer key or a screened candidate. Leaves absent from the
+gold sets are out-of-scope by default until users add adjudicated items at the same
+evidence tier.
 
 \paragraph{Measurement lessons}
 These tasks must remain separate. Human agreement makes common-evidence triage
